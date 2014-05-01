@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import com.prouty.leagueusa.sdsolschedule.GalleryDatabaseHelper.PhotoCursor;
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.PhotoCursor;
 
 public class ImagePagerActivity extends FragmentActivity 
 	implements ImageFragment.Callbacks {
@@ -20,7 +20,7 @@ public class ImagePagerActivity extends FragmentActivity
 	private int mImageWidth = 0;
 	private int mImageHeight = 0;
 
-	private GalleryDatabaseHelper mHelper;
+	private DatabaseHelper mHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class ImagePagerActivity extends FragmentActivity
 		Log.d(TAG, "onCreate().position: "+position);
 		initUserItem(uId, uName);
 
-		mHelper = new GalleryDatabaseHelper(getApplicationContext());
+		mHelper = new DatabaseHelper(getApplicationContext());
 		mQueryPhotos=queryPhotoItemsforUserId(mUserItem);
 		mQueryPhoto=mQueryPhotos.get(position);
 		Log.d(TAG, "onCreate() mQueryPhoto: "

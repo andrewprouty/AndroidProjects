@@ -11,13 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.prouty.leagueusa.sdsolschedule.GalleryDatabaseHelper.UserCursor;
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.UserCursor;
 
 public class MainUserListActivity extends FragmentActivity {
 	private static final String TAG = "MainUserListActivity";
-	//private UserItem mUserItem;
 	private int mPosition;
-	private GalleryDatabaseHelper mHelper;
+	private DatabaseHelper mHelper;
 	
 	protected void launchPhotoListActivity(UserItem user) {
 		Intent i = new Intent (MainUserListActivity.this, PhotoListActivity.class);
@@ -43,7 +42,7 @@ public class MainUserListActivity extends FragmentActivity {
                 .add(R.id.fragmentContainer, fragment)
                 .commit();
         }
-        mHelper = new GalleryDatabaseHelper(getApplicationContext());
+        mHelper = new DatabaseHelper(getApplicationContext());
     }
 
 	

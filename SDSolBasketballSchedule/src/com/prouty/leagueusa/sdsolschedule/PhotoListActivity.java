@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import com.prouty.leagueusa.sdsolschedule.GalleryDatabaseHelper.PhotoCursor;
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.PhotoCursor;
 
 public class PhotoListActivity extends FragmentActivity
 	implements ImageFragment.Callbacks {
@@ -19,7 +19,7 @@ public class PhotoListActivity extends FragmentActivity
 	private int mImageWidth = 0;
 	private int mImageHeight = 0;
 
-	private GalleryDatabaseHelper mHelper;
+	private DatabaseHelper mHelper;
 
 	protected void launchPhotoDisplayActivity(PhotoItem photo, int position) {
 		Log.d(TAG, "launchPhotoDisplayActivity(): "
@@ -71,7 +71,7 @@ public class PhotoListActivity extends FragmentActivity
 			.add(R.id.fragmentContainer, fragment)
 			.commit();
 		}
-        mHelper = new GalleryDatabaseHelper(getApplicationContext());
+        mHelper = new DatabaseHelper(getApplicationContext());
 	}
 
 	private void initUserItem (String id, String name) {
