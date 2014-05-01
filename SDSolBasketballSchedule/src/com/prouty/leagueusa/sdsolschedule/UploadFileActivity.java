@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class UploadFileActivity extends Activity {
-
+//TODO Delete this one
 	private static final String TAG = "UploadFileActivity";
 	private static int RESULT_LOAD_IMAGE = 1;
 	private EditText mFileNameEditText;
