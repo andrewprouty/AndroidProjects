@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Photo Gallery</string>
+    <string name="app_name">San Diego Sol</string>
     <string name="action_upload_title">Upload Image</string>
     <string name="file_name_text_hint">Image File Name</string>
     <string name="image_description">Photo Image</string>
