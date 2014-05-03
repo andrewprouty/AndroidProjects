@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/user_list_textView"
+        android:id="@+id/season_list_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="24sp" />
@@ -21,7 +21,7 @@
         android:textSize="18sp" />
 
     <ListView
-        android:id="@+id/user_list_view"
+        android:id="@+id/season_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>

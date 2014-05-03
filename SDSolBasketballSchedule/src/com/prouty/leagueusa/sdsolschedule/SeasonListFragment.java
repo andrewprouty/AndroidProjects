@@ -30,7 +30,7 @@ public class SeasonListFragment extends Fragment{
 	FetchSeasonItemsTask mFetchSeasonItemsTask = new FetchSeasonItemsTask();
 	
 	View view;
-	TextView mUserTextView;
+	TextView mSeasonTextView;
 	ListView mListView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,15 +46,15 @@ public class SeasonListFragment extends Fragment{
 	{       
 		Log.d(TAG, "onCreateView()");
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
-        mUserTextView = (TextView)view.findViewById(R.id.user_list_textView);
-		mListView = (ListView)view.findViewById(R.id.user_list_view);
+        mSeasonTextView = (TextView)view.findViewById(R.id.season_list_textView);
+		mListView = (ListView)view.findViewById(R.id.season_list_view);
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				TextView textViewItem = ((TextView) view.findViewById(R.id.row_season_name_textView));
 				//TextView textViewItem = ((TextView) view.findViewById(R.id.row_user_name_textView));
 				String listItemText = textViewItem.getText().toString();
-				Log.d(TAG, "().onItemClick() User ["+position+"]= "+listItemText);
+				Log.d(TAG, "().onItemClick() Season ["+position+"]= "+listItemText);
 				returnSelection(position);
 			}
 		});
@@ -62,10 +62,32 @@ public class SeasonListFragment extends Fragment{
 	}
 
 	private void setupSeason(int choice) {
+    	if (getActivity() == null || mListView == null) {
+    		return;
+    	}
 		Log.d(TAG, "setupSeason("+choice+")");
-		mSeasonItem = mSeasonItems.get(1); //TODO Add user's selection
-		Log.d(TAG, "setupSeason() " + mSeasonItem.getLeagueId() + "-" + mSeasonItem.getSeasonId()+ "-" + mSeasonItem.getSeasonName());
-    	return;
+    	if (choice == GET) {
+    		if (mSeasonItems != null && mSeasonItems.size()>0) {
+    			// Async to save the fetched list to DB
+    			//new InsertSeasonItemsTask().execute(); // save fetched to DB
+    			Log.w(TAG, "setupSeason() replace with insert/save to DB"); //TODO
+    		}
+    		else {
+    			// none. If in DB can populate from there
+    			//new QuerySeasonItemsTask().execute();
+    			Log.e(TAG, "setupSeason() replace with query from DB"); //TODO
+    		}
+    	}
+		//mSeasonItem = mSeasonItems.get(1); //TODO Add user's selection
+		//Log.d(TAG, "setupSeason() " + mSeasonItem.getLeagueId() + "-" + mSeasonItem.getSeasonId()+ "-" + mSeasonItem.getSeasonName());
+    	if (mSeasonItems != null) {
+			SeasonListAdapter adapter = new SeasonListAdapter(mSeasonItems);
+			mListView.setAdapter(adapter);
+		}
+		else {
+			mListView.setAdapter(null);
+		}
+		Log.d(TAG, "setupSeason().");
     }
 
 	private void setupLeague(int choice) {
@@ -122,6 +144,7 @@ public class SeasonListFragment extends Fragment{
     			new QueryUserItemsTask().execute();
     		}
     	}
+    	/*
 		if (mUserItems != null) {
 			UserListAdapter adapter = new UserListAdapter(mUserItems);
 			mListView.setAdapter(adapter);
@@ -129,14 +152,23 @@ public class SeasonListFragment extends Fragment{
 		else {
 			mListView.setAdapter(null);
 		}
+		*/
     }
 
     private void returnSelection(int position) {
-		mFetchUserItemsTask.cancel(true);
-    	mUserItem = mUserItems.get(position);
-    	Log.i(TAG, "returnSelection()=["+position+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
-		mUserTextView.setText(mUserItem.getUserName());
-		((MainActivity) getActivity()).launchPhotoListActivity(mUserItem);
+		//old
+		//mFetchUserItemsTask.cancel(true);
+    	mUserItem = mUserItems.get(6);//(position);
+    	Log.i(TAG, "returnSelection()=["+6+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
+		//mUserTextView.setText(mUserItem.getUserName());
+
+    	//new
+		//mFetchLeagueItemsTask.cancel(true);
+		//mFetchSeasonItemsTask.cancel(true);
+    	mSeasonItem = mSeasonItems.get(position);
+		mSeasonTextView.setText(mSeasonItem.getSeasonName());
+		Log.i(TAG, "returnSelection()=["+position+"] "+mSeasonItem.getSeasonId()+": "+mSeasonItem.getSeasonName());
+		((MainActivity) getActivity()).launchPhotoListActivity(mUserItem); //TODO Create division activity
     }
     private class FetchUserItemsTask extends AsyncTask<Void,Void,ArrayList<UserItem>> {
         @Override
@@ -211,6 +243,25 @@ public class SeasonListFragment extends Fragment{
         	} catch (Exception e) {
         		Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
         	}
+        }
+    }
+    private class SeasonListAdapter extends ArrayAdapter<SeasonItem> {
+        public SeasonListAdapter(ArrayList<SeasonItem> seasonItems) {
+            super(getActivity(), 0, seasonItems);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.season_list_row, parent, false);
+            }
+            
+            SeasonItem item = getItem(position);
+            TextView seasonTextView = (TextView)convertView.findViewById(R.id.row_season_name_textView);
+			Log.v(TAG, "adapter.getView() item.getSeasonName(): "+item.getSeasonName());
+            seasonTextView.setText(item.getSeasonName());
+            
+            return convertView;
         }
     }
     private class UserListAdapter extends ArrayAdapter<UserItem> {
