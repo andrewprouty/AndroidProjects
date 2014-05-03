@@ -14,9 +14,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-public class SeasonListLeagueUSA{
-	private static final String TAG = "SeasonListLeagueUSA";
-	private LeagueItem mLeagueItem;
+public class ConferenceListLeagueUSA{
+	private static final String TAG = "ConferenceListLeagueUSA";
+	private DivisionItem mSetupItem;
 
 	public byte[] getUrlBytes(String urlSpec) throws IOException {
 		URL url = new URL(urlSpec);
@@ -46,28 +46,32 @@ public class SeasonListLeagueUSA{
 		return new String(getUrlBytes(urlSpec));
 	}
 
-	public ArrayList<SeasonItem> fetchItems(LeagueItem leagueItem, Context appContext) {
-		ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
-		mLeagueItem = leagueItem; // Sets class variable
+	public ArrayList<ConferenceItem> fetchItems(DivisionItem setupItem, Context appContext) {
+		ArrayList<ConferenceItem> items = new ArrayList<ConferenceItem>();
+		mSetupItem = setupItem; // Sets class variable
 		try {
-			String jsonString = GETSeasonList();
+			String jsonString = GETList();
 			if (jsonString == null || jsonString.length() == 0) {
 				//Not online - will show an empty list if not in DB
 				Log.i(TAG, "fetchItems() Failed to fetch items");
 			}
 			else {
-				parseSeasonList(items, jsonString);
+				parseList(items, jsonString);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "fetchItems() Exc:"+e.getMessage(),e);
 		}
 		return items;
 	}
-	private String GETSeasonList() {
+	private String GETList() {
 		String url = "";
 		String jsonString = "";
 		try {
-			url = Uri.parse(mLeagueItem.getLeagueURL()+"?league="+mLeagueItem.getLeagueId()).toString();
+			// http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123
+			url = Uri.parse(mSetupItem.getLeagueURL()
+					+"?league="+mSetupItem.getLeagueId()
+					+"&season="+mSetupItem.getSeasonId()
+					+"&division="+mSetupItem.getDivisionId()).toString();
 			Log.d(TAG, "GETSeasonList():" + url);
 			jsonString = getUrl(url);
 			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);
@@ -78,21 +82,26 @@ public class SeasonListLeagueUSA{
 		}
 		return jsonString;
 	}
-	private void parseSeasonList(ArrayList<SeasonItem> items, String stringSeasonList) {
+	private void parseList(ArrayList<ConferenceItem> items, String stringSeasonList) {
 		try {
 			JSONArray jsonSeasonList = new JSONArray (stringSeasonList);  
-			// [{"seasonid":"7","seasonname":"Breakaway League 2014"},
+			// [{"conferenceid":"127","conferencename":"Boys JV B"}] 
 			for (int i = 0; i < jsonSeasonList.length(); i++) {
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
-				String season_id  = jsonNode.optString("seasonid").toString();
-				String season_name   = jsonNode.optString("seasonname").toString();
-				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+season_id+"-"+season_name);
+				String id  = jsonNode.optString("conferenceid").toString();
+				String name= jsonNode.optString("conferencename").toString();
+				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+id+"-"+name);
 
-				SeasonItem item = new SeasonItem();
-				item.setLeagueId(mLeagueItem.getLeagueId());
-				item.setLeagueURL(mLeagueItem.getLeagueURL());
-				item.setSeasonId(season_id);
-				item.setSeasonName(season_name);
+				ConferenceItem item = new ConferenceItem();
+				item.setLeagueId(mSetupItem.getLeagueId());
+				item.setLeagueURL(mSetupItem.getLeagueURL());
+				item.setSeasonId(mSetupItem.getSeasonId());
+				item.setSeasonName(mSetupItem.getSeasonName());
+				item.setDivisionId(mSetupItem.getDivisionId());
+				item.setDivisionName(mSetupItem.getDivisionName());
+
+				item.setConferenceId(id);
+				item.setConferenceName(name);
 				items.add(item);
 			}
 			Log.d(TAG, "parseSeasonList() SeasonItem added: "+jsonSeasonList.length());

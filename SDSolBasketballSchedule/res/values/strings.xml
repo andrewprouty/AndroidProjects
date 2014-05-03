@@ -1,6 +1,10 @@
 <resources>
 
     <string name="app_name">San Diego Sol</string>
+    <string name="season_list_textView_hint">Select a Season</string>
+    <string name="division_list_division_name_hint">Please select a Division</string>
+    <string name="fatal_multiple_conference_per_division">ERROR program can only handle 1 conference per division</string>
+    <string name="fatal_conference_suggestion">Try a different division</string>
     <string name="action_upload_title">Upload Image</string>
     <string name="file_name_text_hint">Image File Name</string>
     <string name="image_description">Photo Image</string>
@@ -10,7 +14,6 @@
     <string name="upload_button_text">Upload as Andrew</string>
     <string name="upload_success">Photo Uploaded</string>
     <string name="upload_failure">Error with Upload</string>
-    <string name="season_list_textView_hint">Select a Season</string>
     <string name="view_button_text">Browse Gallery</string>
 
 </resources>

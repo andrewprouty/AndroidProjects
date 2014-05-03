@@ -14,9 +14,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-public class LeagueListLeagueUSA{
-	private static final String TAG = "LeagueListLeagueUSA";
-	private static final String ENDPOINT = "http://www.sdsolbasketball.com/mobileschedule.php";
+public class DivisionListLeagueUSA{
+	private static final String TAG = "DivisionListLeagueUSA";
+	private SeasonItem mSetupItem;
 
 	public byte[] getUrlBytes(String urlSpec) throws IOException {
 		URL url = new URL(urlSpec);
@@ -46,8 +46,9 @@ public class LeagueListLeagueUSA{
 		return new String(getUrlBytes(urlSpec));
 	}
 
-	public ArrayList<LeagueItem> fetchItems(Context appContext) {
-		ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
+	public ArrayList<DivisionItem> fetchItems(SeasonItem setupItem, Context appContext) {
+		ArrayList<DivisionItem> items = new ArrayList<DivisionItem>();
+		mSetupItem = setupItem; // Sets class variable
 		try {
 			String jsonString = GETList();
 			if (jsonString == null || jsonString.length() == 0) {
@@ -66,39 +67,43 @@ public class LeagueListLeagueUSA{
 		String url = "";
 		String jsonString = "";
 		try {
-			url = Uri.parse(ENDPOINT).toString();
-			Log.d(TAG, "GETLeagueList():" + url);
+			// http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8
+			url = Uri.parse(mSetupItem.getLeagueURL()
+					+"?league="+mSetupItem.getLeagueId()
+					+"&season="+mSetupItem.getSeasonId()).toString();
+			Log.d(TAG, "GETSeasonList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETLeagueList() Received json: " + jsonString);
+			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);
 		} catch (IOException ioe) {
-			Log.e(TAG, "GETLeagueList() IOException: "+ioe.getMessage()); // skip stack
+			Log.e(TAG, "GETSeasonList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {
-			Log.e(TAG, "GETLeagueList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "GETSeasonList() Exc:"+e.getMessage(),e);
 		}
 		return jsonString;
 	}
-	private void parseList(ArrayList<LeagueItem> items, String stringLeagueList) {
+	private void parseList(ArrayList<DivisionItem> items, String stringSeasonList) {
 		try {
-			JSONArray jsonLeagueList = new JSONArray (stringLeagueList);  
-			// {"name":"Roger Whitney","id":"1"},...
-			// [{"leagueid":"1","orgname":"San Diego Sol"}]
-			for (int i = 0; i < jsonLeagueList.length(); i++) {
-				JSONObject jsonNode = jsonLeagueList.getJSONObject(i);
-				String id  = jsonNode.optString("leagueid").toString();
-				String name   = jsonNode.optString("orgname").toString();
-				String url = "http://www.sdsolbasketball.com/mobileschedule.php";
-				Log.d(TAG, "parseLeagueList() ["+ i + "] : "+id+"-"+name+"-"+url);
+			JSONArray jsonSeasonList = new JSONArray (stringSeasonList);  
+			// [{"divisionid":"107","divisionname":"Boys 3rd"},...
+			for (int i = 0; i < jsonSeasonList.length(); i++) {
+				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
+				String id  = jsonNode.optString("divisionid").toString();
+				String name= jsonNode.optString("divisionname").toString();
+				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+id+"-"+name);
 
-				LeagueItem item = new LeagueItem();
-				item.setLeagueId(id);
-				item.setOrgName(name);
-				item.setLeagueURL(url);
-					// If this is enhanced for other leagues, URL likely to be returned in JSON result
+				DivisionItem item = new DivisionItem();
+				item.setLeagueId(mSetupItem.getLeagueId());
+				item.setLeagueURL(mSetupItem.getLeagueURL());
+				item.setSeasonId(mSetupItem.getSeasonId());
+				item.setSeasonName(mSetupItem.getSeasonName());
+				
+				item.setDivisionId(id);
+				item.setDivisionName(name);
 				items.add(item);
 			}
-			Log.d(TAG, "parseLeagueList() LeagueItem added: "+jsonLeagueList.length());
+			Log.d(TAG, "parseSeasonList() SeasonItem added: "+jsonSeasonList.length());
 		} catch (Exception e) {
-			Log.e(TAG, "parseLeagueList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "parseSeasonList() Exc:"+e.getMessage(),e);
 		}
 	}
 }

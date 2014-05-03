@@ -29,6 +29,10 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name="com.prouty.leagueusa.sdsolschedule.DivisionListActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name="com.prouty.leagueusa.sdsolschedule.PhotoListActivity"
             android:label="@string/app_name" >
         </activity>

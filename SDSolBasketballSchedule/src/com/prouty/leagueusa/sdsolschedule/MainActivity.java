@@ -17,7 +17,21 @@ public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private int mPosition;
 	private DatabaseHelper mHelper;
-	
+
+	protected void launchDivisionListActivity(SeasonItem item) {
+		Intent i = new Intent (MainActivity.this, DivisionListActivity.class);
+		i.putExtra("LeagueId", item.getLeagueId().toString());
+		i.putExtra("LeagueURL", item.getLeagueURL().toString());
+		i.putExtra("SeasonId", item.getSeasonId().toString());
+		i.putExtra("SeasonName", item.getSeasonName().toString());
+		Log.d(TAG, "launchDivisionListActivity() season: "
+				+ item.getLeagueId() + " ("
+				+ item.getLeagueURL() + "); "
+				+ item.getSeasonId() + "-"
+				+ item.getSeasonName());
+		startActivity(i);
+	}
+
 	protected void launchPhotoListActivity(UserItem user) {
 		Intent i = new Intent (MainActivity.this, PhotoListActivity.class);
 		i.putExtra("UserId", user.getUserId().toString());

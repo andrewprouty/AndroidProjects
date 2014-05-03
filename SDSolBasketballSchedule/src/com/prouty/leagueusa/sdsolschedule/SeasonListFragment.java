@@ -25,7 +25,6 @@ public class SeasonListFragment extends Fragment{
 	private SeasonItem mSeasonItem;
 	private ArrayList<UserItem> mUserItems;
 	private UserItem mUserItem;
-	FetchUserItemsTask mFetchUserItemsTask = new FetchUserItemsTask();
 	FetchLeagueItemsTask mFetchLeagueItemsTask = new FetchLeagueItemsTask();
 	FetchSeasonItemsTask mFetchSeasonItemsTask = new FetchSeasonItemsTask();
 	
@@ -37,7 +36,6 @@ public class SeasonListFragment extends Fragment{
 		Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
-        mFetchUserItemsTask.execute();
         mFetchLeagueItemsTask.execute();
     }
 	
@@ -125,7 +123,6 @@ public class SeasonListFragment extends Fragment{
 		mLeagueItem = mLeagueItems.get(0);
 		Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
         mFetchSeasonItemsTask.execute();
-    	return;
     }
 
 	private void setupUser(int choice) {
@@ -158,17 +155,22 @@ public class SeasonListFragment extends Fragment{
     private void returnSelection(int position) {
 		//old
 		//mFetchUserItemsTask.cancel(true);
-    	mUserItem = mUserItems.get(6);//(position);
-    	Log.i(TAG, "returnSelection()=["+6+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
+    	//mUserItem = mUserItems.get(6);//(position);
+    	//Log.i(TAG, "returnSelection()=["+6+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
 		//mUserTextView.setText(mUserItem.getUserName());
+		//((MainActivity) getActivity()).launchPhotoListActivity(mUserItem); //TODO Create division activity
 
     	//new
-		//mFetchLeagueItemsTask.cancel(true);
-		//mFetchSeasonItemsTask.cancel(true);
+		mFetchLeagueItemsTask.cancel(true);
+		mFetchSeasonItemsTask.cancel(true);
     	mSeasonItem = mSeasonItems.get(position);
 		mSeasonTextView.setText(mSeasonItem.getSeasonName());
-		Log.i(TAG, "returnSelection()=["+position+"] "+mSeasonItem.getSeasonId()+": "+mSeasonItem.getSeasonName());
-		((MainActivity) getActivity()).launchPhotoListActivity(mUserItem); //TODO Create division activity
+		Log.i(TAG, "returnSelection()=["+position+"] "
+				+ mSeasonItem.getLeagueId() + " ("
+				+ mSeasonItem.getLeagueURL() + "); "
+				+ mSeasonItem.getSeasonId() + "-"
+				+ mSeasonItem.getSeasonName());
+		((MainActivity) getActivity()).launchDivisionListActivity(mSeasonItem);
     }
     private class FetchUserItemsTask extends AsyncTask<Void,Void,ArrayList<UserItem>> {
         @Override
