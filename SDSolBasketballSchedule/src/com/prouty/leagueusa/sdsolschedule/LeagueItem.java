@@ -2,13 +2,13 @@ package com.prouty.leagueusa.sdsolschedule;
 
 public class LeagueItem {
     private String mLeagueId;
-    private String mLeagueName;
+    private String mOrgName;
 
-    public String getLeagueName() {
-        return mLeagueName;
+    public String getOrgName() {
+        return mOrgName;
     }
-    public void setLeagueName(String leagueName) {
-        mLeagueName = leagueName;
+    public void setOrgName(String orgName) {
+        mOrgName = orgName;
     }
     
     public String getLeagueId() {

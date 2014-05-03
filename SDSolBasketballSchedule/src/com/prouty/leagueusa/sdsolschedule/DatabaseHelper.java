@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String TABLE_LEAGUE = "league";
 	private static final String COLUMN_LEAGUE_LEAGUE_ID = "league_id";
-	private static final String COLUMN_LEAGUE_LEAGUE_NAME = "league_name";
+	private static final String COLUMN_LEAGUE_ORG_NAME = "org_name";
 
 	private static final String TABLE_SEASON = "season";
 	private static final String COLUMN_SEASON_LEAGUE_ID = "league_id";
@@ -84,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// implement schema changes and data massage here when upgrading
 	}
 
-	public long deleteLeagues() {
+	public long deleteLeague() {
 		Log.d(TAG, "deleteLeagues()");
 		return getWritableDatabase().delete(TABLE_LEAGUE, null, null);
 	}
@@ -92,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "insertLeague()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_LEAGUE_LEAGUE_ID, item.getLeagueId());
-		cv.put(COLUMN_LEAGUE_LEAGUE_NAME, item.getLeagueName());
+		cv.put(COLUMN_LEAGUE_ORG_NAME, item.getOrgName());
 		return getWritableDatabase().insert(TABLE_LEAGUE, null, cv);
 	}
 	public LeagueCursor queryLeagues() {
@@ -257,7 +257,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				return null;
 			LeagueItem item = new LeagueItem();
 			item.setLeagueId(getString(getColumnIndex(COLUMN_LEAGUE_LEAGUE_ID)));
-			item.setLeagueName(getString(getColumnIndex(COLUMN_LEAGUE_LEAGUE_NAME)));
+			item.setOrgName(getString(getColumnIndex(COLUMN_LEAGUE_ORG_NAME)));
 			return item;
 		}
 	}

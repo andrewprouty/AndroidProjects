@@ -13,13 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.UserCursor;
 
-public class MainUserListActivity extends FragmentActivity {
-	private static final String TAG = "MainUserListActivity";
+public class MainActivity extends FragmentActivity {
+	private static final String TAG = "MainActivity";
 	private int mPosition;
 	private DatabaseHelper mHelper;
 	
 	protected void launchPhotoListActivity(UserItem user) {
-		Intent i = new Intent (MainUserListActivity.this, PhotoListActivity.class);
+		Intent i = new Intent (MainActivity.this, PhotoListActivity.class);
 		i.putExtra("UserId", user.getUserId().toString());
 		i.putExtra("UserName", user.getUserName().toString());
 		Log.d(TAG, "launchPhotoListActivity() user: "
@@ -58,7 +58,7 @@ public class MainUserListActivity extends FragmentActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_upload:
 	    		Log.d(TAG, "onOptionsItemSelected() calling UploadFileActivity");
-	    		Intent i = new Intent (MainUserListActivity.this, UploadFileActivity.class);
+	    		Intent i = new Intent (MainActivity.this, UploadFileActivity.class);
 	    		startActivity(i);
 	            return true;
 	        default:
@@ -68,12 +68,36 @@ public class MainUserListActivity extends FragmentActivity {
 	}
 	
     public Fragment createFragment() {
-		 return new UserListFragment();
+		 return new SeasonListFragment();
 	}
 
 	public int getPosition () {
 		return mPosition;
 	}
+    protected void insertLeagueItems(ArrayList<LeagueItem> items) {
+        LeagueItem item;
+        Log.d(TAG, "insertLeagueItems()");
+		mHelper.deleteLeague(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        for (int i=0; i<items.size(); i++) {
+    		item=items.get(i);
+    		Log.v(TAG, "insertLeagueItems() league: "+ item.getLeagueId() + "-"+ item.getOrgName());
+            mHelper.insertLeague(item);
+            mHelper.close();
+        }
+        return;
+    }
+    protected void insertSeasonItems(ArrayList<SeasonItem> items) {
+        SeasonItem item;
+        Log.d(TAG, "insertSeasonItems()");
+		mHelper.deleteSeason(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        for (int i=0; i<items.size(); i++) {
+    		item=items.get(i);
+    		Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-"+ item.getSeasonId() + "-"+ item.getSeasonName());
+            mHelper.insertSeason(item);
+            mHelper.close();
+        }
+        return;
+    }
     protected void insertUserItems(ArrayList<UserItem> items) {
         UserItem item;
         Log.d(TAG, "insertUserItems()");

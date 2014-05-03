@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/black"
-        android:text="@string/user_list_textView_hint"
+        android:text="@string/season_list_textView_hint"
         android:textAppearance="?android:attr/textAppearanceSmallInverse"
         android:textSize="18sp" />
 

@@ -15,13 +15,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class UserListFragment extends Fragment{
-	private static final String TAG = "UserListFragment";
+public class SeasonListFragment extends Fragment{
+	private static final String TAG = "SeasonListFragment";
 	private static final int GET = 0;
 	private static final int QUERY = 1;
+	private ArrayList<LeagueItem> mLeagueItems;
+	private LeagueItem mLeagueItem;
+	private ArrayList<SeasonItem> mSeasonItems;
+	private SeasonItem mSeasonItem;
 	private ArrayList<UserItem> mUserItems;
 	private UserItem mUserItem;
 	FetchUserItemsTask mFetchUserItemsTask = new FetchUserItemsTask();
+	FetchLeagueItemsTask mFetchLeagueItemsTask = new FetchLeagueItemsTask();
+	FetchSeasonItemsTask mFetchSeasonItemsTask = new FetchSeasonItemsTask();
 	
 	View view;
 	TextView mUserTextView;
@@ -32,13 +38,14 @@ public class UserListFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
         mFetchUserItemsTask.execute();
+        mFetchLeagueItemsTask.execute();
     }
 	
     @Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
 		Log.d(TAG, "onCreateView()");
-		view = inflater.inflate(R.layout.fragment_user_list, container,false);
+		view = inflater.inflate(R.layout.fragment_season_list, container,false);
         mUserTextView = (TextView)view.findViewById(R.id.user_list_textView);
 		mListView = (ListView)view.findViewById(R.id.user_list_view);
 		mListView.setOnItemClickListener(new OnItemClickListener () {
@@ -53,6 +60,23 @@ public class UserListFragment extends Fragment{
 		return view;
 	}
 	
+	private void knowLeague(int choice) {
+		Log.d(TAG, "returnLeague("+choice+")");
+		mLeagueItem = mLeagueItems.get(0);
+		
+		Log.d(TAG, "knowLeague() " + mLeagueItem.getLeagueId() + "-" + mLeagueItem.getOrgName());
+        mFetchSeasonItemsTask.execute();
+    	return;
+    }
+
+	private void knowSeason(int choice) {
+		Log.d(TAG, "returnSeason("+choice+")");
+		mSeasonItem = mSeasonItems.get(1);
+		
+		Log.d(TAG, "returnSeason() " + mSeasonItem.getLeagueId() + "-" + mSeasonItem.getSeasonId()+ "-" + mSeasonItem.getSeasonName());
+    	return;
+    }
+
 	private void setupAdapter(int choice) {
     	if (getActivity() == null || mListView == null) {
     		return;
@@ -83,7 +107,7 @@ public class UserListFragment extends Fragment{
     	mUserItem = mUserItems.get(position);
     	Log.i(TAG, "returnSelection()=["+position+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
 		mUserTextView.setText(mUserItem.getUserName());
-		((MainUserListActivity) getActivity()).launchPhotoListActivity(mUserItem);
+		((MainActivity) getActivity()).launchPhotoListActivity(mUserItem);
     }
     private class FetchUserItemsTask extends AsyncTask<Void,Void,ArrayList<UserItem>> {
         @Override
@@ -99,14 +123,64 @@ public class UserListFragment extends Fragment{
         	return items;
         }
         @Override
-        protected void onPostExecute(ArrayList<UserItem> userItems) {
+        protected void onPostExecute(ArrayList<UserItem> items) {
         	try {
-        		mUserItems = userItems;
+        		mUserItems = items;
         		Log.d(TAG, "FetchUserItemsTask.onPostExecute()");
         		setupAdapter(GET); // show listing
         		cancel(true); // done !
         	} catch (Exception e) {
         		Log.e(TAG, "FetchUserItemsTask.doInBackground() Exception.", e);
+        	}
+        }
+    }
+    private class FetchLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
+        @Override
+        protected ArrayList<LeagueItem> doInBackground(Void... params) {
+        	Log.d(TAG, "FetchLeagueItemsTask.doInBackground()");
+    		ArrayList<LeagueItem> items = null;
+    		try {
+    			// pass context for app dir to cache file
+        		items = new LeagueListLeagueUSA().fetchItems(getActivity().getApplicationContext());
+    		} catch (Exception e) {
+    			Log.e(TAG, "FetchLeagueItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+        }
+        @Override
+        protected void onPostExecute(ArrayList<LeagueItem> items) {
+        	try {
+        		mLeagueItems = items;
+        		Log.d(TAG, "FetchLeagueItemsTask.onPostExecute()");
+        		knowLeague(GET); // show listing
+        		cancel(true); // done !
+        	} catch (Exception e) {
+        		Log.e(TAG, "FetchLeagueItemsTask.doInBackground() Exception.", e);
+        	}
+        }
+    }
+    private class FetchSeasonItemsTask extends AsyncTask<Void,Void,ArrayList<SeasonItem>> {
+        @Override
+        protected ArrayList<SeasonItem> doInBackground(Void... params) {
+        	Log.d(TAG, "FetchSeasonItemsTask.doInBackground()");
+    		ArrayList<SeasonItem> items = null;
+    		try {
+    			// pass context for app dir to cache file
+        		items = new SeasonListLeagueUSA().fetchItems(mLeagueItem, getActivity().getApplicationContext());
+    		} catch (Exception e) {
+    			Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+        }
+        @Override
+        protected void onPostExecute(ArrayList<SeasonItem> items) {
+        	try {
+        		mSeasonItems = items;
+        		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute()");
+        		knowSeason(GET); // show listing
+        		cancel(true); // done !
+        	} catch (Exception e) {
+        		Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
         	}
         }
     }
@@ -135,7 +209,7 @@ public class UserListFragment extends Fragment{
     	protected Void doInBackground(Void... nada) {
     		Log.d(TAG, "InsertUserItemsTask.doInBackground()");
     		try {
-        		 ((MainUserListActivity) getActivity()).insertUserItems(mUserItems);
+        		 ((MainActivity) getActivity()).insertUserItems(mUserItems);
     		} catch (Exception e) {
     			Log.e(TAG, "InsertUserItemsTask.doInBackground() Exception.", e);
     		}
@@ -153,7 +227,7 @@ public class UserListFragment extends Fragment{
         	Log.d(TAG, "QueryUserItemsTask.doInBackground()");
     		ArrayList<UserItem> items = null;
     		try {
-    			items = ((MainUserListActivity) getActivity()).queryUserItems();
+    			items = ((MainActivity) getActivity()).queryUserItems();
     		} catch (Exception e) {
     			Log.e(TAG, "QueryUserItemsTask.doInBackground() Exception.", e);
     		}

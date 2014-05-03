@@ -10,7 +10,7 @@
     <string name="upload_button_text">Upload as Andrew</string>
     <string name="upload_success">Photo Uploaded</string>
     <string name="upload_failure">Error with Upload</string>
-    <string name="user_list_textView_hint">Select a User -or- Use Add button</string>
+    <string name="season_list_textView_hint">Select a Season</string>
     <string name="view_button_text">Browse Gallery</string>
 
 </resources>
