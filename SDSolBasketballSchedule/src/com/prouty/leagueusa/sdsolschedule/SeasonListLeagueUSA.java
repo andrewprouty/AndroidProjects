@@ -16,7 +16,6 @@ import android.util.Log;
 
 public class SeasonListLeagueUSA{
 	private static final String TAG = "SeasonListLeagueUSA";
-	private static final String ENDPOINT ="http://www.sdsolbasketball.com/mobileschedule.php?league=";
 	private LeagueItem mLeagueItem;
 
 	public byte[] getUrlBytes(String urlSpec) throws IOException {
@@ -68,7 +67,7 @@ public class SeasonListLeagueUSA{
 		String url = "";
 		String jsonString = "";
 		try {
-			url = Uri.parse(ENDPOINT+mLeagueItem.getLeagueId()).toString();
+			url = Uri.parse(mLeagueItem.getLeagueURL()+"?league="+mLeagueItem.getLeagueId()).toString();
 			Log.d(TAG, "GETSeasonList():" + url);
 			jsonString = getUrl(url);
 			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);

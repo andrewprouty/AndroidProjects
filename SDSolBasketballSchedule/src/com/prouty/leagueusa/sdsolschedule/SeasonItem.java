@@ -2,6 +2,7 @@ package com.prouty.leagueusa.sdsolschedule;
 
 public class SeasonItem {
     private String mLeagueId;
+    private String mLeagueURL;
     private String mSeasonId;
     private String mSeasonName;
 
@@ -10,6 +11,13 @@ public class SeasonItem {
     }
     public void setLeagueId(String leagueId) {
         mLeagueId = leagueId;
+    }
+
+    public String getLeagueURL() {
+        return mLeagueURL;
+    }
+    public void setLeagueURL(String leagueURL) {
+        mLeagueURL = leagueURL;
     }
 
     public String getSeasonId() {
@@ -25,4 +33,5 @@ public class SeasonItem {
     public void setSeasonName(String seasonName) {
         mSeasonName = seasonName;
     }
+
 }
