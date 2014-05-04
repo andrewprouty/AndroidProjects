@@ -94,18 +94,19 @@ public class TeamListFragment extends Fragment{
 		mFetchTeamItemsTask.cancel(true);
     	mTeamItem = mTeamItems.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
-		Log.i(TAG, "returnTeam()=["+position+"] "
-				+ mTeamItem.getLeagueId() + " ("
-				+ mTeamItem.getLeagueURL() + "); "
-				+ mTeamItem.getSeasonId() + "-"
-				+ mTeamItem.getSeasonName() + "; " 
-				+ mTeamItem.getDivisionId() + "-"
-				+ mTeamItem.getDivisionName() + "-"
-				+ mTeamItem.getConferenceId() + "-"
-				+ mTeamItem.getTeamId() + "-"
-				+ mTeamItem.getTeamName());
+		Log.i(TAG, "returnTeam()=["+position+"]"
+				+ " league ID="  + mTeamItem.getLeagueId()
+				+ ", url="  + mTeamItem.getLeagueURL()
+				+ " season ID="  + mTeamItem.getSeasonId()
+				+ ", name=" + mTeamItem.getSeasonName() 
+				+ " division ID="  + mTeamItem.getDivisionId()
+				+ ", name=" + mTeamItem.getDivisionName()
+				+ " conferenceId="  + mTeamItem.getConferenceId()
+				+ " team ID="  + mTeamItem.getTeamId()
+				+ ", name=" + mTeamItem.getTeamName());
+
 		Toast.makeText(getActivity().getApplicationContext(),mTeamItem.getTeamName(), Toast.LENGTH_SHORT).show();
-		//TODO call next method
+		((TeamListActivity) getActivity()).launchGameListActivity(mTeamItem);
 	}
 	private class FetchTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {
 		@Override

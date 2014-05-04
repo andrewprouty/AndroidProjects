@@ -42,11 +42,11 @@ public class TeamItem {
     public void setDivisionId(String divisionId) {
         mDivisionId = divisionId;
     }
-    public void setDivisionName(String divisionName) {
-        mDivisionName = divisionName;
-    }
     public String getDivisionName() {
         return mDivisionName;
+    }
+    public void setDivisionName(String divisionName) {
+        mDivisionName = divisionName;
     }
     public String getConferenceId() {
         return mConferenceId;
@@ -55,17 +55,16 @@ public class TeamItem {
         mConferenceId= conferenceId;
     }
     //team
-    public String getTeamName() {
-        return mTeamName;
-    }
-    public void setTeamName(String teamName) {
-        mTeamName = teamName;
-    }
-    
     public String getTeamId() {
         return mTeamId;
     }
     public void setTeamId(String teamId) {
         mTeamId = teamId;
+    }
+    public String getTeamName() {
+        return mTeamName;
+    }
+    public void setTeamName(String teamName) {
+        mTeamName = teamName;
     }
 }
