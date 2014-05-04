@@ -27,8 +27,7 @@ public class DivisionListFragment extends Fragment{
 	private ConferenceItem mConferenceItem;
 	
 	FetchDivisionItemsTask mFetchDivisionItemsTask = new FetchDivisionItemsTask();
-	FetchConferenceItemsTask mFetchConferenceItemsTask = new FetchConferenceItemsTask();
-    
+
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
@@ -101,7 +100,8 @@ public class DivisionListFragment extends Fragment{
 				+ mDivisionItem.getSeasonName() + "; " 
 				+ mDivisionItem.getDivisionId() + "-"
 				+ mDivisionItem.getDivisionName());
-		mFetchConferenceItemsTask.execute(mDivisionItem);
+		new FetchConferenceItemsTask().execute(mDivisionItem); //new here as may repeat
+
 	}
 	private void returnConference(int choice) {
 		//TODO (Limitation) NO UI for Conference, SDSol uses 1:1 division:conference

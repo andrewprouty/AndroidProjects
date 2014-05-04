@@ -23,8 +23,6 @@ public class SeasonListFragment extends Fragment{
 	private LeagueItem mLeagueItem;
 	private ArrayList<SeasonItem> mSeasonItems;
 	private SeasonItem mSeasonItem;
-	private ArrayList<UserItem> mUserItems;
-	private UserItem mUserItem;
 	FetchLeagueItemsTask mFetchLeagueItemsTask = new FetchLeagueItemsTask();
 	FetchSeasonItemsTask mFetchSeasonItemsTask = new FetchSeasonItemsTask();
 	
@@ -124,43 +122,7 @@ public class SeasonListFragment extends Fragment{
 		Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
         mFetchSeasonItemsTask.execute();
     }
-
-	private void setupUser(int choice) {
-    	if (getActivity() == null || mListView == null) {
-    		return;
-    	}
-    	Log.d(TAG, "setupAdapter("+choice+")");
-
-    	if (choice == GET) {
-    		if (mUserItems != null && mUserItems.size()>0) {
-    			// Async to save the fetched list to DB
-    			new InsertUserItemsTask().execute(); // save fetched to DB
-    		}
-    		else {
-    			// none. If in DB can populate from there
-    			new QueryUserItemsTask().execute();
-    		}
-    	}
-    	/*
-		if (mUserItems != null) {
-			UserListAdapter adapter = new UserListAdapter(mUserItems);
-			mListView.setAdapter(adapter);
-		}
-		else {
-			mListView.setAdapter(null);
-		}
-		*/
-    }
-
     private void returnSelection(int position) {
-		//old
-		//mFetchUserItemsTask.cancel(true);
-    	//mUserItem = mUserItems.get(6);//(position);
-    	//Log.i(TAG, "returnSelection()=["+6+"] "+mUserItem.getUserId()+": "+mUserItem.getUserName());
-		//mUserTextView.setText(mUserItem.getUserName());
-		//((MainActivity) getActivity()).launchPhotoListActivity(mUserItem); //TODO Create division activity
-
-    	//new
 		mFetchLeagueItemsTask.cancel(true);
 		mFetchSeasonItemsTask.cancel(true);
     	mSeasonItem = mSeasonItems.get(position);
@@ -171,31 +133,6 @@ public class SeasonListFragment extends Fragment{
 				+ mSeasonItem.getSeasonId() + "-"
 				+ mSeasonItem.getSeasonName());
 		((MainActivity) getActivity()).launchDivisionListActivity(mSeasonItem);
-    }
-    private class FetchUserItemsTask extends AsyncTask<Void,Void,ArrayList<UserItem>> {
-        @Override
-        protected ArrayList<UserItem> doInBackground(Void... params) {
-        	Log.d(TAG, "FetchUserItemsTask.doInBackground()");
-    		ArrayList<UserItem> items = null;
-    		try {
-    			// pass context for app dir to cache file
-        		items = new UserListBismarck().fetchItems(getActivity().getApplicationContext());
-    		} catch (Exception e) {
-    			Log.e(TAG, "FetchUserItemsTask.doInBackground() Exception.", e);
-    		}
-        	return items;
-        }
-        @Override
-        protected void onPostExecute(ArrayList<UserItem> items) {
-        	try {
-        		mUserItems = items;
-        		Log.d(TAG, "FetchUserItemsTask.onPostExecute()");
-        		setupUser(GET); // show listing
-        		cancel(true); // done !
-        	} catch (Exception e) {
-        		Log.e(TAG, "FetchUserItemsTask.doInBackground() Exception.", e);
-        	}
-        }
     }
     private class FetchLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
         @Override
@@ -266,61 +203,4 @@ public class SeasonListFragment extends Fragment{
             return convertView;
         }
     }
-    private class UserListAdapter extends ArrayAdapter<UserItem> {
-        public UserListAdapter(ArrayList<UserItem> userItems) {
-            super(getActivity(), 0, userItems);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.user_list_row, parent, false);
-            }
-            
-            UserItem item = getItem(position);
-            TextView userTextView = (TextView)convertView.findViewById(R.id.row_user_name_textView);
-			Log.v(TAG, "adapter.getView() item.getUserName(): "+item.getUserName());
-            userTextView.setText(item.getUserName());
-            
-            return convertView;
-        }
-    }
-    private class InsertUserItemsTask extends AsyncTask<Void,Void,Void> {
-    	//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
-    	@Override
-    	protected Void doInBackground(Void... nada) {
-    		Log.d(TAG, "InsertUserItemsTask.doInBackground()");
-    		try {
-        		 ((MainActivity) getActivity()).insertUserItems(mUserItems);
-    		} catch (Exception e) {
-    			Log.e(TAG, "InsertUserItemsTask.doInBackground() Exception.", e);
-    		}
-    		return null;
-    	}
-    	@Override
-    	protected void onPostExecute(Void nada) {
-    		Log.d(TAG, "InsertUserItemsTask.onPostExecute()");
-    		cancel(true); // done !
-    	}
-    }
-	private class QueryUserItemsTask extends AsyncTask<Void,Void,ArrayList<UserItem>> {
-		@Override
-		protected ArrayList<UserItem> doInBackground(Void... nada) {
-        	Log.d(TAG, "QueryUserItemsTask.doInBackground()");
-    		ArrayList<UserItem> items = null;
-    		try {
-    			items = ((MainActivity) getActivity()).queryUserItems();
-    		} catch (Exception e) {
-    			Log.e(TAG, "QueryUserItemsTask.doInBackground() Exception.", e);
-    		}
-        	return items;
-		}
-		@Override
-		protected void onPostExecute(ArrayList<UserItem> userItems) {
-			mUserItems = userItems;
-			setupUser(QUERY);
-            cancel(true); // done !
-        	Log.d(TAG, "QueryUserItemsTask.onPostExecute()");
-		}
-	}
 }
