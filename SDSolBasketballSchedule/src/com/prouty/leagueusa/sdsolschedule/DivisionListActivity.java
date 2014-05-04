@@ -1,5 +1,6 @@
 package com.prouty.leagueusa.sdsolschedule;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,16 +19,17 @@ public class DivisionListActivity extends FragmentActivity {
 				+ item.getSeasonId()+"-"
 				+ item.getSeasonName()+"-"
 				+ item.getDivisionId()+"-"
-				+ item.getConferenceId()+"-"
-				+ item.getConferenceName());
-		/*Intent i = new Intent (DisplayListActivity.this, TeamListActivity.class);
+				+ item.getDivisionName()+"-"
+				+ item.getConferenceId());
+		Intent i = new Intent (this, TeamListActivity.class);
 		i.putExtra("LeagueId", item.getLeagueId().toString());
 		i.putExtra("LeagueURL", item.getLeagueURL().toString());
 		i.putExtra("SeasonId", item.getSeasonId().toString());
 		i.putExtra("SeasonName", item.getSeasonName().toString());
 		i.putExtra("DivisionId", item.getDivisionId().toString());
+		i.putExtra("DivisionName", item.getDivisionName().toString());
 		i.putExtra("ConferenceId", item.getConferenceId().toString());
-		startActivity(i);*/
+		startActivity(i);
 	}
 	
 	@Override

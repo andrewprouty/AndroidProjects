@@ -1,8 +1,9 @@
 <resources>
 
     <string name="app_name">San Diego Sol</string>
-    <string name="season_list_textView_hint">Select a Season</string>
-    <string name="division_list_division_name_hint">Please select a Division</string>
+    <string name="season_name_hint">Please select a Season</string>
+    <string name="division_name_hint">Please select a Division</string>
+    <string name="team_name_hint">Please select a Team</string>
     <string name="fatal_multiple_conference_per_division">ERROR program can only handle 1 conference per division</string>
     <string name="fatal_conference_suggestion">Try a different division</string>
     <string name="action_upload_title">Upload Image</string>

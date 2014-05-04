@@ -33,7 +33,7 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	protected void launchPhotoListActivity(UserItem user) {
-		Intent i = new Intent (MainActivity.this, PhotoListActivity.class);
+		Intent i = new Intent (this, PhotoListActivity.class);
 		i.putExtra("UserId", user.getUserId().toString());
 		i.putExtra("UserName", user.getUserName().toString());
 		Log.d(TAG, "launchPhotoListActivity() user: "

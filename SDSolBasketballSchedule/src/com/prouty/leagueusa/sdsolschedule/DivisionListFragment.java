@@ -135,8 +135,7 @@ public class DivisionListFragment extends Fragment{
 		}
 		mConferenceItem = mConferenceItems.get(0);
 		Log.d(TAG, "returnConference().");
-		//TODO Return to next activity
-		Log.i(TAG, "returnConference()"
+		Log.d(TAG, "returnConference()"
 				+ mConferenceItem.getLeagueId() + " ("
 				+ mConferenceItem.getLeagueURL() + "); "
 				+ mConferenceItem.getSeasonId() + "-"
@@ -145,6 +144,7 @@ public class DivisionListFragment extends Fragment{
 				+ mConferenceItem.getDivisionName() + "; "
 				+ mConferenceItem.getConferenceId() + "-"
 				+ mConferenceItem.getConferenceName());
+		((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
     }
 
 	private class FetchDivisionItemsTask extends AsyncTask<SeasonItem,Void,ArrayList<DivisionItem>> {
