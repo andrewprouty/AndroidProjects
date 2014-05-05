@@ -67,13 +67,13 @@ public class LeagueListLeagueUSA{
 		String jsonString = "";
 		try {
 			url = Uri.parse(ENDPOINT).toString();
-			Log.d(TAG, "GETLeagueList():" + url);
+			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETLeagueList() Received json: " + jsonString);
+			Log.d(TAG, "GETList() Received json: " + jsonString);
 		} catch (IOException ioe) {
-			Log.e(TAG, "GETLeagueList() IOException: "+ioe.getMessage()); // skip stack
+			Log.e(TAG, "GETList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {
-			Log.e(TAG, "GETLeagueList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "GETList() Exc:"+e.getMessage(),e);
 		}
 		return jsonString;
 	}
@@ -96,9 +96,9 @@ public class LeagueListLeagueUSA{
 					// If this is enhanced for other leagues, URL likely to be returned in JSON result
 				items.add(item);
 			}
-			Log.d(TAG, "parseLeagueList() LeagueItem added: "+jsonLeagueList.length());
+			Log.d(TAG, "parseList() Item added: "+jsonLeagueList.length());
 		} catch (Exception e) {
-			Log.e(TAG, "parseLeagueList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}
 	}
 }

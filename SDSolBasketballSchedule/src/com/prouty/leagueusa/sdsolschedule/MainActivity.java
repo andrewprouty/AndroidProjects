@@ -11,7 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.UserCursor;
+
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.LeagueCursor;
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
@@ -83,11 +85,29 @@ public class MainActivity extends FragmentActivity {
 		mHelper.deleteLeague(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
-    		Log.v(TAG, "insertLeagueItems() league: "+ item.getLeagueId() + "-"+ item.getOrgName());
+    		Log.v(TAG, "insertLeagueItems() league: "+item.getLeagueId()+"-"+item.getOrgName()+item.getLeagueURL());
             mHelper.insertLeague(item);
             mHelper.close();
         }
         return;
+    }
+    protected ArrayList<LeagueItem> queryLeagueItems() {
+    	LeagueCursor cursor;
+    	ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
+    	cursor = mHelper.queryLeagues();
+    	cursor.moveToFirst();
+    	while(!cursor.isAfterLast()) {
+    		LeagueItem item = cursor.getLeagueItem();
+    		items.add(item);
+    		cursor.moveToNext();
+    		Log.d(TAG, "queryLeagueItem() league: "
+    				+ item.getLeagueId() + "-"
+    				+ item.getOrgName() + "-"
+    				+ item.getLeagueURL());
+    	}
+    	cursor.close();
+        mHelper.close();
+    	return items;
     }
     protected void insertSeasonItems(ArrayList<SeasonItem> items) {
         SeasonItem item;
@@ -95,36 +115,27 @@ public class MainActivity extends FragmentActivity {
 		mHelper.deleteSeason(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
-    		Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-"+ item.getSeasonId() + "-"+ item.getSeasonName());
+    		Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-" + item.getLeagueURL() + "-"
+    				+ item.getSeasonId() + "-"+ item.getSeasonName());
             mHelper.insertSeason(item);
             mHelper.close();
         }
         return;
     }
-    protected void insertUserItems(ArrayList<UserItem> items) {
-        UserItem item;
-        Log.d(TAG, "insertUserItems()");
-		mHelper.deleteUsers(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
-        for (int i=0; i<items.size(); i++) {
-    		item=items.get(i);
-    		Log.v(TAG, "insertUserItems() user: "+ item.getUserId() + "-"+ item.getUserName());
-            mHelper.insertUser(item);
-            mHelper.close();
-        }
-        return;
-    }
-    protected ArrayList<UserItem> queryUserItems() {
-    	UserCursor cursor;
-    	ArrayList<UserItem> items = new ArrayList<UserItem>();
-    	cursor = mHelper.queryUsers();
+    protected ArrayList<SeasonItem> querySeasonItemsbyLeagueId(LeagueItem pk) {
+    	SeasonCursor cursor;
+    	ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
+    	cursor = mHelper.querySeasonsbyLeagueId(pk.getLeagueId());
     	cursor.moveToFirst();
     	while(!cursor.isAfterLast()) {
-			UserItem item = cursor.getUserItem();
+    		SeasonItem item = cursor.getSeasonItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.d(TAG, "queryUserItem() user: "
-    				+ item.getUserId() + "-"
-    				+ item.getUserName());
+    		Log.d(TAG, "querySeasonItem() Season: "
+    				+ item.getLeagueId() + "-"
+    				+ item.getLeagueURL() + "-"
+    				+ item.getSeasonId() + "-"
+    				+ item.getSeasonName());
     	}
     	cursor.close();
         mHelper.close();

@@ -16,9 +16,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TABLE_LEAGUE = "league";
 	private static final String COLUMN_LEAGUE_LEAGUE_ID = "league_id";
 	private static final String COLUMN_LEAGUE_ORG_NAME = "org_name";
+	private static final String COLUMN_LEAGUE_LEAGUE_URL = "league_url";
 
 	private static final String TABLE_SEASON = "season";
 	private static final String COLUMN_SEASON_LEAGUE_ID = "league_id";
+	private static final String COLUMN_SEASON_LEAGUE_URL = "league_url";
 	private static final String COLUMN_SEASON_SEASON_ID = "season_id";
 	private static final String COLUMN_SEASON_SEASON_NAME = "season_name";
 
@@ -54,10 +56,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		Log.d(TAG, "onCreate()");
 		db.execSQL("create table league (" +
-				" league_id varchar(10) primary key, league_name varchar(100))");
+				" league_id varchar(10) primary key, org_name varchar(100), league_url varchar(100))");
 		
 		db.execSQL("create table season (" +
-				" league_id varchar(10), season_id varchar(10), season_name varchar(100)," +
+				" league_id varchar(10), league_url varchar(100), season_id varchar(10), season_name varchar(100)," +
 				" primary key (league_id, season_id))");
 
 		db.execSQL("create table division (" +
@@ -93,6 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_LEAGUE_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_LEAGUE_ORG_NAME, item.getOrgName());
+		cv.put(COLUMN_LEAGUE_LEAGUE_URL, item.getLeagueURL());
 		return getWritableDatabase().insert(TABLE_LEAGUE, null, cv);
 	}
 	public LeagueCursor queryLeagues() {
@@ -100,7 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// equivalent to "select * from league order by league_id asc"
 		// sorting by user_id as an alpha... just copying JSON ordering
 		Cursor wrapped = getReadableDatabase().query(TABLE_LEAGUE,
-				null, null, null, null, null, COLUMN_LEAGUE_LEAGUE_ID + " asc");
+				null, null, null, null, null, COLUMN_LEAGUE_ORG_NAME + " asc");
 		return new LeagueCursor(wrapped);
 	}
 
@@ -112,6 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "insertSeason()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_SEASON_LEAGUE_ID, item.getLeagueId());
+		cv.put(COLUMN_SEASON_LEAGUE_URL, item.getLeagueURL());
 		cv.put(COLUMN_SEASON_SEASON_ID, item.getSeasonId());
 		cv.put(COLUMN_SEASON_SEASON_NAME, item.getSeasonName());
 		return getWritableDatabase().insert(TABLE_SEASON, null, cv);
@@ -258,6 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			LeagueItem item = new LeagueItem();
 			item.setLeagueId(getString(getColumnIndex(COLUMN_LEAGUE_LEAGUE_ID)));
 			item.setOrgName(getString(getColumnIndex(COLUMN_LEAGUE_ORG_NAME)));
+			item.setLeagueURL(getString(getColumnIndex(COLUMN_LEAGUE_LEAGUE_URL)));
 			return item;
 		}
 	}
@@ -270,6 +275,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				return null;
 			SeasonItem item = new SeasonItem();
 			item.setLeagueId(getString(getColumnIndex(COLUMN_SEASON_LEAGUE_ID)));
+			item.setLeagueURL(getString(getColumnIndex(COLUMN_SEASON_LEAGUE_URL)));
 			item.setSeasonId(getString(getColumnIndex(COLUMN_SEASON_SEASON_ID)));
 			item.setSeasonName(getString(getColumnIndex(COLUMN_SEASON_SEASON_NAME)));
 			return item;

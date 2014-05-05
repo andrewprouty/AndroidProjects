@@ -18,6 +18,7 @@ import android.widget.TextView;
 public class SeasonListFragment extends Fragment{
 	private static final String TAG = "SeasonListFragment";
 	private static final int GET = 0;
+	private static final int QUERY = 1;
 	private ArrayList<LeagueItem> mLeagueItems;
 	private LeagueItem mLeagueItem;
 	private ArrayList<SeasonItem> mSeasonItems;
@@ -37,7 +38,8 @@ public class SeasonListFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
 		Log.d(TAG, "onCreateView()");
-		new FetchLeagueItemsTask().execute();
+		new QueryLeagueItemsTask().execute(); // fast
+		new FetchLeagueItemsTask().execute(); // add in anything new
        
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
         mSeasonTextView = (TextView)view.findViewById(R.id.season_list_textView);
@@ -46,44 +48,13 @@ public class SeasonListFragment extends Fragment{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				TextView textViewItem = ((TextView) view.findViewById(R.id.row_season_name_textView));
-				//TextView textViewItem = ((TextView) view.findViewById(R.id.row_user_name_textView));
 				String listItemText = textViewItem.getText().toString();
 				Log.d(TAG, "().onItemClick() Season ["+position+"]= "+listItemText);
-				returnSelection(position);
+				returnSeason(position);
 			}
 		});
 		return view;
 	}
-
-	private void setupSeason(int choice) {
-    	if (getActivity() == null || mListView == null) {
-    		return;
-    	}
-		Log.d(TAG, "setupSeason("+choice+")");
-    	if (choice == GET) {
-    		if (mSeasonItems != null && mSeasonItems.size()>0) {
-    			// Async to save the fetched list to DB
-    			//new InsertSeasonItemsTask().execute(); // save fetched to DB
-    			Log.w(TAG, "setupSeason() replace with insert/save to DB"); //TODO League insert DB
-    		}
-    		else {
-    			// none. If in DB can populate from there
-    			//new QuerySeasonItemsTask().execute();
-    			Log.e(TAG, "setupSeason() replace with query from DB"); //TODO League query DB
-    		}
-    	}
-		//mSeasonItem = mSeasonItems.get(1); //TODO Add user's selection
-		//Log.d(TAG, "setupSeason() " + mSeasonItem.getLeagueId() + "-" + mSeasonItem.getSeasonId()+ "-" + mSeasonItem.getSeasonName());
-    	if (mSeasonItems != null) {
-			SeasonListAdapter adapter = new SeasonListAdapter(mSeasonItems);
-			mListView.setAdapter(adapter);
-		}
-		else {
-			mListView.setAdapter(null);
-		}
-		Log.d(TAG, "setupSeason().");
-    }
-
 	private void setupLeague(int choice) {
 		// Really only expect 1:San Diego Sol. Prepared for future extensibility
 		if (getActivity() == null || mListView == null) {
@@ -94,11 +65,9 @@ public class SeasonListFragment extends Fragment{
     	if (choice == GET) {
     		if (mLeagueItems != null && mLeagueItems.size()>0) {
     			// Async to save the fetched list to DB
-    			Log.w(TAG, "setupLeague() replace with insert/save to DB"); //TODO Season query DB
-    			//new InsertLeagueItemsTask().execute(); // save fetched to DB
+    			new InsertLeagueItemsTask().execute(); // save fetched to DB
     		}
     		else {	// none. If in DB can populate from there
-    			Log.e(TAG, "setupLeague() replace with query from DB"); //TODO Season query DB
     			//new QueryLeagueItemsTask().execute();
     		}
     	}
@@ -116,14 +85,37 @@ public class SeasonListFragment extends Fragment{
 			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
 			mLeagueItems.add(item);
 		}
-		mLeagueItem = mLeagueItems.get(0);
-		Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
-		new FetchSeasonItemsTask().execute();
+		if (mLeagueItems != null && mLeagueItems.size() > 0
+				&& mSeasonItems == null) { // League does GET/QUERY in parallel - only initiate once
+			mLeagueItem = mLeagueItems.get(0);
+			Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
+			new QuerySeasonItemsTask().execute(); // fast
+			new FetchSeasonItemsTask().execute(); // add in anything new
+		}
     }
-    private void returnSelection(int position) {
+	private void setupSeason(int choice) {
+    	if (getActivity() == null || mListView == null) {
+    		return;
+    	}
+		Log.d(TAG, "setupSeason("+choice+")");
+    	if (choice == GET) {
+    		if (mSeasonItems != null && mSeasonItems.size()>0) {
+    			new InsertSeasonItemsTask().execute(); // save fetched to DB
+    		}
+    	}
+    	if (mSeasonItems != null && mSeasonItems.size() > 0) {
+			SeasonListAdapter adapter = new SeasonListAdapter(mSeasonItems);
+			mListView.setAdapter(adapter);
+		}
+		/*else {
+			mListView.setAdapter(null);
+		}*/
+		Log.d(TAG, "setupSeason().");
+    }
+    private void returnSeason(int position) {
     	mSeasonItem = mSeasonItems.get(position);
 		mSeasonTextView.setText(mSeasonItem.getSeasonName());
-		Log.i(TAG, "returnSelection()=["+position+"] "
+		Log.i(TAG, "returnSeason()=["+position+"] "
 				+ mSeasonItem.getLeagueId() + " ("
 				+ mSeasonItem.getLeagueURL() + "); "
 				+ mSeasonItem.getSeasonId() + "-"
@@ -146,8 +138,10 @@ public class SeasonListFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<LeagueItem> items) {
         	try {
-        		mLeagueItems = items;
         		Log.d(TAG, "FetchLeagueItemsTask.onPostExecute()");
+        		if (items != null && items.size() > 0) {
+        			mLeagueItems = items;
+        		}
         		setupLeague(GET); // show listing
         		cancel(true); // done !
         	} catch (Exception e) {
@@ -155,6 +149,45 @@ public class SeasonListFragment extends Fragment{
         	}
         }
     }
+    private class InsertLeagueItemsTask extends AsyncTask<Void,Void,Void> {
+    	//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertLeagueItemsTask.doInBackground()");
+    		try {
+    			((MainActivity) getActivity()).insertLeagueItems(mLeagueItems);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertLeagueItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertLeagueItemsTask.onPostExecute()");
+    		cancel(true); // done !
+    	}
+    }
+	private class QueryLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
+		@Override
+		protected ArrayList<LeagueItem> doInBackground(Void... nada) {
+        	Log.d(TAG, "QueryLeagueItemsTask.doInBackground()");
+    		ArrayList<LeagueItem> items = null;
+    		try {
+    			items = ((MainActivity) getActivity()).queryLeagueItems();
+    		} catch (Exception e) {
+    			Log.e(TAG, "QueryLeagueItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<LeagueItem> items) {
+			mLeagueItems = items;
+			setupLeague(QUERY);
+            cancel(true); // done !
+        	Log.d(TAG, "QueryLeagueItemsTask.onPostExecute()");
+		}
+	}
+	// SEASON
     private class FetchSeasonItemsTask extends AsyncTask<Void,Void,ArrayList<SeasonItem>> {
         @Override
         protected ArrayList<SeasonItem> doInBackground(Void... params) {
@@ -171,7 +204,9 @@ public class SeasonListFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<SeasonItem> items) {
         	try {
-        		mSeasonItems = items;
+        		if (items != null && items.size() > 0) {
+            		mSeasonItems = items;
+        		}
         		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute()");
         		setupSeason(GET); // show listing
         		cancel(true); // done !
@@ -199,4 +234,42 @@ public class SeasonListFragment extends Fragment{
             return convertView;
         }
     }
+    private class InsertSeasonItemsTask extends AsyncTask<Void,Void,Void> {
+    	//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertSeasonItemsTask.doInBackground()");
+    		try {
+    			((MainActivity) getActivity()).insertSeasonItems(mSeasonItems);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertSeasonItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertSeasonItemsTask.onPostExecute()");
+    		cancel(true); // done !
+    	}
+    }
+	private class QuerySeasonItemsTask extends AsyncTask<Void,Void,ArrayList<SeasonItem>> {
+		@Override
+		protected ArrayList<SeasonItem> doInBackground(Void... nada) {
+        	Log.d(TAG, "QuerySeasonItemsTask.doInBackground()");
+    		ArrayList<SeasonItem> items = null;
+    		try {
+    			items = ((MainActivity) getActivity()).querySeasonItemsbyLeagueId(mLeagueItem);
+    		} catch (Exception e) {
+    			Log.e(TAG, "QuerySeasonItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<SeasonItem> items) {
+        	Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() fetched: " + items.size());
+			mSeasonItems = items;
+			setupSeason(QUERY);
+            cancel(true); // done !
+		}
+	}
 }
