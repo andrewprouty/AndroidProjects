@@ -33,8 +33,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_DIVISION_DIVISION_NAME = "division_name";
 
 	private static final String TABLE_CONFERENCE = "conference";
+	private static final String COLUMN_CONFERENCE_LEAGUE_ID = "league_id";
+	private static final String COLUMN_CONFERENCE_LEAGUE_URL = "league_url";
+	private static final String COLUMN_CONFERENCE_SEASON_ID = "season_id";
+	private static final String COLUMN_CONFERENCE_SEASON_NAME = "season_name";
+	private static final String COLUMN_CONFERENCE_DIVISION_ID = "division_id";
+	private static final String COLUMN_CONFERENCE_DIVISION_NAME = "division_name";
 	private static final String COLUMN_CONFERENCE_CONFERENCE_ID = "conference_id";
 	private static final String COLUMN_CONFERENCE_CONFERENCE_NAME = "conference_name";
+	private static final String COLUMN_CONFERENCE_CONFERENCE_COUNT = "conference_count";
 
 	private static final String TABLE_TEAM = "team";
 	private static final String COLUMN_TEAM_TEAM_ID = "team_id";
@@ -71,7 +78,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" primary key (league_id, season_id, division_id))");
 
 		db.execSQL("create table conference (" +
-				" conference_id varchar(10) primary key, conference_name varchar(100))");
+				" league_id varchar(10), league_url varchar(100)," +
+				" season_id varchar(10), season_name varchar(100),"+
+				" division_id varchar(10), division_name varchar(100)," +
+				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
+				" primary key (league_id, season_id, division_id, conference_id))");
+				
 		db.execSQL("create table team (" +
 				" team_id varchar(10) primary key, team_name varchar(100))");
 
@@ -173,9 +185,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long insertConference(ConferenceItem item) {
 		Log.d(TAG, "insertConference()");
 		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_CONFERENCE_LEAGUE_ID, item.getLeagueId());
+		cv.put(COLUMN_CONFERENCE_LEAGUE_URL, item.getLeagueURL());
+		cv.put(COLUMN_CONFERENCE_SEASON_ID, item.getSeasonId());
+		cv.put(COLUMN_CONFERENCE_SEASON_NAME, item.getSeasonName());
+		cv.put(COLUMN_CONFERENCE_DIVISION_ID, item.getDivisionId());
+		cv.put(COLUMN_CONFERENCE_DIVISION_NAME, item.getDivisionName());
 		cv.put(COLUMN_CONFERENCE_CONFERENCE_ID, item.getConferenceId());
 		cv.put(COLUMN_CONFERENCE_CONFERENCE_NAME, item.getConferenceName());
+		cv.put(COLUMN_CONFERENCE_CONFERENCE_COUNT, item.getConferenceCount());
 		return getWritableDatabase().insert(TABLE_CONFERENCE, null, cv);
+	}
+	public ConferenceCursor queryConferenceByDivisionItem(DivisionItem item) {
+		Log.d(TAG, "queryConference()");
+		Cursor wrapped = getReadableDatabase().query(TABLE_DIVISION,
+				null, // all columns 
+				COLUMN_CONFERENCE_LEAGUE_ID + " = ? AND "+	// Where column
+				COLUMN_CONFERENCE_SEASON_ID + " = ? AND "+	// Where column
+				COLUMN_CONFERENCE_DIVISION_ID + " = ?",		// Where column
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId())}, // values
+				null, // group by
+				null, // having
+				COLUMN_CONFERENCE_CONFERENCE_NAME + " asc", // order by
+				null); // limit of rows
+		return new ConferenceCursor(wrapped);
 	}
 	public ConferenceCursor queryConferences() {
 		Log.d(TAG, "queryConferences()");
@@ -252,7 +287,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new PhotoCursor(wrapped);
 	}
-
 	/**
 	 * A convenience class to wrap a cursor that returns rows from the table.
 	 * The {@link getUser()} method will give you a UserItem instance for the current row.
@@ -289,7 +323,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return item;
 		}
 	}
-
 	public static class DivisionCursor extends CursorWrapper {
 		public DivisionCursor(Cursor c) {
 			super(c);
@@ -315,8 +348,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (isBeforeFirst() || isAfterLast())
 				return null;
 			ConferenceItem item = new ConferenceItem();
+			item.setLeagueId(getString(getColumnIndex(COLUMN_CONFERENCE_LEAGUE_ID)));
+			item.setLeagueURL(getString(getColumnIndex(COLUMN_CONFERENCE_LEAGUE_URL)));
+			item.setSeasonId(getString(getColumnIndex(COLUMN_CONFERENCE_SEASON_ID)));
+			item.setSeasonName(getString(getColumnIndex(COLUMN_CONFERENCE_SEASON_NAME)));
+			item.setDivisionId(getString(getColumnIndex(COLUMN_CONFERENCE_DIVISION_ID)));
+			item.setDivisionName(getString(getColumnIndex(COLUMN_CONFERENCE_DIVISION_NAME)));
 			item.setConferenceId(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_ID)));
 			item.setConferenceName(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_NAME)));
+			item.setConferenceName(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_COUNT)));
 			return item;
 		}
 	}

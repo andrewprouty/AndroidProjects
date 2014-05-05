@@ -14,6 +14,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DivisionListFragment extends Fragment{
 	private static final String TAG = "DivisionListFragment";
@@ -64,83 +65,69 @@ public class DivisionListFragment extends Fragment{
 		return view;
 	}
 
-	private void setupDivision(int choice) {
+	private void setupDivision(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
-    	Log.d(TAG, "setupDivision("+choice+") season: "+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
-    	if (choice == GET) {
-    		if (mDivisionItems != null && mDivisionItems.size()>0) {
+    	Log.d(TAG, "setupDivision("+choice+") choiceSize="+choiceSize+" season="+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
+    	if (choiceSize > 0) {
+        	if (choice == GET) {
     			new InsertDivisionItemsTask().execute();
     		}
-		}
-    	if (mDivisionItems != null) {
-    		DivisionListAdapter adapter = new DivisionListAdapter(mDivisionItems);
+        	//TODO If 2nd value (choiceSize * size()) BOTH have = count.INSERT but don't refresh screen
+        	DivisionListAdapter adapter = new DivisionListAdapter(mDivisionItems);
 			mListView.setAdapter(adapter);
-		}
-		else {
-			mListView.setAdapter(null);
 		}
 	}
 	private void selectDivision(int position) {
     	mDivisionItem = mDivisionItems.get(position);
 		mDivisionTextView.setText(mDivisionItem.getDivisionName());
 		Log.i(TAG, "selectDivision()=["+position+"] "
-				+ mDivisionItem.getLeagueId() + " ("
-				+ mDivisionItem.getLeagueURL() + "); "
-				+ mDivisionItem.getSeasonId() + "-"
-				+ mDivisionItem.getSeasonName() + "; " 
-				+ mDivisionItem.getDivisionId() + "-"
-				+ mDivisionItem.getDivisionName());
+				+ " league ID="    + mDivisionItem.getLeagueId()
+				+ ", url="         + mDivisionItem.getLeagueURL()
+				+ " season ID="    + mDivisionItem.getSeasonId()
+				+ ", name="        + mDivisionItem.getSeasonName() 
+				+ " division ID="  + mDivisionItem.getDivisionId()
+				+ ", name="        + mDivisionItem.getDivisionName());
 		new FetchConferenceItemsTask().execute(mDivisionItem);
-
+		new QueryConferenceItemsTask().execute(); //TODO (TEST!!) Division-Conference query DB
 	}
-	private void returnConference(int choice) {
+	private void returnConference(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
     		return;
     	}
-		Log.d(TAG, "returnConference("+choice+")");
+    	Log.d(TAG, "returnConference("+choice+") choiceSize="+choiceSize+" division="+mDivisionItem.getDivisionId()+"-"+mDivisionItem.getDivisionName());
 
-    	if (choice == GET) {
-    		if (mConferenceItems != null && mConferenceItems.size()>0) {
-    			// Async to save the fetched list to DB
-    			Log.w(TAG, "returnConference() replace with insert/save to DB"); //TODO Division-Conference insert DB
-    			//new InsertConferenceItemsTask().execute(); // save fetched to DB
-    		}
-    		else {	// none. If in DB can populate from there
-    			Log.e(TAG, "returnConference() replace with query from DB"); //TODO Division-Conference query DB
-    			//new QueryConferenceItemsTask().execute();
+    	if (choiceSize > 0) {
+        	if (choice == GET) {
+    			new InsertConferenceItemsTask().execute(); 
     		}
     	}
 		if (mConferenceItems != null) {
 			int size = mConferenceItems.size();
-			if (size > 1) {
-				Log.w(TAG, "returnConference() 1 conference should have been returned, received. Will use [0] "+ size);
+			if (size == 0) {
+				Toast.makeText(getActivity().getApplicationContext(), R.string.no_information_available, Toast.LENGTH_SHORT).show();
 			}
-		}
-		else {
-			Log.e(TAG, "returnConference() 1 conference should have been returned, received zero. Required- no good guess");
-			//int msgId = R.string.fatal_multiple_conference_per_division;
-			//Toast.makeText(getActivity().getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
-			return;
-		}
-		mConferenceItem = mConferenceItems.get(0); //TODO This fails in Wifi-only mode currently
-		Log.d(TAG, "returnConference() about to log");
-		Log.v(TAG, "returnConference():"
-				+ " league ID="    + mConferenceItem.getLeagueId()
-				+ ", url="         + mConferenceItem.getLeagueURL()
-				+ " season ID="    + mConferenceItem.getSeasonId()
-				+ ", name="        + mConferenceItem.getSeasonName() 
-				+ " division ID="  + mConferenceItem.getDivisionId()
-				+ ", name="        + mConferenceItem.getDivisionName()
-				+ " conferenceId=" + mConferenceItem.getConferenceId()
-				+ ", name="        + mConferenceItem.getConferenceName()
-				+ ", count="       + mConferenceItem.getConferenceCount());
-		if(mConferenceItems.size() > 1) {
-			((DivisionListActivity) getActivity()).launchConferenceListActivity(mConferenceItem);
-		}
-		else {
-			((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
+			else {
+				mConferenceItem = mConferenceItems.get(0); //TODO Query & Re-test in mixed modes
+				Log.d(TAG, "returnConference() about to log");
+				Log.v(TAG, "returnConference():"
+						+ " league ID="    + mConferenceItem.getLeagueId()
+						+ ", url="         + mConferenceItem.getLeagueURL()
+						+ " season ID="    + mConferenceItem.getSeasonId()
+						+ ", name="        + mConferenceItem.getSeasonName() 
+						+ " division ID="  + mConferenceItem.getDivisionId()
+						+ ", name="        + mConferenceItem.getDivisionName()
+						+ " conferenceId=" + mConferenceItem.getConferenceId()
+						+ ", name="        + mConferenceItem.getConferenceName()
+						+ ", count="       + mConferenceItem.getConferenceCount());
+				if(size == 1) {
+					((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
+				}
+				else { // multiple to provide a choice
+					((DivisionListActivity) getActivity()).launchConferenceListActivity(mConferenceItem);
+				}
+			}
 		}
     }
 
@@ -158,12 +145,16 @@ public class DivisionListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<DivisionItem> items) {
-    		if (items != null && items.size() > 0) {
+        	Log.d(TAG, "FetchDivisionItemsTask onPostExecute()");
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
     			mDivisionItems = items;
     		}
-			setupDivision(GET);
-            cancel(true); // done !
-        	Log.d(TAG, "FetchDivisionItemsTask onPostExecute()");
+			setupDivision(GET, size);
+    		cancel(true);
 		}
 	}
 	private class DivisionListAdapter extends ArrayAdapter<DivisionItem> {
@@ -184,7 +175,6 @@ public class DivisionListFragment extends Fragment{
 		}
 	}
     private class InsertDivisionItemsTask extends AsyncTask<Void,Void,Void> {
-    	//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
     	@Override
     	protected Void doInBackground(Void... nada) {
     		Log.d(TAG, "InsertDivisionItemsTask.doInBackground()");
@@ -207,7 +197,7 @@ public class DivisionListFragment extends Fragment{
         	Log.d(TAG, "QueryDivisionItemsTask.doInBackground()");
     		ArrayList<DivisionItem> items = null;
     		try {
-    			items = ((DivisionListActivity) getActivity()).queryDivisionsbySeasonItem(mSeasonItem);
+    			items = ((DivisionListActivity) getActivity()).queryDivisionsBySeasonItem(mSeasonItem);
     		} catch (Exception e) {
     			Log.e(TAG, "QueryDivisionItemsTask.doInBackground() Exception.", e);
     		}
@@ -215,10 +205,16 @@ public class DivisionListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<DivisionItem> items) {
-        	Log.d(TAG, "QueryDivisionItemsTask.onPostExecute() fetched: " + items.size());
-			mDivisionItems = items;
-			setupDivision(QUERY);
-            cancel(true); // done !
+        	Log.d(TAG, "QueryDivisionItemsTask.onPostExecute() queried=" + items.size());
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+    			mDivisionItems = items;
+    		}
+       		setupDivision(QUERY, size);
+            cancel(true);
 		}
 	}
 	private class FetchConferenceItemsTask extends AsyncTask<DivisionItem,Void,ArrayList<ConferenceItem>> {
@@ -234,11 +230,60 @@ public class DivisionListFragment extends Fragment{
         	return items;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<ConferenceItem> conferenceItems) {
-			mConferenceItems = conferenceItems;
-			returnConference(GET);
-            cancel(true); // done !
-        	Log.d(TAG, "FetchConferenceItemsTask onPostExecute()");
+		protected void onPostExecute(ArrayList<ConferenceItem> items) {
+    		Log.d(TAG, "FetchConferenceItemsTask.onPostExecute() fetched=" + items.size());
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+    			mConferenceItems = items;
+    		}
+			returnConference(GET, size);
+    		cancel(true);
+		}
+	}
+    private class InsertConferenceItemsTask extends AsyncTask<Void,Void,Void> {
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertConferenceItemsTask.doInBackground()");
+    		try {
+    			((DivisionListActivity) getActivity()).insertConferenceItems(mConferenceItems);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertConferenceItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertConferenceItemsTask.onPostExecute()");
+    		cancel(true);
+    	}
+    }
+	private class QueryConferenceItemsTask extends AsyncTask<DivisionItem,Void,ArrayList<ConferenceItem>> {
+		@Override
+		protected ArrayList<ConferenceItem> doInBackground(DivisionItem... nada) {
+        	Log.d(TAG, "QueryConferenceItemsTask.doInBackground()");
+    		ArrayList<ConferenceItem> items = null;
+    		try {
+    			items = ((DivisionListActivity) getActivity()).queryConferenceByDivisionItem(mDivisionItem);
+    		} catch (Exception e) {
+    			Log.e(TAG, "QueryConferenceItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<ConferenceItem> items) {
+        	Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=" + items.size());//TODO .. what if zero!!
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+    			mConferenceItems = items;
+    		}
+       		returnConference(QUERY, size);
+            cancel(true);
 		}
 	}
 }

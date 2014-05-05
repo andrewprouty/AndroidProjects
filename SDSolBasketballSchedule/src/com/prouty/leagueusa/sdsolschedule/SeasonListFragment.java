@@ -82,11 +82,9 @@ public class SeasonListFragment extends Fragment{
 			item.setLeagueId("1");
 			item.setOrgName("San Diego Sol");
 			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
-			Log.d(TAG, "setupLeague() before add");
 			ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();  
 			items.add(item);
 			mLeagueItems = items;
-			Log.d(TAG, "setupLeague() alive??");
     	}
 
     	//GET & QUERY are in parallel - picking GET as the winner (since faster & hardcode above)
@@ -97,34 +95,6 @@ public class SeasonListFragment extends Fragment{
 			new FetchSeasonItemsTask().execute(); // add in anything new
     	}
 		Log.d(TAG, "setupSeason("+choice+").");
-
-    	/*if (choice == GET) {
-    		if (mLeagueItems != null && mLeagueItems.size()>0) {
-    			new InsertLeagueItemsTask().execute(); // save fetched to DB
-    		}
-    	}
-		if (mLeagueItems != null) {
-			int size = mLeagueItems.size();
-			if (size > 1) {
-				Log.e(TAG, "setupLeague() 1 league should have been returned, received. Will use [0] "+ size);
-			}
-		}
-		else {
-			Log.e(TAG, "setupLeague() 1 league should have been returned, received zero. Providing hardcode");
-			LeagueItem item = new LeagueItem();
-			item.setLeagueId("1");
-			item.setOrgName("San Diego Sol");
-			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
-			mLeagueItems.add(item);
-		}
-		if (mLeagueItems != null && mLeagueItems.size() > 0
-				&& mSeasonItems == null) { // League does GET/QUERY in parallel - only initiate once
-			mLeagueItem = mLeagueItems.get(0);
-			Log.d(TAG, "setupLeague(). [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
-			new QuerySeasonItemsTask().execute(); // fast
-			new FetchSeasonItemsTask().execute(); // add in anything new
-		}
-		Log.d(TAG, "setupSeason("+choice+")."); */
     }
 	private void setupSeason(int choice, int choiceSize) {
     	if (getActivity() == null || mListView == null) {
@@ -167,7 +137,7 @@ public class SeasonListFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<LeagueItem> items) {
         	try {
-        		Log.d(TAG, "FetchLeagueItemsTask.onPostExecute()");
+        		Log.d(TAG, "FetchLeagueItemsTask.onPostExecute() fetched=" + items.size());
         		int size;
         		if (items == null || items.size() == 0) {
         			size = 0;
@@ -214,7 +184,7 @@ public class SeasonListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<LeagueItem> items) {
-        	Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() fetched: " + items.size());
+        	Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() queried=" + items.size());
         	int size;
     		if (items == null || items.size() == 0) {
     			size = 0;
@@ -243,7 +213,7 @@ public class SeasonListFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<SeasonItem> items) {
         	try {
-        		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute()");
+        		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute() fetched=" + items.size());
         		int size;
         		if (items == null || items.size() == 0) {
         			size = 0;
@@ -309,7 +279,7 @@ public class SeasonListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<SeasonItem> items) {
-        	Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() fetched: " + items.size());
+        	Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() queried=" + items.size());
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;
@@ -317,7 +287,7 @@ public class SeasonListFragment extends Fragment{
     			size = items.size();
         		mSeasonItems = items;
     		}
-       		setupSeason(QUERY, size); // show listing
+       		setupSeason(QUERY, size);
             cancel(true);
 		}
 	}
