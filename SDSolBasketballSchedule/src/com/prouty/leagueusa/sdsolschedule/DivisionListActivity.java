@@ -13,14 +13,7 @@ public class DivisionListActivity extends FragmentActivity {
 	private DatabaseHelper mHelper;
 
 	protected void launchTeamListActivity(ConferenceItem item) {
-		Log.d(TAG, "launchTeamListActivity(): "
-				+ item.getLeagueId()+"-"
-				+ item.getLeagueURL()+"-"
-				+ item.getSeasonId()+"-"
-				+ item.getSeasonName()+"-"
-				+ item.getDivisionId()+"-"
-				+ item.getDivisionName()+"-"
-				+ item.getConferenceId());
+		Log.d(TAG, "launchTeamListActivity()");
 		Intent i = new Intent (this, TeamListActivity.class);
 		i.putExtra("LeagueId", item.getLeagueId().toString());
 		i.putExtra("LeagueURL", item.getLeagueURL().toString());
@@ -29,6 +22,18 @@ public class DivisionListActivity extends FragmentActivity {
 		i.putExtra("DivisionId", item.getDivisionId().toString());
 		i.putExtra("DivisionName", item.getDivisionName().toString());
 		i.putExtra("ConferenceId", item.getConferenceId().toString());
+		i.putExtra("ConferenceName", item.getConferenceName().toString());
+		i.putExtra("ConferenceCount", item.getConferenceCount().toString());
+		Log.v(TAG, "launchGameListActivity(): "
+				+ " league ID="    + item.getLeagueId()
+				+ ", url="         + item.getLeagueURL()
+				+ " season ID="    + item.getSeasonId()
+				+ ", name="        + item.getSeasonName() 
+				+ " division ID="  + item.getDivisionId()
+				+ ", name="        + item.getDivisionName()
+				+ " conferenceId=" + item.getConferenceId()
+				+ ", name="        + item.getConferenceName()
+				+ ", count="       + item.getConferenceCount());
 		startActivity(i);
 	}
 	
@@ -42,7 +47,15 @@ public class DivisionListActivity extends FragmentActivity {
 		String leagueURL = getIntent().getStringExtra("LeagueURL");
 		String seasonId  = getIntent().getStringExtra("SeasonId");
 		String seasonName= getIntent().getStringExtra("SeasonName");
-		initSetupItem(leagueId, leagueURL, seasonId, seasonName);
+		mSeasonItem.setLeagueId(leagueId);
+		mSeasonItem.setLeagueURL(leagueURL);
+		mSeasonItem.setSeasonId(seasonId);
+		mSeasonItem.setSeasonName(seasonName);
+		Log.v(TAG, "onCreate() : "
+				+ " league ID="    + mSeasonItem.getLeagueId()
+				+ ", url="         + mSeasonItem.getLeagueURL()
+				+ " season ID="    + mSeasonItem.getSeasonId()
+				+ ", name="        + mSeasonItem.getSeasonName()); 
 
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
@@ -54,17 +67,6 @@ public class DivisionListActivity extends FragmentActivity {
 			.commit();
 		}
         mHelper = new DatabaseHelper(getApplicationContext());
-	}
-	private void initSetupItem (String leagueId, String leagueURL, String seasonId, String seasonName) {
-		mSeasonItem.setLeagueId(leagueId);
-		mSeasonItem.setLeagueURL(leagueURL);
-		mSeasonItem.setSeasonId(seasonId);
-		mSeasonItem.setSeasonName(seasonName);
-		Log.d(TAG, "initSetupItem() : "
-				+ mSeasonItem.getLeagueId() + " ("
-				+ mSeasonItem.getLeagueURL() + "); "
-				+ mSeasonItem.getSeasonId() + "-"
-				+ mSeasonItem.getSeasonName());
 	}
 	public SeasonItem getSeasonItem () {
 		return mSeasonItem;

@@ -10,6 +10,7 @@ public class ConferenceItem {
 
     private String mConferenceId;
     private String mConferenceName;
+    private String mConferenceCount;
 
     public String getLeagueId() {
         return mLeagueId;
@@ -60,5 +61,10 @@ public class ConferenceItem {
     public void setConferenceName(String conferenceName) {
         mConferenceName = conferenceName;
     }
-    
+    public String getConferenceCount() {
+        return mConferenceCount;
+    }
+    public void setConferenceCount(String conferenceCount) {
+        mConferenceCount = conferenceCount;
+    }
 }

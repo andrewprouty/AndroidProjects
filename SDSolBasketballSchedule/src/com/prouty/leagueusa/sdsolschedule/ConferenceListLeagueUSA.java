@@ -86,11 +86,18 @@ public class ConferenceListLeagueUSA{
 		try {
 			JSONArray jsonSeasonList = new JSONArray (stringSeasonList);  
 			// [{"conferenceid":"127","conferencename":"Boys JV B"}] 
+			String count;
+			if (jsonSeasonList.length() > 1) {
+				count = "many";
+			}
+			else {
+				count = "one";
+			}
 			for (int i = 0; i < jsonSeasonList.length(); i++) {
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
 				String id  = jsonNode.optString("conferenceid").toString();
 				String name= jsonNode.optString("conferencename").toString();
-				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+id+"-"+name);
+				Log.d(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
 
 				ConferenceItem item = new ConferenceItem();
 				item.setLeagueId(mSetupItem.getLeagueId());
@@ -102,11 +109,12 @@ public class ConferenceListLeagueUSA{
 
 				item.setConferenceId(id);
 				item.setConferenceName(name);
+				item.setConferenceCount(count);
 				items.add(item);
 			}
-			Log.d(TAG, "parseSeasonList() SeasonItem added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Item added: "+jsonSeasonList.length());
 		} catch (Exception e) {
-			Log.e(TAG, "parseSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}
 	}
 }

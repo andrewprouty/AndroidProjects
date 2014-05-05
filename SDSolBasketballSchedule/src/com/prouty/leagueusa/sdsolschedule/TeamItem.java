@@ -9,6 +9,7 @@ public class TeamItem {
     private String mDivisionName;
     private String mConferenceId;
     private String mConferenceName;
+    private String mConferenceCount;
 
     private String mTeamId;
     private String mTeamName;
@@ -61,6 +62,13 @@ public class TeamItem {
     public void setConferenceName(String conferenceName) {
         mConferenceName = conferenceName;
     }
+    public String getConferenceCount() {
+        return mConferenceCount;
+    }
+    public void setConferenceCount(String conferenceCount) {
+        mConferenceCount = conferenceCount;
+    }
+
     //team
     public String getTeamId() {
         return mTeamId;

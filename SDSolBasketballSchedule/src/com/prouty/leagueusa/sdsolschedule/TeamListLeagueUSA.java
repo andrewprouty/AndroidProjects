@@ -101,6 +101,8 @@ public class TeamListLeagueUSA{
 				item.setDivisionId(mSetupItem.getDivisionId());
 				item.setDivisionName(mSetupItem.getDivisionName());
 				item.setConferenceId(mSetupItem.getConferenceId());
+				item.setConferenceName(mSetupItem.getConferenceName());
+				item.setConferenceCount(mSetupItem.getConferenceCount());
 
 				item.setTeamId(id);
 				item.setTeamName(name);

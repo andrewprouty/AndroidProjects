@@ -121,26 +121,27 @@ public class DivisionListFragment extends Fragment{
 		if (mConferenceItems != null) {
 			int size = mConferenceItems.size();
 			if (size > 1) {
-				Log.e(TAG, "returnConference() 1 conference should have been returned, received. Will use [0] "+ size);
+				Log.w(TAG, "returnConference() 1 conference should have been returned, received. Will use [0] "+ size);
 			}
 		}
 		else {
 			Log.e(TAG, "returnConference() 1 conference should have been returned, received zero. Required- no good guess");
-			int msgId = R.string.fatal_multiple_conference_per_division;
+			//int msgId = R.string.fatal_multiple_conference_per_division;
 			//Toast.makeText(getActivity().getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		mConferenceItem = mConferenceItems.get(0);
-		Log.d(TAG, "returnConference().");
-		Log.d(TAG, "returnConference()"
-				+ mConferenceItem.getLeagueId() + " ("
-				+ mConferenceItem.getLeagueURL() + "); "
-				+ mConferenceItem.getSeasonId() + "-"
-				+ mConferenceItem.getSeasonName() + "; " 
-				+ mConferenceItem.getDivisionId() + "-"
-				+ mConferenceItem.getDivisionName() + "; "
-				+ mConferenceItem.getConferenceId() + "-"
-				+ mConferenceItem.getConferenceName());
+		Log.d(TAG, "returnConference() about to log");
+		Log.v(TAG, "returnConference():"
+				+ " league ID="    + mConferenceItem.getLeagueId()
+				+ ", url="         + mConferenceItem.getLeagueURL()
+				+ " season ID="    + mConferenceItem.getSeasonId()
+				+ ", name="        + mConferenceItem.getSeasonName() 
+				+ " division ID="  + mConferenceItem.getDivisionId()
+				+ ", name="        + mConferenceItem.getDivisionName()
+				+ " conferenceId=" + mConferenceItem.getConferenceId()
+				+ ", name="        + mConferenceItem.getConferenceName()
+				+ ", count="       + mConferenceItem.getConferenceCount());
 		((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
     }
 

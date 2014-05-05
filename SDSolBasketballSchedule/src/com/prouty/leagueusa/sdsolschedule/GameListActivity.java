@@ -24,6 +24,8 @@ public class GameListActivity extends FragmentActivity {
 		String divisionId  = getIntent().getStringExtra("DivisionId");
 		String divisionName= getIntent().getStringExtra("DivisionName");
 		String conferenceId  = getIntent().getStringExtra("ConferenceId");
+		String conferenceName = getIntent().getStringExtra("ConferenceName");
+		String conferenceCount = getIntent().getStringExtra("ConferenceCount");
 		String teamId  = getIntent().getStringExtra("TeamId");
 		String teamName= getIntent().getStringExtra("TeamName");
 		mTeamItem.setLeagueId(leagueId);
@@ -33,18 +35,22 @@ public class GameListActivity extends FragmentActivity {
 		mTeamItem.setDivisionId(divisionId);
 		mTeamItem.setDivisionName(divisionName);
 		mTeamItem.setConferenceId(conferenceId);
+		mTeamItem.setConferenceName(conferenceName);
+		mTeamItem.setConferenceCount(conferenceCount);
 		mTeamItem.setTeamId(teamId);
 		mTeamItem.setTeamName(teamName);
-		Log.d(TAG, "initSetupItem() "
-				+ " league ID="  + mTeamItem.getLeagueId()
-				+ ", url="  + mTeamItem.getLeagueURL()
-				+ " season ID="  + mTeamItem.getSeasonId()
-				+ ", name=" + mTeamItem.getSeasonName() 
+		Log.v(TAG, "onCreate() "
+				+ " league ID="    + mTeamItem.getLeagueId()
+				+ ", url="         + mTeamItem.getLeagueURL()
+				+ " season ID="    + mTeamItem.getSeasonId()
+				+ ", name="        + mTeamItem.getSeasonName() 
 				+ " division ID="  + mTeamItem.getDivisionId()
-				+ ", name=" + mTeamItem.getDivisionName()
-				+ " conferenceId="  + mTeamItem.getConferenceId()
-				+ " team ID="  + mTeamItem.getTeamId()
-				+ ", name=" + mTeamItem.getTeamName());
+				+ ", name="        + mTeamItem.getDivisionName()
+				+ " conferenceId=" + mTeamItem.getConferenceId()
+				+ ", name="        + mTeamItem.getConferenceName()
+				+ ", count="       + mTeamItem.getConferenceCount()
+				+ " team ID="      + mTeamItem.getTeamId()
+				+ ", name="        + mTeamItem.getTeamName());
 
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);

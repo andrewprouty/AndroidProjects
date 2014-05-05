@@ -91,15 +91,17 @@ public class TeamListFragment extends Fragment{
     	mTeamItem = mTeamItems.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		Log.i(TAG, "returnTeam()=["+position+"]"
-				+ " league ID="  + mTeamItem.getLeagueId()
-				+ ", url="  + mTeamItem.getLeagueURL()
-				+ " season ID="  + mTeamItem.getSeasonId()
-				+ ", name=" + mTeamItem.getSeasonName() 
-				+ " division ID="  + mTeamItem.getDivisionId()
-				+ ", name=" + mTeamItem.getDivisionName()
+				+ " league ID="     + mTeamItem.getLeagueId()
+				+ ", url="          + mTeamItem.getLeagueURL()
+				+ " season ID="     + mTeamItem.getSeasonId()
+				+ ", name="         + mTeamItem.getSeasonName() 
+				+ " division ID="   + mTeamItem.getDivisionId()
+				+ ", name="         + mTeamItem.getDivisionName()
 				+ " conferenceId="  + mTeamItem.getConferenceId()
-				+ " team ID="  + mTeamItem.getTeamId()
-				+ ", name=" + mTeamItem.getTeamName());
+				+ ", name="         + mTeamItem.getConferenceName()
+				+ ", count="        + mTeamItem.getConferenceCount()
+				+ " team ID="       + mTeamItem.getTeamId()
+				+ ", name="         + mTeamItem.getTeamName());
 
 		//Toast.makeText(getActivity().getApplicationContext(),mTeamItem.getTeamName(), Toast.LENGTH_SHORT).show();
 		((TeamListActivity) getActivity()).launchGameListActivity(mTeamItem);
