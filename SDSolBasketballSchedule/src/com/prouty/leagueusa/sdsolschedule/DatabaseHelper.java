@@ -26,7 +26,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String TABLE_DIVISION = "division";
 	private static final String COLUMN_DIVISION_LEAGUE_ID = "league_id";
+	private static final String COLUMN_DIVISION_LEAGUE_URL = "league_url";
 	private static final String COLUMN_DIVISION_SEASON_ID = "season_id";
+	private static final String COLUMN_DIVISION_SEASON_NAME = "season_name";
 	private static final String COLUMN_DIVISION_DIVISION_ID = "division_id";
 	private static final String COLUMN_DIVISION_DIVISION_NAME = "division_name";
 
@@ -63,7 +65,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" primary key (league_id, season_id))");
 
 		db.execSQL("create table division (" +
-				" league_id varchar(10), season_id varchar(10),"+
+				" league_id varchar(10), league_url varchar(100)," +
+				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" primary key (league_id, season_id, division_id))");
 
@@ -140,20 +143,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long insertDivision(DivisionItem item) {
 		Log.d(TAG, "insertDivision()");
 		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_DIVISION_LEAGUE_ID, item.getLeagueId());
+		cv.put(COLUMN_DIVISION_LEAGUE_URL, item.getLeagueURL());
+		cv.put(COLUMN_DIVISION_SEASON_ID, item.getSeasonId());
+		cv.put(COLUMN_DIVISION_SEASON_NAME, item.getSeasonName());
 		cv.put(COLUMN_DIVISION_DIVISION_ID, item.getDivisionId());
 		cv.put(COLUMN_DIVISION_DIVISION_NAME, item.getDivisionName());
 		return getWritableDatabase().insert(TABLE_DIVISION, null, cv);
 	}
-	public DivisionCursor queryDivisionsbyIds(String leagueId, String seasonId) {
+	public DivisionCursor queryDivisionsBySeasonItem(SeasonItem item) {
 		Log.d(TAG, "queryDivisions()");
-		Cursor wrapped = getReadableDatabase().query(TABLE_SEASON,
+		Cursor wrapped = getReadableDatabase().query(TABLE_DIVISION,
 				null, // all columns 
-				COLUMN_SEASON_LEAGUE_ID + " = ? AND "+	// Where column
-				COLUMN_SEASON_SEASON_ID + " = ?",		// Where column
-				new String[]{ String.valueOf(leagueId), String.valueOf(leagueId)}, // values
+				COLUMN_DIVISION_LEAGUE_ID + " = ? AND "+	// Where column
+				COLUMN_DIVISION_SEASON_ID + " = ?",		// Where column
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_SEASON_SEASON_NAME + " asc", // order by
+				COLUMN_DIVISION_DIVISION_NAME + " asc", // order by
 				null); // limit of rows
 		return new DivisionCursor(wrapped);
 	}
@@ -291,7 +299,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				return null;
 			DivisionItem item = new DivisionItem();
 			item.setLeagueId(getString(getColumnIndex(COLUMN_DIVISION_LEAGUE_ID)));
+			item.setLeagueURL(getString(getColumnIndex(COLUMN_DIVISION_LEAGUE_URL)));
 			item.setSeasonId(getString(getColumnIndex(COLUMN_DIVISION_SEASON_ID)));
+			item.setSeasonName(getString(getColumnIndex(COLUMN_DIVISION_SEASON_NAME)));
 			item.setDivisionId(getString(getColumnIndex(COLUMN_DIVISION_DIVISION_ID)));
 			item.setDivisionName(getString(getColumnIndex(COLUMN_DIVISION_DIVISION_NAME)));
 			return item;

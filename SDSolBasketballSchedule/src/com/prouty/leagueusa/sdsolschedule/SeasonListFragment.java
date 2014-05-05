@@ -33,7 +33,6 @@ public class SeasonListFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
     }
-	
     @Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
@@ -66,9 +65,6 @@ public class SeasonListFragment extends Fragment{
     		if (mLeagueItems != null && mLeagueItems.size()>0) {
     			// Async to save the fetched list to DB
     			new InsertLeagueItemsTask().execute(); // save fetched to DB
-    		}
-    		else {	// none. If in DB can populate from there
-    			//new QueryLeagueItemsTask().execute();
     		}
     	}
 		if (mLeagueItems != null) {

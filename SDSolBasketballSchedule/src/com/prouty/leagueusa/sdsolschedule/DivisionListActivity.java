@@ -1,5 +1,7 @@
 package com.prouty.leagueusa.sdsolschedule;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,9 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.DivisionCursor;
+
 public class DivisionListActivity extends FragmentActivity {
 	private static final String TAG = "DivisionListActivity";
 	private SeasonItem   mSeasonItem = new SeasonItem();
+	private DatabaseHelper mHelper;
 
 	protected void launchConferenceListActivity(ConferenceItem item) {
 		Log.d(TAG, "launchTeamListActivity()");
@@ -84,8 +89,45 @@ public class DivisionListActivity extends FragmentActivity {
 			.add(R.id.fragmentContainer, fragment)
 			.commit();
 		}
+		mHelper = new DatabaseHelper(getApplicationContext());
 	}
 	public SeasonItem getSeasonItem () {
 		return mSeasonItem;
 	}
+    protected void insertDivisionItems(ArrayList<DivisionItem> items) {
+    	DivisionItem item;
+        Log.d(TAG, "insertDivisionItems()");
+		mHelper.deleteDivision(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        for (int i=0; i<items.size(); i++) {
+    		item=items.get(i);
+    		Log.v(TAG, "insertDivisionItems() division: "+ item.getLeagueId() + "-" + item.getLeagueURL() + "-"
+    				+ item.getSeasonId() + "-"+ item.getSeasonName() +"-"
+    				+ item.getDivisionId() + "-"+ item.getDivisionName() +"-"
+    				);
+            mHelper.insertDivision(item);
+            mHelper.close();
+        }
+        return;
+    }
+    protected ArrayList<DivisionItem> queryDivisionsbySeasonItem(SeasonItem pk) {
+    	DivisionCursor cursor;
+    	ArrayList<DivisionItem> items = new ArrayList<DivisionItem>();
+    	cursor = mHelper.queryDivisionsBySeasonItem(pk);
+    	cursor.moveToFirst();
+    	while(!cursor.isAfterLast()) {
+    		DivisionItem item = cursor.getDivisionItem();
+    		items.add(item);
+    		cursor.moveToNext();
+    		Log.d(TAG, "queryDivisionItem() Division: "
+    				+ item.getLeagueId() + "-"
+    				+ item.getLeagueURL() + "-"
+    				+ item.getSeasonId() + "-"
+    				+ item.getSeasonName() + "-"
+    				+ item.getDivisionId() + "-"
+    				+ item.getDivisionName());
+    	}
+    	cursor.close();
+        mHelper.close();
+    	return items;
+    }
 }

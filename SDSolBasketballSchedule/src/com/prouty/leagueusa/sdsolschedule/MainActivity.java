@@ -17,7 +17,6 @@ import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
-	private int mPosition;
 	private DatabaseHelper mHelper;
 
 	protected void launchDivisionListActivity(SeasonItem item) {
@@ -76,9 +75,6 @@ public class MainActivity extends FragmentActivity {
 		 return new SeasonListFragment();
 	}
 
-	public int getPosition () {
-		return mPosition;
-	}
     protected void insertLeagueItems(ArrayList<LeagueItem> items) {
         LeagueItem item;
         Log.d(TAG, "insertLeagueItems()");

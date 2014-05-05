@@ -18,6 +18,7 @@ import android.widget.TextView;
 public class DivisionListFragment extends Fragment{
 	private static final String TAG = "DivisionListFragment";
 	private static final int GET = 0;
+	private static final int QUERY = 0;
 	private ArrayList<DivisionItem> mDivisionItems;
 	private ArrayList<ConferenceItem> mConferenceItems;
 	private SeasonItem mSeasonItem;
@@ -41,7 +42,8 @@ public class DivisionListFragment extends Fragment{
 	{       
     	Log.d(TAG, "onCreateView()");
 		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
-		new FetchDivisionItemsTask().execute(mSeasonItem);
+		new QueryDivisionItemsTask().execute(mSeasonItem); // fast or offline
+		new FetchDivisionItemsTask().execute(mSeasonItem); // get anything new
 		
 		view = inflater.inflate(R.layout.fragment_division_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.division_list_season_name);
@@ -69,8 +71,7 @@ public class DivisionListFragment extends Fragment{
     	Log.d(TAG, "setupDivision("+choice+") season: "+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
     	if (choice == GET) {
     		if (mDivisionItems != null && mDivisionItems.size()>0) {
-    			Log.w(TAG, "setupDivision() replace with insert/save to DB"); //TODO Division insert DB
-    			//new InsertDivisionItemsTask().execute(); //save fetched to DB
+    			new InsertDivisionItemsTask().execute(); //TODO WIP save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
     			Log.e(TAG, "setupDivision() replace with query from DB"); //TODO Division query DB
@@ -99,7 +100,6 @@ public class DivisionListFragment extends Fragment{
 
 	}
 	private void returnConference(int choice) {
-		//TODO (Limitation) NO UI for Conference, SDSol uses 1:1 division:conference
 		if (getActivity() == null || mListView == null) {
     		return;
     	}
@@ -183,6 +183,44 @@ public class DivisionListFragment extends Fragment{
 			Log.v(TAG, "adapter.getView() item.getDivisionName(): "+item.getDivisionName());
 			divisionTextView.setText(item.getDivisionName());
 			return convertView;
+		}
+	}
+    private class InsertDivisionItemsTask extends AsyncTask<Void,Void,Void> {
+    	//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertDivisionItemsTask.doInBackground()");
+    		try {
+    			((DivisionListActivity) getActivity()).insertDivisionItems(mDivisionItems);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertDivisionItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertDivisionItemsTask.onPostExecute()");
+    		cancel(true);
+    	}
+    }
+	private class QueryDivisionItemsTask extends AsyncTask<SeasonItem,Void,ArrayList<DivisionItem>> {
+		@Override
+		protected ArrayList<DivisionItem> doInBackground(SeasonItem... nada) {
+        	Log.d(TAG, "QueryDivisionItemsTask.doInBackground()");
+    		ArrayList<DivisionItem> items = null;
+    		try {
+    			items = ((DivisionListActivity) getActivity()).queryDivisionsbySeasonItem(mSeasonItem);
+    		} catch (Exception e) {
+    			Log.e(TAG, "QueryDivisionItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<DivisionItem> items) {
+        	Log.d(TAG, "QueryDivisionItemsTask.onPostExecute() fetched: " + items.size());
+			mDivisionItems = items;
+			setupDivision(QUERY);
+            cancel(true); // done !
 		}
 	}
 	private class FetchConferenceItemsTask extends AsyncTask<DivisionItem,Void,ArrayList<ConferenceItem>> {
