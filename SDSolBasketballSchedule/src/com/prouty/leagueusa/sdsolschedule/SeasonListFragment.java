@@ -23,8 +23,6 @@ public class SeasonListFragment extends Fragment{
 	private LeagueItem mLeagueItem;
 	private ArrayList<SeasonItem> mSeasonItems;
 	private SeasonItem mSeasonItem;
-	FetchLeagueItemsTask mFetchLeagueItemsTask = new FetchLeagueItemsTask();
-	FetchSeasonItemsTask mFetchSeasonItemsTask = new FetchSeasonItemsTask();
 	
 	View view;
 	TextView mSeasonTextView;
@@ -34,13 +32,14 @@ public class SeasonListFragment extends Fragment{
 		Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
-        mFetchLeagueItemsTask.execute();
     }
 	
     @Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
 		Log.d(TAG, "onCreateView()");
+		new FetchLeagueItemsTask().execute();
+       
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
         mSeasonTextView = (TextView)view.findViewById(R.id.season_list_textView);
 		mListView = (ListView)view.findViewById(R.id.season_list_view);
@@ -120,11 +119,9 @@ public class SeasonListFragment extends Fragment{
 		}
 		mLeagueItem = mLeagueItems.get(0);
 		Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
-        mFetchSeasonItemsTask.execute();
+		new FetchSeasonItemsTask().execute();
     }
     private void returnSelection(int position) {
-		mFetchLeagueItemsTask.cancel(true);
-		mFetchSeasonItemsTask.cancel(true);
     	mSeasonItem = mSeasonItems.get(position);
 		mSeasonTextView.setText(mSeasonItem.getSeasonName());
 		Log.i(TAG, "returnSelection()=["+position+"] "

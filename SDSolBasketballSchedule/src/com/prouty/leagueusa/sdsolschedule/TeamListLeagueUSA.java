@@ -73,13 +73,13 @@ public class TeamListLeagueUSA{
 					+"&season="+mSetupItem.getSeasonId()
 					+"&division="+mSetupItem.getDivisionId()
 					+"&conference="+mSetupItem.getConferenceId()).toString();
-			Log.d(TAG, "GETSeasonList():" + url);
+			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);
+			Log.d(TAG, "GETList() Received json: " + jsonString);
 		} catch (IOException ioe) {
-			Log.e(TAG, "GETSeasonList() IOException: "+ioe.getMessage()); // skip stack
+			Log.e(TAG, "GETList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {
-			Log.e(TAG, "GETSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "GETList() Exc:"+e.getMessage(),e);
 		}
 		return jsonString;
 	}

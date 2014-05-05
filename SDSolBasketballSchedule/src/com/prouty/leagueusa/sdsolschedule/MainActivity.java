@@ -32,16 +32,6 @@ public class MainActivity extends FragmentActivity {
 		startActivity(i);
 	}
 
-	protected void launchPhotoListActivity(UserItem user) {
-		Intent i = new Intent (this, PhotoListActivity.class);
-		i.putExtra("UserId", user.getUserId().toString());
-		i.putExtra("UserName", user.getUserName().toString());
-		Log.d(TAG, "launchPhotoListActivity() user: "
-				+ user.getUserId() + "-"
-				+ user.getUserName());
-		startActivity(i);
-	}
-
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +48,6 @@ public class MainActivity extends FragmentActivity {
         }
         mHelper = new DatabaseHelper(getApplicationContext());
     }
-
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

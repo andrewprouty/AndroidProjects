@@ -29,7 +29,6 @@ public class GameListLeagueUSA{
 			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				return null;
 			}
-
 			int bytesRead = 0;
 			byte[] buffer = new byte[1024];
 			while ((bytesRead = in.read(buffer)) > 0) {
@@ -74,13 +73,13 @@ public class GameListLeagueUSA{
 					+"&division="+mSetupItem.getDivisionId()
 					+"&conference="+mSetupItem.getConferenceId()
 					+"&team="+mSetupItem.getTeamId()).toString();
-			Log.d(TAG, "GETSeasonList():" + url);
+			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);
+			Log.d(TAG, "GETList() Received json: " + jsonString);
 		} catch (IOException ioe) {
-			Log.e(TAG, "GETSeasonList() IOException: "+ioe.getMessage()); // skip stack
+			Log.e(TAG, "GETList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {
-			Log.e(TAG, "GETSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "GETList() Exc:"+e.getMessage(),e);
 		}
 		return jsonString;
 	}
@@ -119,26 +118,38 @@ public class GameListLeagueUSA{
 				item.setTeamId(mSetupItem.getTeamId());
 				item.setTeamName(mSetupItem.getTeamName());
 
-				String GameDateTime=gameDate; // TODO trim
-				String GameOpponent;
-				String GameScore;
-				if (mSetupItem.getTeamId() == homeTeamId) {
-					GameOpponent=awayTeamName;
-					GameScore=homeScore+"-"+awayScore; //TODO skip "null" score
+				if (homeScore.equals("null")) {
+					homeScore="";
+				}
+				if (awayScore.equals("null")) {
+					awayScore="";
+				}
+				String GameDateTime=gameDate;
+				String GameAwayTeam=awayTeamName;
+				String GameHomeTeam=homeTeamName;
+				String GameHomeScore=homeScore;
+				String GameAwayScore=awayScore;
+				String GameLocation;
+				if (locationName.equals(fieldName)) {
+					GameLocation=locationName;
 				}
 				else {
-					GameOpponent=homeTeamName;
-					GameScore=awayScore+"-"+homeScore;
+					GameLocation=locationName+", "+fieldName;
 				}
-				String GameLocation=locationName; // TODO compare
 
-				Log.v(TAG, "parseList() time="+GameDateTime+" opponent="+GameOpponent+
-						" location="+GameLocation+" score="+GameScore);
+				Log.v(TAG, "parseList() time="+GameDateTime+
+						" away="+GameAwayTeam+
+						" home="+GameHomeTeam+
+						" awayScore="+GameAwayScore+
+						" homeScore="+GameHomeScore+
+						" location="+GameLocation);
 				item.setGameId(gameId);
 				item.setGameDateTime(GameDateTime);
-				item.setGameOpponent(GameOpponent);
+				item.setGameHomeTeam(GameHomeTeam);
+				item.setGameAwayTeam(GameAwayTeam);
 				item.setGameLocation(GameLocation);
-				item.setGameScore(GameScore);
+				item.setGameHomeScore(GameHomeScore);
+				item.setGameAwayScore(GameAwayScore);
 				items.add(item);
 			}
 			Log.d(TAG, "parseList() added: "+jsonSeasonList.length());

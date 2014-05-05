@@ -50,35 +50,35 @@ public class SeasonListLeagueUSA{
 		ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
 		mLeagueItem = leagueItem; // Sets class variable
 		try {
-			String jsonString = GETSeasonList();
+			String jsonString = GETList();
 			if (jsonString == null || jsonString.length() == 0) {
 				//Not online - will show an empty list if not in DB
 				Log.i(TAG, "fetchItems() Failed to fetch items");
 			}
 			else {
-				parseSeasonList(items, jsonString);
+				parseList(items, jsonString);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "fetchItems() Exc:"+e.getMessage(),e);
 		}
 		return items;
 	}
-	private String GETSeasonList() {
+	private String GETList() {
 		String url = "";
 		String jsonString = "";
 		try {
 			url = Uri.parse(mLeagueItem.getLeagueURL()+"?league="+mLeagueItem.getLeagueId()).toString();
-			Log.d(TAG, "GETSeasonList():" + url);
+			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETSeasonList() Received json: " + jsonString);
+			Log.d(TAG, "GETList() Received json: " + jsonString);
 		} catch (IOException ioe) {
-			Log.e(TAG, "GETSeasonList() IOException: "+ioe.getMessage()); // skip stack
+			Log.e(TAG, "GETList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {
-			Log.e(TAG, "GETSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "GETList() Exc:"+e.getMessage(),e);
 		}
 		return jsonString;
 	}
-	private void parseSeasonList(ArrayList<SeasonItem> items, String stringSeasonList) {
+	private void parseList(ArrayList<SeasonItem> items, String stringSeasonList) {
 		try {
 			JSONArray jsonSeasonList = new JSONArray (stringSeasonList);  
 			// [{"seasonid":"7","seasonname":"Breakaway League 2014"},
@@ -95,9 +95,9 @@ public class SeasonListLeagueUSA{
 				item.setSeasonName(season_name);
 				items.add(item);
 			}
-			Log.d(TAG, "parseSeasonList() SeasonItem added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() SeasonItem added: "+jsonSeasonList.length());
 		} catch (Exception e) {
-			Log.e(TAG, "parseSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}
 	}
 }

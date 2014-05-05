@@ -26,8 +26,6 @@ public class DivisionListFragment extends Fragment{
 	private DivisionItem mDivisionItem;
 	private ConferenceItem mConferenceItem;
 	
-	FetchDivisionItemsTask mFetchDivisionItemsTask = new FetchDivisionItemsTask();
-
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
@@ -37,16 +35,16 @@ public class DivisionListFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
     	Log.d(TAG, "onCreate()");
-
 		setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
-		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
-		mFetchDivisionItemsTask.execute(mSeasonItem);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
     	Log.d(TAG, "onCreateView()");
+		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
+		new FetchDivisionItemsTask().execute(mSeasonItem);
+		
 		view = inflater.inflate(R.layout.fragment_division_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.division_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.division_list_division_name);
@@ -73,11 +71,11 @@ public class DivisionListFragment extends Fragment{
     	Log.d(TAG, "setupDivision("+choice+") season: "+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
     	if (choice == GET) {
     		if (mDivisionItems != null && mDivisionItems.size()>0) {
-    			Log.w(TAG, "setupDivision() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "setupDivision() replace with insert/save to DB"); //TODO Division insert DB
     			//new InsertDivisionItemsTask().execute(); //save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupDivision() replace with query from DB"); //TODO
+    			Log.e(TAG, "setupDivision() replace with query from DB"); //TODO Division query DB
     			//new QueryDivisionItemsTask().execute(mSeasonItem);
     		}
 		}
@@ -90,7 +88,6 @@ public class DivisionListFragment extends Fragment{
 		}
 	}
 	private void selectDivision(int position) {
-		mFetchDivisionItemsTask.cancel(true);
     	mDivisionItem = mDivisionItems.get(position);
 		mDivisionTextView.setText(mDivisionItem.getDivisionName());
 		Log.i(TAG, "selectDivision()=["+position+"] "
@@ -100,7 +97,7 @@ public class DivisionListFragment extends Fragment{
 				+ mDivisionItem.getSeasonName() + "; " 
 				+ mDivisionItem.getDivisionId() + "-"
 				+ mDivisionItem.getDivisionName());
-		new FetchConferenceItemsTask().execute(mDivisionItem); //new here as may repeat
+		new FetchConferenceItemsTask().execute(mDivisionItem);
 
 	}
 	private void returnConference(int choice) {
@@ -113,11 +110,11 @@ public class DivisionListFragment extends Fragment{
     	if (choice == GET) {
     		if (mConferenceItems != null && mConferenceItems.size()>0) {
     			// Async to save the fetched list to DB
-    			Log.w(TAG, "returnConference() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "returnConference() replace with insert/save to DB"); //TODO Conference insert DB
     			//new InsertConferenceItemsTask().execute(); // save fetched to DB
     		}
     		else {	// none. If in DB can populate from there
-    			Log.e(TAG, "returnConference() replace with query from DB"); //TODO
+    			Log.e(TAG, "returnConference() replace with query from DB"); //TODO Conference query DB
     			//new QueryConferenceItemsTask().execute();
     		}
     	}
@@ -130,7 +127,7 @@ public class DivisionListFragment extends Fragment{
 		else {
 			Log.e(TAG, "returnConference() 1 conference should have been returned, received zero. Required- no good guess");
 			int msgId = R.string.fatal_multiple_conference_per_division;
-			Toast.makeText(getActivity().getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(getActivity().getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		mConferenceItem = mConferenceItems.get(0);

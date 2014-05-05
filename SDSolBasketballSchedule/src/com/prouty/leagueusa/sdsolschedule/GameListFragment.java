@@ -2,6 +2,7 @@ package com.prouty.leagueusa.sdsolschedule;
 
 import java.util.ArrayList;
 
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,8 +22,6 @@ public class GameListFragment extends Fragment{
 	private ArrayList<GameItem> mGameItems;
 	private GameItem mGameItem;
 	
-	FetchGameItemsTask mFetchGameItemsTask = new FetchGameItemsTask();
-
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
@@ -35,14 +34,15 @@ public class GameListFragment extends Fragment{
     	Log.d(TAG, "onCreate()");
 
 		setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
-		mTeamItem=((GameListActivity) getActivity()).getTeamItem();
-		mFetchGameItemsTask.execute(mTeamItem);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
-    	Log.d(TAG, "onCreateView() getDivisionName: "+mTeamItem.getDivisionName());
+    	Log.d(TAG, "onCreateView()");
+		mTeamItem=((GameListActivity) getActivity()).getTeamItem();
+		new FetchGameItemsTask().execute(mTeamItem);
+
 		view = inflater.inflate(R.layout.fragment_game_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.game_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.game_list_division_name); 
@@ -62,11 +62,11 @@ public class GameListFragment extends Fragment{
     	Log.d(TAG, "setupGame("+choice+") team: "+mTeamItem.getTeamId()+"-"+mTeamItem.getTeamName());
     	if (choice == GET) {
     		if (mGameItems != null && mGameItems.size()>0) {
-    			Log.w(TAG, "setupGame() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "setupGame() replace with insert/save to DB"); //TODO insert DB
     			//new InsertGameItemsTask().execute(); //save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupGame() replace with query from DB"); //TODO
+    			Log.e(TAG, "setupGame() replace with query from DB"); //TODO query DB
     			//new QueryGameItemsTask().execute(mSeasonItem);
     		}
 		}
@@ -110,18 +110,27 @@ public class GameListFragment extends Fragment{
 
 			GameItem item = getItem(position);
 			Log.d(TAG, "GameListAdapter ["+position+"]");
-			
-			TextView opponentTextView = (TextView)convertView.findViewById(R.id.row_game_opponent_textView);
-			Log.v(TAG, "adapter Opponent: "+item.getGameOpponent());
-			opponentTextView.setText(item.getGameOpponent());
 
 			TextView dateTimeTextView = (TextView)convertView.findViewById(R.id.row_game_dateTime_textView);
 			Log.v(TAG, "adapter GameDateTime(): "+item.getGameDateTime());
 			dateTimeTextView.setText(item.getGameDateTime());
+			dateTimeTextView.setTypeface(null, Typeface.BOLD);
 
-			TextView scoreTextView = (TextView)convertView.findViewById(R.id.row_game_score_textView);
-			Log.v(TAG, "adapter GameScore(): "+item.getGameScore());
-			scoreTextView.setText(item.getGameScore());
+			TextView homeTeamTextView = (TextView)convertView.findViewById(R.id.row_game_home_team_textView);
+			Log.v(TAG, "adapter Home: "+item.getGameHomeTeam());
+			homeTeamTextView.setText(item.getGameHomeTeam());
+
+			TextView awayTeamTextView = (TextView)convertView.findViewById(R.id.row_game_away_team_textView);
+			Log.v(TAG, "adapter Away: "+item.getGameAwayTeam());
+			awayTeamTextView.setText(item.getGameAwayTeam());
+
+			TextView homeScoreTextView = (TextView)convertView.findViewById(R.id.row_game_home_score_textView);
+			Log.v(TAG, "adapter GameHomeScore(): "+item.getGameHomeScore());
+			homeScoreTextView.setText(item.getGameHomeScore());
+
+			TextView awayScoreTextView = (TextView)convertView.findViewById(R.id.row_game_away_score_textView);
+			Log.v(TAG, "adapter GameAwayScore(): "+item.getGameAwayScore());
+			awayScoreTextView.setText(item.getGameAwayScore());
 
 			TextView locationTextView = (TextView)convertView.findViewById(R.id.row_game_location_textView);
 			Log.v(TAG, "adapter GameLocation(): "+item.getGameLocation());

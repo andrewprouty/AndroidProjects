@@ -14,7 +14,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class TeamListFragment extends Fragment{
 	private static final String TAG = "TeamListFragment";
@@ -24,8 +23,6 @@ public class TeamListFragment extends Fragment{
 	private ArrayList<TeamItem> mTeamItems;
 	private TeamItem mTeamItem;
 	
-	FetchTeamItemsTask mFetchTeamItemsTask = new FetchTeamItemsTask();
-
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
@@ -36,16 +33,16 @@ public class TeamListFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
     	Log.d(TAG, "onCreate()");
-
 		setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
-		mConferenceItem=((TeamListActivity) getActivity()).getConferenceItem();
-		mFetchTeamItemsTask.execute(mConferenceItem);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
     	Log.d(TAG, "onCreateView()");
+		mConferenceItem=((TeamListActivity) getActivity()).getConferenceItem();
+		new FetchTeamItemsTask().execute(mConferenceItem);
+		
 		view = inflater.inflate(R.layout.fragment_team_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.team_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.team_list_division_name); 
@@ -74,11 +71,11 @@ public class TeamListFragment extends Fragment{
     	Log.d(TAG, "setupTeam("+choice+") season: "+mConferenceItem.getConferenceId()+"-"+mConferenceItem.getConferenceName());
     	if (choice == GET) {
     		if (mTeamItems != null && mTeamItems.size()>0) {
-    			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO insert DB
     			//new InsertTeamItemsTask().execute(); //save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupTeam() replace with query from DB"); //TODO
+    			Log.e(TAG, "setupTeam() replace with query from DB"); //TODO query DB
     			//new QueryTeamItemsTask().execute(mSeasonItem);
     		}
 		}
@@ -91,7 +88,6 @@ public class TeamListFragment extends Fragment{
 		}
 	}
 	private void returnTeam(int position) {
-		mFetchTeamItemsTask.cancel(true);
     	mTeamItem = mTeamItems.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		Log.i(TAG, "returnTeam()=["+position+"]"
@@ -105,7 +101,7 @@ public class TeamListFragment extends Fragment{
 				+ " team ID="  + mTeamItem.getTeamId()
 				+ ", name=" + mTeamItem.getTeamName());
 
-		Toast.makeText(getActivity().getApplicationContext(),mTeamItem.getTeamName(), Toast.LENGTH_SHORT).show();
+		//Toast.makeText(getActivity().getApplicationContext(),mTeamItem.getTeamName(), Toast.LENGTH_SHORT).show();
 		((TeamListActivity) getActivity()).launchGameListActivity(mTeamItem);
 	}
 	private class FetchTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {

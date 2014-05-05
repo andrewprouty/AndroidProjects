@@ -8,14 +8,17 @@ public class GameItem {
     private String mDivisionId;
     private String mDivisionName;
     private String mConferenceId;
+    private String mConferenceName;
     private String mTeamId;
 	private String mTeamName;
 
     private String mGameId;
     private String mGameDateTime;
-    private String mGameOpponent;
+    private String mGameHomeTeam;
+    private String mGameAwayTeam;
     private String mGameLocation;
-    private String mGameScore;
+    private String mGameHomeScore;
+    private String mGameAwayScore;
 
     public String getLeagueId() {
         return mLeagueId;
@@ -59,6 +62,12 @@ public class GameItem {
     public void setConferenceId(String conferenceId) {
         mConferenceId= conferenceId;
     }
+    public String getConferenceName() {
+        return mConferenceName;
+    }
+    public void setConferenceName(String conferenceName) {
+        mConferenceName = conferenceName;
+    }
     public String getTeamId() {
         return mTeamId;
     }
@@ -84,11 +93,17 @@ public class GameItem {
     public void setGameDateTime(String gameDateTime) {
         mGameDateTime = gameDateTime;
     }
-    public String getGameOpponent() {
-        return mGameOpponent;
+    public String getGameHomeTeam() {
+        return mGameHomeTeam;
     }
-    public void setGameOpponent(String gameOpponent) {
-        mGameOpponent = gameOpponent;
+    public void setGameHomeTeam(String gameHomeTeam) {
+        mGameHomeTeam = gameHomeTeam;
+    }
+    public String getGameAwayTeam() {
+        return mGameAwayTeam;
+    }
+    public void setGameAwayTeam(String gameAwayTeam) {
+        mGameAwayTeam = gameAwayTeam;
     }
     public String getGameLocation() {
         return mGameLocation;
@@ -96,10 +111,16 @@ public class GameItem {
     public void setGameLocation(String gameLocation) {
         mGameLocation = gameLocation;
     }
-    public String getGameScore() {
-        return mGameScore;
+    public String getGameHomeScore() {
+        return mGameHomeScore;
     }
-    public void setGameScore(String gameScore) {
-        mGameScore = gameScore;
+    public void setGameHomeScore(String gameHomeScore) {
+        mGameHomeScore = gameHomeScore;
+    }
+    public String getGameAwayScore() {
+        return mGameAwayScore;
+    }
+    public void setGameAwayScore(String gameAwayScore) {
+        mGameAwayScore = gameAwayScore;
     }
 }
