@@ -18,7 +18,7 @@ import android.widget.TextView;
 public class DivisionListFragment extends Fragment{
 	private static final String TAG = "DivisionListFragment";
 	private static final int GET = 0;
-	private static final int QUERY = 0;
+	private static final int QUERY = 1;
 	private ArrayList<DivisionItem> mDivisionItems;
 	private ArrayList<ConferenceItem> mConferenceItems;
 	private SeasonItem mSeasonItem;
@@ -71,11 +71,7 @@ public class DivisionListFragment extends Fragment{
     	Log.d(TAG, "setupDivision("+choice+") season: "+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
     	if (choice == GET) {
     		if (mDivisionItems != null && mDivisionItems.size()>0) {
-    			new InsertDivisionItemsTask().execute(); //TODO WIP save fetched to DB
-    		}
-    		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupDivision() replace with query from DB"); //TODO Division query DB
-    			//new QueryDivisionItemsTask().execute(mSeasonItem);
+    			new InsertDivisionItemsTask().execute();
     		}
 		}
     	if (mDivisionItems != null) {
@@ -128,7 +124,7 @@ public class DivisionListFragment extends Fragment{
 			//Toast.makeText(getActivity().getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		mConferenceItem = mConferenceItems.get(0);
+		mConferenceItem = mConferenceItems.get(0); //TODO This fails in Wifi-only mode currently
 		Log.d(TAG, "returnConference() about to log");
 		Log.v(TAG, "returnConference():"
 				+ " league ID="    + mConferenceItem.getLeagueId()
@@ -161,8 +157,10 @@ public class DivisionListFragment extends Fragment{
         	return items;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<DivisionItem> divisionItems) {
-			mDivisionItems = divisionItems;
+		protected void onPostExecute(ArrayList<DivisionItem> items) {
+    		if (items != null && items.size() > 0) {
+    			mDivisionItems = items;
+    		}
 			setupDivision(GET);
             cancel(true); // done !
         	Log.d(TAG, "FetchDivisionItemsTask onPostExecute()");

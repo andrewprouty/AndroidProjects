@@ -54,16 +54,52 @@ public class SeasonListFragment extends Fragment{
 		});
 		return view;
 	}
-	private void setupLeague(int choice) {
+	private void setupLeague(int choice, int choiceSize) {
 		// Really only expect 1:San Diego Sol. Prepared for future extensibility
 		if (getActivity() == null || mListView == null) {
     		return;
     	}
-		Log.d(TAG, "setupLeague("+choice+")");
+		Log.d(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
 
-    	if (choice == GET) {
+    	if (choiceSize > 0) {
+        	if (choice == GET) {
+    			new InsertLeagueItemsTask().execute(); // save fetched to DB
+        	}
+		}
+    	else if (choiceSize > 1) {
+    		Log.e(TAG, "setupLeague() 1 league should have been returned, received "+choiceSize+". Providing hardcode.");
+			LeagueItem item = new LeagueItem();
+			item.setLeagueId("1");
+			item.setOrgName("San Diego Sol");
+			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
+			mLeagueItems.add(item);
+    	}
+		//Change when more leagues. Currently this is the only/expected value.
+    	//Scenario is a new install: QUERY returns nothing (fast) & GET eventually errored as offline
+    	if (choice == QUERY && choiceSize == 0 && mLeagueItems == null) {
+			Log.e(TAG, "setupLeague() 1 league should have been returned, received zero. Providing hardcode");
+			LeagueItem item = new LeagueItem();
+			item.setLeagueId("1");
+			item.setOrgName("San Diego Sol");
+			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
+			Log.d(TAG, "setupLeague() before add");
+			ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();  
+			items.add(item);
+			mLeagueItems = items;
+			Log.d(TAG, "setupLeague() alive??");
+    	}
+
+    	//GET & QUERY are in parallel - picking GET as the winner (since faster & hardcode above)
+    	if (choice == QUERY) {
+			mLeagueItem = mLeagueItems.get(mLeagueItems.size()-1);
+			Log.d(TAG, "setupLeague(). [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
+			new QuerySeasonItemsTask().execute(); // fast
+			new FetchSeasonItemsTask().execute(); // add in anything new
+    	}
+		Log.d(TAG, "setupSeason("+choice+").");
+
+    	/*if (choice == GET) {
     		if (mLeagueItems != null && mLeagueItems.size()>0) {
-    			// Async to save the fetched list to DB
     			new InsertLeagueItemsTask().execute(); // save fetched to DB
     		}
     	}
@@ -84,29 +120,26 @@ public class SeasonListFragment extends Fragment{
 		if (mLeagueItems != null && mLeagueItems.size() > 0
 				&& mSeasonItems == null) { // League does GET/QUERY in parallel - only initiate once
 			mLeagueItem = mLeagueItems.get(0);
-			Log.d(TAG, "setupLeague() [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
+			Log.d(TAG, "setupLeague(). [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
 			new QuerySeasonItemsTask().execute(); // fast
 			new FetchSeasonItemsTask().execute(); // add in anything new
 		}
+		Log.d(TAG, "setupSeason("+choice+")."); */
     }
-	private void setupSeason(int choice) {
+	private void setupSeason(int choice, int choiceSize) {
     	if (getActivity() == null || mListView == null) {
     		return;
     	}
-		Log.d(TAG, "setupSeason("+choice+")");
-    	if (choice == GET) {
-    		if (mSeasonItems != null && mSeasonItems.size()>0) {
-    			new InsertSeasonItemsTask().execute(); // save fetched to DB
-    		}
-    	}
-    	if (mSeasonItems != null && mSeasonItems.size() > 0) {
+		Log.d(TAG, "setupSeason("+choice+") choiceSize="+choiceSize);
+    	if (choiceSize > 0) {
+        	if (choice == GET) {
+       			new InsertSeasonItemsTask().execute(); // save fetched to DB
+        	}
 			SeasonListAdapter adapter = new SeasonListAdapter(mSeasonItems);
 			mListView.setAdapter(adapter);
 		}
-		/*else {
-			mListView.setAdapter(null);
-		}*/
-		Log.d(TAG, "setupSeason().");
+		//removed zero/else case: mListView.setAdapter(null);
+		Log.d(TAG, "setupSeason("+choice+").");
     }
     private void returnSeason(int position) {
     	mSeasonItem = mSeasonItems.get(position);
@@ -135,11 +168,15 @@ public class SeasonListFragment extends Fragment{
         protected void onPostExecute(ArrayList<LeagueItem> items) {
         	try {
         		Log.d(TAG, "FetchLeagueItemsTask.onPostExecute()");
-        		if (items != null && items.size() > 0) {
+        		int size;
+        		if (items == null || items.size() == 0) {
+        			size = 0;
+        		} else {
+        			size = items.size();
         			mLeagueItems = items;
         		}
-        		setupLeague(GET); // show listing
-        		cancel(true); // done !
+           		setupLeague(GET, size); // show listing
+        		cancel(true);
         	} catch (Exception e) {
         		Log.e(TAG, "FetchLeagueItemsTask.doInBackground() Exception.", e);
         	}
@@ -177,10 +214,16 @@ public class SeasonListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<LeagueItem> items) {
-			mLeagueItems = items;
-			setupLeague(QUERY);
+        	Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() fetched: " + items.size());
+        	int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+    			mLeagueItems = items;
+    		}
+			setupLeague(QUERY, size);
             cancel(true); // done !
-        	Log.d(TAG, "QueryLeagueItemsTask.onPostExecute()");
 		}
 	}
 	// SEASON
@@ -200,12 +243,16 @@ public class SeasonListFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<SeasonItem> items) {
         	try {
-        		if (items != null && items.size() > 0) {
+        		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute()");
+        		int size;
+        		if (items == null || items.size() == 0) {
+        			size = 0;
+        		} else {
+        			size = items.size();
             		mSeasonItems = items;
         		}
-        		Log.d(TAG, "FetchSeasonItemsTask.onPostExecute()");
-        		setupSeason(GET); // show listing
-        		cancel(true); // done !
+           		setupSeason(GET, size); // show listing
+        		cancel(true);
         	} catch (Exception e) {
         		Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
         	}
@@ -263,9 +310,15 @@ public class SeasonListFragment extends Fragment{
 		@Override
 		protected void onPostExecute(ArrayList<SeasonItem> items) {
         	Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() fetched: " + items.size());
-			mSeasonItems = items;
-			setupSeason(QUERY);
-            cancel(true); // done !
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+        		mSeasonItems = items;
+    		}
+       		setupSeason(QUERY, size); // show listing
+            cancel(true);
 		}
 	}
 }
