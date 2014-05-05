@@ -17,14 +17,13 @@ import android.widget.TextView;
 public class GameListFragment extends Fragment{
 	private static final String TAG = "GameListFragment";
 	private static final int GET = 0;
-	private static final int QUERY = 1;
 	private TeamItem mTeamItem;
 	private ArrayList<GameItem> mGameItems;
-	private GameItem mGameItem;
 	
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
+	TextView mConferenceTextView;
 	TextView mTeamTextView;
 	ListView mListView;
 	
@@ -43,7 +42,15 @@ public class GameListFragment extends Fragment{
 		mTeamItem=((GameListActivity) getActivity()).getTeamItem();
 		new FetchGameItemsTask().execute(mTeamItem);
 
-		view = inflater.inflate(R.layout.fragment_game_list, container,false);
+		if (mTeamItem.getConferenceCount().equals("one")) {
+			view = inflater.inflate(R.layout.fragment_game_list_no_conference, container,false);
+		}
+		else {
+			view = inflater.inflate(R.layout.fragment_game_list_show_conference, container,false);
+			mConferenceTextView = (TextView)view.findViewById(R.id.game_list_conference_name); 
+			mConferenceTextView.setText(mTeamItem.getConferenceName());
+		}
+		
 		mSeasonTextView = (TextView)view.findViewById(R.id.game_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.game_list_division_name); 
 		mTeamTextView = (TextView)view.findViewById(R.id.game_list_team_name);
@@ -62,11 +69,11 @@ public class GameListFragment extends Fragment{
     	Log.d(TAG, "setupGame("+choice+") team: "+mTeamItem.getTeamId()+"-"+mTeamItem.getTeamName());
     	if (choice == GET) {
     		if (mGameItems != null && mGameItems.size()>0) {
-    			Log.w(TAG, "setupGame() replace with insert/save to DB"); //TODO insert DB
+    			Log.w(TAG, "setupGame() replace with insert/save to DB"); //TODO Game insert DB
     			//new InsertGameItemsTask().execute(); //save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupGame() replace with query from DB"); //TODO query DB
+    			Log.e(TAG, "setupGame() replace with query from DB"); //TODO Game query DB
     			//new QueryGameItemsTask().execute(mSeasonItem);
     		}
 		}

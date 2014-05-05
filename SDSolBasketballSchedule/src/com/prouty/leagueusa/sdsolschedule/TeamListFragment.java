@@ -18,7 +18,6 @@ import android.widget.TextView;
 public class TeamListFragment extends Fragment{
 	private static final String TAG = "TeamListFragment";
 	private static final int GET = 0;
-	private static final int QUERY = 1;
 	private ConferenceItem mConferenceItem;
 	private ArrayList<TeamItem> mTeamItems;
 	private TeamItem mTeamItem;
@@ -26,6 +25,7 @@ public class TeamListFragment extends Fragment{
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
+	TextView mConferenceTextView;
 	TextView mTeamTextView;
 	ListView mListView;
 	
@@ -43,7 +43,14 @@ public class TeamListFragment extends Fragment{
 		mConferenceItem=((TeamListActivity) getActivity()).getConferenceItem();
 		new FetchTeamItemsTask().execute(mConferenceItem);
 		
-		view = inflater.inflate(R.layout.fragment_team_list, container,false);
+		if (mConferenceItem.getConferenceCount().equals("one")) {
+			view = inflater.inflate(R.layout.fragment_team_list_no_conference, container,false);
+		}
+		else {
+			view = inflater.inflate(R.layout.fragment_team_list_show_conference, container,false);
+			mConferenceTextView = (TextView)view.findViewById(R.id.team_list_conference_name); 
+			mConferenceTextView.setText(mConferenceItem.getConferenceName());
+		}
 		mSeasonTextView = (TextView)view.findViewById(R.id.team_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.team_list_division_name); 
 		mTeamTextView = (TextView)view.findViewById(R.id.team_list_team_name);
@@ -71,11 +78,11 @@ public class TeamListFragment extends Fragment{
     	Log.d(TAG, "setupTeam("+choice+") season: "+mConferenceItem.getConferenceId()+"-"+mConferenceItem.getConferenceName());
     	if (choice == GET) {
     		if (mTeamItems != null && mTeamItems.size()>0) {
-    			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO insert DB
+    			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO Team insert DB
     			//new InsertTeamItemsTask().execute(); //save fetched to DB
     		}
     		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupTeam() replace with query from DB"); //TODO query DB
+    			Log.e(TAG, "setupTeam() replace with query from DB"); //TODO Team query DB
     			//new QueryTeamItemsTask().execute(mSeasonItem);
     		}
 		}

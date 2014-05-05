@@ -10,7 +10,25 @@ import android.util.Log;
 public class DivisionListActivity extends FragmentActivity {
 	private static final String TAG = "DivisionListActivity";
 	private SeasonItem   mSeasonItem = new SeasonItem();
-	private DatabaseHelper mHelper;
+
+	protected void launchConferenceListActivity(ConferenceItem item) {
+		Log.d(TAG, "launchTeamListActivity()");
+		Intent i = new Intent (this, ConferenceListActivity.class);
+		i.putExtra("LeagueId", item.getLeagueId().toString());
+		i.putExtra("LeagueURL", item.getLeagueURL().toString());
+		i.putExtra("SeasonId", item.getSeasonId().toString());
+		i.putExtra("SeasonName", item.getSeasonName().toString());
+		i.putExtra("DivisionId", item.getDivisionId().toString());
+		i.putExtra("DivisionName", item.getDivisionName().toString());
+		Log.v(TAG, "launchGameListActivity(): "
+				+ " league ID="    + item.getLeagueId()
+				+ ", url="         + item.getLeagueURL()
+				+ " season ID="    + item.getSeasonId()
+				+ ", name="        + item.getSeasonName() 
+				+ " division ID="  + item.getDivisionId()
+				+ ", name="        + item.getDivisionName());
+		startActivity(i);
+	}
 
 	protected void launchTeamListActivity(ConferenceItem item) {
 		Log.d(TAG, "launchTeamListActivity()");
@@ -66,7 +84,6 @@ public class DivisionListActivity extends FragmentActivity {
 			.add(R.id.fragmentContainer, fragment)
 			.commit();
 		}
-        mHelper = new DatabaseHelper(getApplicationContext());
 	}
 	public SeasonItem getSeasonItem () {
 		return mSeasonItem;

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/conference_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/conference_list_season_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/season_name_hint"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/conference_list_division_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/division_name_hint"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="18sp" />
+    
+    <TextView
+        android:id="@+id/conference_list_conference_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:text="@string/conference_name_hint"
+        android:textAppearance="?android:attr/textAppearanceSmallInverse"
+        android:textSize="18sp" />
+    
+    <ListView
+        android:id="@+id/conference_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+    
+</LinearLayout>

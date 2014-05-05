@@ -18,7 +18,6 @@ import android.widget.TextView;
 public class SeasonListFragment extends Fragment{
 	private static final String TAG = "SeasonListFragment";
 	private static final int GET = 0;
-	private static final int QUERY = 1;
 	private ArrayList<LeagueItem> mLeagueItems;
 	private LeagueItem mLeagueItem;
 	private ArrayList<SeasonItem> mSeasonItems;
@@ -65,12 +64,12 @@ public class SeasonListFragment extends Fragment{
     		if (mSeasonItems != null && mSeasonItems.size()>0) {
     			// Async to save the fetched list to DB
     			//new InsertSeasonItemsTask().execute(); // save fetched to DB
-    			Log.w(TAG, "setupSeason() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "setupSeason() replace with insert/save to DB"); //TODO League insert DB
     		}
     		else {
     			// none. If in DB can populate from there
     			//new QuerySeasonItemsTask().execute();
-    			Log.e(TAG, "setupSeason() replace with query from DB"); //TODO
+    			Log.e(TAG, "setupSeason() replace with query from DB"); //TODO League query DB
     		}
     	}
 		//mSeasonItem = mSeasonItems.get(1); //TODO Add user's selection
@@ -95,11 +94,11 @@ public class SeasonListFragment extends Fragment{
     	if (choice == GET) {
     		if (mLeagueItems != null && mLeagueItems.size()>0) {
     			// Async to save the fetched list to DB
-    			Log.w(TAG, "setupLeague() replace with insert/save to DB"); //TODO
+    			Log.w(TAG, "setupLeague() replace with insert/save to DB"); //TODO Season query DB
     			//new InsertLeagueItemsTask().execute(); // save fetched to DB
     		}
     		else {	// none. If in DB can populate from there
-    			Log.e(TAG, "setupLeague() replace with query from DB"); //TODO
+    			Log.e(TAG, "setupLeague() replace with query from DB"); //TODO Season query DB
     			//new QueryLeagueItemsTask().execute();
     		}
     	}

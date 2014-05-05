@@ -14,12 +14,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DivisionListFragment extends Fragment{
 	private static final String TAG = "DivisionListFragment";
 	private static final int GET = 0;
-	private static final int QUERY = 1;
 	private ArrayList<DivisionItem> mDivisionItems;
 	private ArrayList<ConferenceItem> mConferenceItems;
 	private SeasonItem mSeasonItem;
@@ -110,11 +108,11 @@ public class DivisionListFragment extends Fragment{
     	if (choice == GET) {
     		if (mConferenceItems != null && mConferenceItems.size()>0) {
     			// Async to save the fetched list to DB
-    			Log.w(TAG, "returnConference() replace with insert/save to DB"); //TODO Conference insert DB
+    			Log.w(TAG, "returnConference() replace with insert/save to DB"); //TODO Division-Conference insert DB
     			//new InsertConferenceItemsTask().execute(); // save fetched to DB
     		}
     		else {	// none. If in DB can populate from there
-    			Log.e(TAG, "returnConference() replace with query from DB"); //TODO Conference query DB
+    			Log.e(TAG, "returnConference() replace with query from DB"); //TODO Division-Conference query DB
     			//new QueryConferenceItemsTask().execute();
     		}
     	}
@@ -142,7 +140,12 @@ public class DivisionListFragment extends Fragment{
 				+ " conferenceId=" + mConferenceItem.getConferenceId()
 				+ ", name="        + mConferenceItem.getConferenceName()
 				+ ", count="       + mConferenceItem.getConferenceCount());
-		((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
+		if(mConferenceItems.size() > 1) {
+			((DivisionListActivity) getActivity()).launchConferenceListActivity(mConferenceItem);
+		}
+		else {
+			((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
+		}
     }
 
 	private class FetchDivisionItemsTask extends AsyncTask<SeasonItem,Void,ArrayList<DivisionItem>> {

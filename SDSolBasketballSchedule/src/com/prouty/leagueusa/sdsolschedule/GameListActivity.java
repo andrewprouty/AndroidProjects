@@ -9,7 +9,7 @@ import android.util.Log;
 public class GameListActivity extends FragmentActivity {
 	private static final String TAG = "GameListActivity";
 	private TeamItem   mTeamItem = new TeamItem();
-	private DatabaseHelper mHelper;
+	//private DatabaseHelper mHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class GameListActivity extends FragmentActivity {
 			.add(R.id.fragmentContainer, fragment)
 			.commit();
 		}
-        mHelper = new DatabaseHelper(getApplicationContext());
+        //mHelper = new DatabaseHelper(getApplicationContext());
 	}
 	public TeamItem getTeamItem () {
 		return mTeamItem;
