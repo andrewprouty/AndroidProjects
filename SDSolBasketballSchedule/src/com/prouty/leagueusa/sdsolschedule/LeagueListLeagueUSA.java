@@ -87,7 +87,7 @@ public class LeagueListLeagueUSA{
 				String id  = jsonNode.optString("leagueid").toString();
 				String name   = jsonNode.optString("orgname").toString();
 				String url = "http://www.sdsolbasketball.com/mobileschedule.php";
-				Log.d(TAG, "parseLeagueList() ["+ i + "] : "+id+"-"+name+"-"+url);
+				Log.v(TAG, "parseList() ["+ i + "] : "+id+"-"+name+"-"+url);
 
 				LeagueItem item = new LeagueItem();
 				item.setLeagueId(id);
@@ -96,7 +96,7 @@ public class LeagueListLeagueUSA{
 					// If this is enhanced for other leagues, URL likely to be returned in JSON result
 				items.add(item);
 			}
-			Log.d(TAG, "parseList() Item added: "+jsonLeagueList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonLeagueList.length());
 		} catch (Exception e) {
 			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}

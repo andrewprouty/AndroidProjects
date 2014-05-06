@@ -64,7 +64,6 @@ public class DivisionListFragment extends Fragment{
 		});
 		return view;
 	}
-
 	private void setupDivision(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
@@ -74,7 +73,6 @@ public class DivisionListFragment extends Fragment{
         	if (choice == GET) {
     			new InsertDivisionItemsTask().execute();
     		}
-        	//TODO If 2nd value (choiceSize * size()) BOTH have = count.INSERT but don't refresh screen
         	DivisionListAdapter adapter = new DivisionListAdapter(mDivisionItems);
 			mListView.setAdapter(adapter);
 		}
@@ -130,7 +128,6 @@ public class DivisionListFragment extends Fragment{
 			}
 		}
     }
-
 	private class FetchDivisionItemsTask extends AsyncTask<SeasonItem,Void,ArrayList<DivisionItem>> {
 		@Override
 		protected ArrayList<DivisionItem> doInBackground(SeasonItem... params) {
@@ -160,13 +157,13 @@ public class DivisionListFragment extends Fragment{
 	private class DivisionListAdapter extends ArrayAdapter<DivisionItem> {
 		public DivisionListAdapter(ArrayList<DivisionItem> items) {
 			super(getActivity(), 0, items);
+			Log.d(TAG, "DivisionListAdapter Constructor");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(R.layout.division_list_row, parent, false);
 			}
-
 			DivisionItem item = getItem(position);
 			TextView divisionTextView = (TextView)convertView.findViewById(R.id.row_division_name_textView);
 			Log.v(TAG, "adapter.getView() item.getDivisionName(): "+item.getDivisionName());
@@ -274,7 +271,7 @@ public class DivisionListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<ConferenceItem> items) {
-        	Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=" + items.size());//TODO .. what if zero!!
+        	Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=" + items.size());
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;

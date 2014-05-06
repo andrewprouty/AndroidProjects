@@ -86,7 +86,7 @@ public class SeasonListLeagueUSA{
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
 				String season_id  = jsonNode.optString("seasonid").toString();
 				String season_name   = jsonNode.optString("seasonname").toString();
-				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+season_id+"-"+season_name);
+				Log.v(TAG, "parseList() ["+ i + "] : "+season_id+"-"+season_name);
 
 				SeasonItem item = new SeasonItem();
 				item.setLeagueId(mLeagueItem.getLeagueId());
@@ -95,7 +95,7 @@ public class SeasonListLeagueUSA{
 				item.setSeasonName(season_name);
 				items.add(item);
 			}
-			Log.d(TAG, "parseList() SeasonItem added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());
 		} catch (Exception e) {
 			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}

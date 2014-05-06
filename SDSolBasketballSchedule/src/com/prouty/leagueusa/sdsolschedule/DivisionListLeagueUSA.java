@@ -89,7 +89,7 @@ public class DivisionListLeagueUSA{
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
 				String id  = jsonNode.optString("divisionid").toString();
 				String name= jsonNode.optString("divisionname").toString();
-				Log.d(TAG, "parseSeasonList() ["+ i + "] : "+id+"-"+name);
+				Log.v(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
 
 				DivisionItem item = new DivisionItem();
 				item.setLeagueId(mSetupItem.getLeagueId());
@@ -101,9 +101,9 @@ public class DivisionListLeagueUSA{
 				item.setDivisionName(name);
 				items.add(item);
 			}
-			Log.d(TAG, "parseSeasonList() SeasonItem added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());
 		} catch (Exception e) {
-			Log.e(TAG, "parseSeasonList() Exc:"+e.getMessage(),e);
+			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}
 	}
 }

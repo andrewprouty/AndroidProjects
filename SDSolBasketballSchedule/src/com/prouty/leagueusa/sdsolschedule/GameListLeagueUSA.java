@@ -152,7 +152,7 @@ public class GameListLeagueUSA{
 				item.setGameAwayScore(GameAwayScore);
 				items.add(item);
 			}
-			Log.d(TAG, "parseList() added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());
 		} catch (Exception e) {
 			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}

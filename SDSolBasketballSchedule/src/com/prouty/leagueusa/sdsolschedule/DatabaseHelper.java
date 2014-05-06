@@ -106,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return getWritableDatabase().delete(TABLE_LEAGUE, null, null);
 	}
 	public long insertLeague(LeagueItem item) {
-		Log.d(TAG, "insertLeague()");
+		Log.v(TAG, "insertLeague()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_LEAGUE_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_LEAGUE_ORG_NAME, item.getOrgName());
@@ -127,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return getWritableDatabase().delete(TABLE_SEASON, null, null);
 	}
 	public long insertSeason(SeasonItem item) {
-		Log.d(TAG, "insertSeason()");
+		Log.v(TAG, "insertSeason()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_SEASON_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_SEASON_LEAGUE_URL, item.getLeagueURL());
@@ -153,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return getWritableDatabase().delete(TABLE_DIVISION, null, null);
 	}
 	public long insertDivision(DivisionItem item) {
-		Log.d(TAG, "insertDivision()");
+		Log.v(TAG, "insertDivision()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_DIVISION_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_DIVISION_LEAGUE_URL, item.getLeagueURL());
@@ -179,11 +179,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public long deleteConference() {
-		Log.d(TAG, "deleteConference()");
+		Log.v(TAG, "deleteConference()");
 		return getWritableDatabase().delete(TABLE_CONFERENCE, null, null);
 	}
 	public long insertConference(ConferenceItem item) {
-		Log.d(TAG, "insertConference()");
+		Log.v(TAG, "insertConference()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_CONFERENCE_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_CONFERENCE_LEAGUE_URL, item.getLeagueURL());
@@ -198,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public ConferenceCursor queryConferenceByDivisionItem(DivisionItem item) {
 		Log.d(TAG, "queryConference()");
-		Cursor wrapped = getReadableDatabase().query(TABLE_DIVISION,
+		Cursor wrapped = getReadableDatabase().query(TABLE_CONFERENCE,
 				null, // all columns 
 				COLUMN_CONFERENCE_LEAGUE_ID + " = ? AND "+	// Where column
 				COLUMN_CONFERENCE_SEASON_ID + " = ? AND "+	// Where column
@@ -210,14 +210,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null, // having
 				COLUMN_CONFERENCE_CONFERENCE_NAME + " asc", // order by
 				null); // limit of rows
-		return new ConferenceCursor(wrapped);
-	}
-	public ConferenceCursor queryConferences() {
-		Log.d(TAG, "queryConferences()");
-		// equivalent to "select * from league order by league_id asc"
-		// sorting by user_id as an alpha... just copying JSON ordering
-		Cursor wrapped = getReadableDatabase().query(TABLE_CONFERENCE,
-				null, null, null, null, null, COLUMN_CONFERENCE_CONFERENCE_ID + " asc");
 		return new ConferenceCursor(wrapped);
 	}
 
@@ -356,7 +348,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setDivisionName(getString(getColumnIndex(COLUMN_CONFERENCE_DIVISION_NAME)));
 			item.setConferenceId(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_ID)));
 			item.setConferenceName(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_NAME)));
-			item.setConferenceName(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_COUNT)));
+			item.setConferenceCount(getString(getColumnIndex(COLUMN_CONFERENCE_CONFERENCE_COUNT)));
 			return item;
 		}
 	}

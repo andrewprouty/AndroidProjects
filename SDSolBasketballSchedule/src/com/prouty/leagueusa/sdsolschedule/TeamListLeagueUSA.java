@@ -91,7 +91,7 @@ public class TeamListLeagueUSA{
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
 				String id  = jsonNode.optString("teamid").toString();
 				String name= jsonNode.optString("teamname").toString();
-				Log.d(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
+				Log.v(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
 
 				TeamItem item = new TeamItem();
 				item.setLeagueId(mSetupItem.getLeagueId());
@@ -108,7 +108,7 @@ public class TeamListLeagueUSA{
 				item.setTeamName(name);
 				items.add(item);
 			}
-			Log.d(TAG, "parseList() added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());
 		} catch (Exception e) {
 			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}

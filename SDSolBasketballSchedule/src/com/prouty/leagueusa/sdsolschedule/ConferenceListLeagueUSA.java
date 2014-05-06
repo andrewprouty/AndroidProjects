@@ -97,7 +97,7 @@ public class ConferenceListLeagueUSA{
 				JSONObject jsonNode = jsonSeasonList.getJSONObject(i);
 				String id  = jsonNode.optString("conferenceid").toString();
 				String name= jsonNode.optString("conferencename").toString();
-				Log.d(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
+				Log.v(TAG, "parseList() ["+ i + "] : "+id+"-"+name);
 
 				ConferenceItem item = new ConferenceItem();
 				item.setLeagueId(mSetupItem.getLeagueId());
@@ -112,7 +112,7 @@ public class ConferenceListLeagueUSA{
 				item.setConferenceCount(count);
 				items.add(item);
 			}
-			Log.d(TAG, "parseList() Item added: "+jsonSeasonList.length());
+			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());
 		} catch (Exception e) {
 			Log.e(TAG, "parseList() Exc:"+e.getMessage(),e);
 		}
