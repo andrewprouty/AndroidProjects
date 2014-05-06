@@ -21,7 +21,149 @@ public class GameItem {
     private String mGameHomeScore;
     private String mGameAwayScore;
 
-    public String getLeagueId() {
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((mConferenceCount == null) ? 0 : mConferenceCount.hashCode());
+		result = prime * result
+				+ ((mConferenceId == null) ? 0 : mConferenceId.hashCode());
+		result = prime * result
+				+ ((mConferenceName == null) ? 0 : mConferenceName.hashCode());
+		result = prime * result
+				+ ((mDivisionId == null) ? 0 : mDivisionId.hashCode());
+		result = prime * result
+				+ ((mDivisionName == null) ? 0 : mDivisionName.hashCode());
+		result = prime * result
+				+ ((mGameAwayScore == null) ? 0 : mGameAwayScore.hashCode());
+		result = prime * result
+				+ ((mGameAwayTeam == null) ? 0 : mGameAwayTeam.hashCode());
+		result = prime * result
+				+ ((mGameDateTime == null) ? 0 : mGameDateTime.hashCode());
+		result = prime * result
+				+ ((mGameHomeScore == null) ? 0 : mGameHomeScore.hashCode());
+		result = prime * result
+				+ ((mGameHomeTeam == null) ? 0 : mGameHomeTeam.hashCode());
+		result = prime * result + ((mGameId == null) ? 0 : mGameId.hashCode());
+		result = prime * result
+				+ ((mGameLocation == null) ? 0 : mGameLocation.hashCode());
+		result = prime * result
+				+ ((mLeagueId == null) ? 0 : mLeagueId.hashCode());
+		result = prime * result
+				+ ((mLeagueURL == null) ? 0 : mLeagueURL.hashCode());
+		result = prime * result
+				+ ((mSeasonId == null) ? 0 : mSeasonId.hashCode());
+		result = prime * result
+				+ ((mSeasonName == null) ? 0 : mSeasonName.hashCode());
+		result = prime * result + ((mTeamId == null) ? 0 : mTeamId.hashCode());
+		result = prime * result
+				+ ((mTeamName == null) ? 0 : mTeamName.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GameItem other = (GameItem) obj;
+		if (mConferenceCount == null) {
+			if (other.mConferenceCount != null)
+				return false;
+		} else if (!mConferenceCount.equals(other.mConferenceCount))
+			return false;
+		if (mConferenceId == null) {
+			if (other.mConferenceId != null)
+				return false;
+		} else if (!mConferenceId.equals(other.mConferenceId))
+			return false;
+		if (mConferenceName == null) {
+			if (other.mConferenceName != null)
+				return false;
+		} else if (!mConferenceName.equals(other.mConferenceName))
+			return false;
+		if (mDivisionId == null) {
+			if (other.mDivisionId != null)
+				return false;
+		} else if (!mDivisionId.equals(other.mDivisionId))
+			return false;
+		if (mDivisionName == null) {
+			if (other.mDivisionName != null)
+				return false;
+		} else if (!mDivisionName.equals(other.mDivisionName))
+			return false;
+		if (mGameAwayScore == null) {
+			if (other.mGameAwayScore != null)
+				return false;
+		} else if (!mGameAwayScore.equals(other.mGameAwayScore))
+			return false;
+		if (mGameAwayTeam == null) {
+			if (other.mGameAwayTeam != null)
+				return false;
+		} else if (!mGameAwayTeam.equals(other.mGameAwayTeam))
+			return false;
+		if (mGameDateTime == null) {
+			if (other.mGameDateTime != null)
+				return false;
+		} else if (!mGameDateTime.equals(other.mGameDateTime))
+			return false;
+		if (mGameHomeScore == null) {
+			if (other.mGameHomeScore != null)
+				return false;
+		} else if (!mGameHomeScore.equals(other.mGameHomeScore))
+			return false;
+		if (mGameHomeTeam == null) {
+			if (other.mGameHomeTeam != null)
+				return false;
+		} else if (!mGameHomeTeam.equals(other.mGameHomeTeam))
+			return false;
+		if (mGameId == null) {
+			if (other.mGameId != null)
+				return false;
+		} else if (!mGameId.equals(other.mGameId))
+			return false;
+		if (mGameLocation == null) {
+			if (other.mGameLocation != null)
+				return false;
+		} else if (!mGameLocation.equals(other.mGameLocation))
+			return false;
+		if (mLeagueId == null) {
+			if (other.mLeagueId != null)
+				return false;
+		} else if (!mLeagueId.equals(other.mLeagueId))
+			return false;
+		if (mLeagueURL == null) {
+			if (other.mLeagueURL != null)
+				return false;
+		} else if (!mLeagueURL.equals(other.mLeagueURL))
+			return false;
+		if (mSeasonId == null) {
+			if (other.mSeasonId != null)
+				return false;
+		} else if (!mSeasonId.equals(other.mSeasonId))
+			return false;
+		if (mSeasonName == null) {
+			if (other.mSeasonName != null)
+				return false;
+		} else if (!mSeasonName.equals(other.mSeasonName))
+			return false;
+		if (mTeamId == null) {
+			if (other.mTeamId != null)
+				return false;
+		} else if (!mTeamId.equals(other.mTeamId))
+			return false;
+		if (mTeamName == null) {
+			if (other.mTeamName != null)
+				return false;
+		} else if (!mTeamName.equals(other.mTeamName))
+			return false;
+		return true;
+	}
+	public String getLeagueId() {
         return mLeagueId;
     }
     public void setLeagueId(String leagueId) {
