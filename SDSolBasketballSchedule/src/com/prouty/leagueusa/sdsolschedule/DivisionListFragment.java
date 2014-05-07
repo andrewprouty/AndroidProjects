@@ -130,7 +130,6 @@ public class DivisionListFragment extends Fragment{
 			}
 			else {
 				mConferenceItem = mConferenceFetch.get(0);
-				Log.d(TAG, "returnConference() about to log");
 				Log.v(TAG, "returnConference():"
 						+ " league ID="    + mConferenceItem.getLeagueId()
 						+ ", url="         + mConferenceItem.getLeagueURL()

@@ -42,8 +42,8 @@ public class SeasonListFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
 		Log.d(TAG, "onCreateView()");
-		new QueryLeagueItemsTask().execute(); // fast
-		new FetchLeagueItemsTask().execute(); // add in anything new
+		new QueryLeagueItemsTask().execute();
+		new FetchLeagueItemsTask().execute();
        
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
         mSeasonTextView = (TextView)view.findViewById(R.id.season_list_textView);
@@ -251,7 +251,7 @@ public class SeasonListFragment extends Fragment{
         			size = items.size();
             		mSeasonFetch = items;
         		}
-           		setupSeason(GET, size); // show listing
+           		setupSeason(GET, size);
         		cancel(true);
         	} catch (Exception e) {
         		Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
@@ -300,7 +300,7 @@ public class SeasonListFragment extends Fragment{
         	Log.d(TAG, "QuerySeasonItemsTask.doInBackground()");
     		ArrayList<SeasonItem> items = null;
     		try {
-    			items = ((MainActivity) getActivity()).querySeasonItemsbyLeagueId(mLeagueItem);
+    			items = ((MainActivity) getActivity()).querySeasonItemsByLeagueId(mLeagueItem);
     		} catch (Exception e) {
     			Log.e(TAG, "QuerySeasonItemsTask.doInBackground() Exception.", e);
     		}

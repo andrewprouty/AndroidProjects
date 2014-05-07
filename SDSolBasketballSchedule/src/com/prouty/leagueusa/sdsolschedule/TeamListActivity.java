@@ -126,7 +126,7 @@ public class TeamListActivity extends FragmentActivity {
     		TeamItem item = cursor.getTeamItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.v(TAG, "queryDivisionItem() Division: "
+    		Log.v(TAG, "queryTeamItem() Team: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
     				+ " season ID="    + item.getSeasonId()

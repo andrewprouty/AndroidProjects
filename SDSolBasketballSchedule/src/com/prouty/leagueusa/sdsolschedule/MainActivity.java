@@ -118,10 +118,10 @@ public class MainActivity extends FragmentActivity {
         }
         return;
     }
-    protected ArrayList<SeasonItem> querySeasonItemsbyLeagueId(LeagueItem pk) {
+    protected ArrayList<SeasonItem> querySeasonItemsByLeagueId(LeagueItem pk) {
     	SeasonCursor cursor;
     	ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
-    	cursor = mHelper.querySeasonsbyLeagueId(pk.getLeagueId());
+    	cursor = mHelper.querySeasonsByLeagueId(pk.getLeagueId());
     	cursor.moveToFirst();
     	while(!cursor.isAfterLast()) {
     		SeasonItem item = cursor.getSeasonItem();

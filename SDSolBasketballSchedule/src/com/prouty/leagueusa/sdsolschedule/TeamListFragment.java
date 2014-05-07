@@ -14,14 +14,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TeamListFragment extends Fragment{
 	private static final String TAG = "TeamListFragment";
 	private static final int GET = 0;
+	private static final int QUERY = 1;
 	private ConferenceItem mConferenceItem;
 	private ArrayList<TeamItem> mTeamFetch;
-	//private ArrayList<TeamItem> mTeamQuery;
-	//private ArrayList<TeamItem> mTeamDisplay;
+	private ArrayList<TeamItem> mTeamQuery;
+	private ArrayList<TeamItem> mTeamDisplay;
 	private TeamItem mTeamItem;
 	
 	View view;
@@ -43,6 +45,7 @@ public class TeamListFragment extends Fragment{
 	{       
     	Log.d(TAG, "onCreateView()");
 		mConferenceItem=((TeamListActivity) getActivity()).getConferenceItem();
+		new QueryTeamItemsTask().execute(mConferenceItem);
 		new FetchTeamItemsTask().execute(mConferenceItem);
 		
 		if (mConferenceItem.getConferenceCount().equals("one")) {
@@ -66,36 +69,48 @@ public class TeamListFragment extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				TextView textViewItem = ((TextView) view.findViewById(R.id.row_team_name_textView));
 				String listItemText = textViewItem.getText().toString();
-				Log.d(TAG, "onCreatView()setOnItemClickListener.onItemClick() Team ["+position+"]= "+listItemText);
+				Log.d(TAG, "onCreateView()setOnItemClickListener.onItemClick() Team ["+position+"]= "+listItemText);
 				returnTeam(position);
 			}
 		});
 		return view;
 	}
 
-	private void setupTeam(int choice) {
+	private void setupTeam(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
     	Log.d(TAG, "setupTeam("+choice+") season: "+mConferenceItem.getConferenceId()+"-"+mConferenceItem.getConferenceName());
-    	if (choice == GET) {
-    		if (mTeamFetch != null && mTeamFetch.size()>0) {
-    			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO Team insert DB
-    			//new InsertTeamItemsTask().execute(); //save fetched to DB
-    		}
-    		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupTeam() replace with query from DB"); //TODO Team query DB
-    			//new QueryTeamItemsTask().execute(mSeasonItem);
-    		}
+		if (mTeamDisplay == null || mTeamDisplay.size() == 0) {
+			if (choiceSize > 0) {
+				if (choice == GET) {						// No results yet, but I have some
+					mTeamDisplay = mTeamFetch;
+					new InsertTeamItemsTask().execute();	// Most likely Query was fast but empty
+				}
+				else {
+					mTeamDisplay = mTeamQuery;
+				}
+				TeamListAdapter adapter = new TeamListAdapter(mTeamDisplay);
+				mListView.setAdapter(adapter);
+			} //[else] 1st with no results, or 2nd and nobody had results
 		}
-    	if (mTeamFetch != null) {
-    		TeamListAdapter adapter = new TeamListAdapter(mTeamFetch);
-			mListView.setAdapter(adapter);
-		}
-		else {
-			mListView.setAdapter(null);
+		else {//else: 1st had results. I am 2nd 
+			if (choiceSize > 0) {							// Both had results
+				if (!mTeamFetch.equals(mTeamQuery)) {
+					Log.w(TAG, "setupTeam("+choice+") Fetched != Queried. Sizes info only: "
+							+ mTeamFetch.size() + " " + mTeamQuery.size());
+					if (choice == GET) {
+						new InsertTeamItemsTask().execute();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					Log.d(TAG, "setupTeam("+choice+") Fetched=Queried");
+				}
+			}
 		}
 	}
+    	
 	private void returnTeam(int position) {
     	mTeamItem = mTeamFetch.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
@@ -112,7 +127,6 @@ public class TeamListFragment extends Fragment{
 				+ " team ID="       + mTeamItem.getTeamId()
 				+ ", name="         + mTeamItem.getTeamName());
 
-		//Toast.makeText(getActivity().getApplicationContext(),mTeamItem.getTeamName(), Toast.LENGTH_SHORT).show();
 		((TeamListActivity) getActivity()).launchGameListActivity(mTeamItem);
 	}
 	private class FetchTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {
@@ -128,28 +142,81 @@ public class TeamListFragment extends Fragment{
         	return items;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<TeamItem> teamItems) {
-			mTeamFetch = teamItems;
-			setupTeam(GET);
-            cancel(true); // done !
-        	Log.d(TAG, "FetchTeamItemsTask onPostExecute()");
+		protected void onPostExecute(ArrayList<TeamItem> items) {
+        	try {
+        		Log.d(TAG, "FetchTeamItemsTask.onPostExecute() fetched=" + items.size());
+        		int size;
+        		if (items == null || items.size() == 0) {
+        			size = 0;
+        		} else {
+        			size = items.size();
+            		mTeamFetch = items;
+        		}
+           		setupTeam(GET, size);
+        		cancel(true);
+        	} catch (Exception e) {
+        		Log.e(TAG, "FetchTeamItemsTask.doInBackground() Exception.", e);
+        	}
 		}
 	}
 	private class TeamListAdapter extends ArrayAdapter<TeamItem> {
 		public TeamListAdapter(ArrayList<TeamItem> items) {
 			super(getActivity(), 0, items);
+			Log.i(TAG, "TeamListAdapter Constructor");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(R.layout.team_list_row, parent, false);
 			}
-
 			TeamItem item = getItem(position);
 			TextView teamTextView = (TextView)convertView.findViewById(R.id.row_team_name_textView);
-			Log.v(TAG, "adapter.getView() item.getTeamName(): "+item.getTeamName());
+			Log.v(TAG, "TeamListAdapter getView() ["+position+"] :"+item.getTeamName());
 			teamTextView.setText(item.getTeamName());
 			return convertView;
+		}
+	}
+    private class InsertTeamItemsTask extends AsyncTask<Void,Void,Void> {
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertTeamItemsTask.doInBackground()");
+    		try {
+    			((TeamListActivity) getActivity()).insertTeamItems(mTeamFetch);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertTeamItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertTeamItemsTask.onPostExecute()");
+    		cancel(true); // done !
+    	}
+    }
+	private class QueryTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {
+		@Override
+		protected ArrayList<TeamItem> doInBackground(ConferenceItem... nada) {
+        	Log.d(TAG, "QueryTeamItemsTask.doInBackground()");
+    		ArrayList<TeamItem> items = null;
+    		try {
+    			items = ((TeamListActivity) getActivity()).queryTeamByConferenceItem(mConferenceItem);
+    		} catch (Exception e) {
+    			Log.e(TAG, "QueryTeamItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<TeamItem> items) {
+        	Log.d(TAG, "QueryTeamItemsTask.onPostExecute() queried=" + items.size());
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+        		mTeamQuery = items;
+    		}
+       		setupTeam(QUERY, size);
+            cancel(true);
 		}
 	}
 }

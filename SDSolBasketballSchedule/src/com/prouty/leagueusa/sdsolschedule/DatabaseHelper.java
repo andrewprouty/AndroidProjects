@@ -88,15 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
-				" team_id varchar(10) team_name varchar(100)," +
+				" team_id varchar(10), team_name varchar(100)," +
 				" primary key (league_id, season_id, division_id, conference_id, team_id))");
-
-		db.execSQL("create table user (" +
-				" user_id varchar(10) primary key, user_name varchar(100))");
-		db.execSQL("create table photo (" +
-				" photo_id integer not null, photo_name varchar(100),"+
-				" user_id varchar(10) references user(user_id), user_name varchar(100)," +
-				" primary key (photo_id, user_id))");
 		Log.d(TAG, "onCreate()ed");
 	}
 
@@ -139,7 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_SEASON_SEASON_NAME, item.getSeasonName());
 		return getWritableDatabase().insert(TABLE_SEASON, null, cv);
 	}
-	public SeasonCursor querySeasonsbyLeagueId(String id) {
+	public SeasonCursor querySeasonsByLeagueId(String id) {
 		Log.d(TAG, "querySeasons()");
 		Cursor wrapped = getReadableDatabase().query(TABLE_SEASON,
 				null, // all columns 
@@ -177,7 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getSeasonId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_DIVISION_DIVISION_NAME + " asc", // order by
+				COLUMN_DIVISION_DIVISION_NAME + " COLLATE NOCASE asc", // order by
 				null); // limit of rows
 		return new DivisionCursor(wrapped);
 	}
@@ -212,7 +205,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getDivisionId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_CONFERENCE_CONFERENCE_NAME + " asc", // order by
+				COLUMN_CONFERENCE_CONFERENCE_NAME + " COLLATE NOCASE asc", // order by
 				null); // limit of rows
 		return new ConferenceCursor(wrapped);
 	}
@@ -222,7 +215,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return getWritableDatabase().delete(TABLE_TEAM, null, null);
 	}
 	public long insertTeam(TeamItem item) {
-		Log.d(TAG, "insertTeam()");
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TEAM_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_TEAM_LEAGUE_URL, item.getLeagueURL());
@@ -253,7 +245,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getConferenceId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_TEAM_TEAM_NAME + " asc", // order by
+				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc", // order by
 				null); // limit of rows
 		return new TeamCursor(wrapped);
 	}
