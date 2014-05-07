@@ -19,7 +19,9 @@ public class TeamListFragment extends Fragment{
 	private static final String TAG = "TeamListFragment";
 	private static final int GET = 0;
 	private ConferenceItem mConferenceItem;
-	private ArrayList<TeamItem> mTeamItems;
+	private ArrayList<TeamItem> mTeamFetch;
+	//private ArrayList<TeamItem> mTeamQuery;
+	//private ArrayList<TeamItem> mTeamDisplay;
 	private TeamItem mTeamItem;
 	
 	View view;
@@ -77,7 +79,7 @@ public class TeamListFragment extends Fragment{
 		}
     	Log.d(TAG, "setupTeam("+choice+") season: "+mConferenceItem.getConferenceId()+"-"+mConferenceItem.getConferenceName());
     	if (choice == GET) {
-    		if (mTeamItems != null && mTeamItems.size()>0) {
+    		if (mTeamFetch != null && mTeamFetch.size()>0) {
     			Log.w(TAG, "setupTeam() replace with insert/save to DB"); //TODO Team insert DB
     			//new InsertTeamItemsTask().execute(); //save fetched to DB
     		}
@@ -86,8 +88,8 @@ public class TeamListFragment extends Fragment{
     			//new QueryTeamItemsTask().execute(mSeasonItem);
     		}
 		}
-    	if (mTeamItems != null) {
-    		TeamListAdapter adapter = new TeamListAdapter(mTeamItems);
+    	if (mTeamFetch != null) {
+    		TeamListAdapter adapter = new TeamListAdapter(mTeamFetch);
 			mListView.setAdapter(adapter);
 		}
 		else {
@@ -95,7 +97,7 @@ public class TeamListFragment extends Fragment{
 		}
 	}
 	private void returnTeam(int position) {
-    	mTeamItem = mTeamItems.get(position);
+    	mTeamItem = mTeamFetch.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		Log.i(TAG, "returnTeam()=["+position+"]"
 				+ " league ID="     + mTeamItem.getLeagueId()
@@ -127,7 +129,7 @@ public class TeamListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<TeamItem> teamItems) {
-			mTeamItems = teamItems;
+			mTeamFetch = teamItems;
 			setupTeam(GET);
             cancel(true); // done !
         	Log.d(TAG, "FetchTeamItemsTask onPostExecute()");

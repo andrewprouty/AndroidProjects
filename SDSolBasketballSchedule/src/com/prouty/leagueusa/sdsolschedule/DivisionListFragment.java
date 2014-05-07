@@ -19,10 +19,10 @@ public class DivisionListFragment extends Fragment{
 	private static final String TAG = "DivisionListFragment";
 	private static final int GET = 0;
 	private static final int QUERY = 1;
-	private ArrayList<DivisionItem> mDivisionQueried;
-	private ArrayList<DivisionItem> mDivisionFetched;
+	private ArrayList<DivisionItem> mDivisionQuery;
+	private ArrayList<DivisionItem> mDivisionFetch;
 	private ArrayList<DivisionItem> mDivisionDisplay;
-	private ArrayList<ConferenceItem> mConferenceItems;
+	private ArrayList<ConferenceItem> mConferenceFetch;
 	private SeasonItem mSeasonItem;
 	private DivisionItem mDivisionItem;
 	private ConferenceItem mConferenceItem;
@@ -44,7 +44,8 @@ public class DivisionListFragment extends Fragment{
 	{       
 		Log.d(TAG, "onCreateView()");
 		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
-		new QueryDivisionItemsTask().execute(mSeasonItem); // TODO Query & Fetch duplicates UI refresh
+		// Initiate both since a lot of divisions & changes more
+		new QueryDivisionItemsTask().execute(mSeasonItem);
 		new FetchDivisionItemsTask().execute(mSeasonItem);
 
 		view = inflater.inflate(R.layout.fragment_division_list, container,false);
@@ -73,21 +74,21 @@ public class DivisionListFragment extends Fragment{
 		if (mDivisionDisplay == null || mDivisionDisplay.size() == 0) {
 			if (choiceSize > 0) {
 				if (choice == GET) {						//No results yet, but I have some
-					mDivisionDisplay = mDivisionFetched;
+					mDivisionDisplay = mDivisionFetch;
 					new InsertDivisionItemsTask().execute();	// Most likely Query was fast but empty
 				}
 				else {
-					mDivisionDisplay = mDivisionQueried;
+					mDivisionDisplay = mDivisionQuery;
 				}
 				DivisionListAdapter adapter = new DivisionListAdapter(mDivisionDisplay);
 				mListView.setAdapter(adapter);
 			} //[else] 1st with no results, or 2nd and nobody had results
 		}
-		else {//else: 1st had results.  I am 2nd 
+		else {//else: 1st had results. I am 2nd 
 			if (choiceSize > 0) {							// Both had results
-				if (!mDivisionFetched.equals(mDivisionQueried)) {
-					Log.d(TAG, "setupDivision("+choice+") Fetched != Queried. Sizes only: "
-							+ mDivisionFetched.size() + " " + mDivisionQueried.size());
+				if (!mDivisionFetch.equals(mDivisionQuery)) {
+					Log.d(TAG, "setupDivision("+choice+") Fetched != Queried. Sizes info only: "
+							+ mDivisionFetch.size() + " " + mDivisionQuery.size());
 					if (choice == GET) {
 						new InsertDivisionItemsTask().execute();
 						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
@@ -110,7 +111,6 @@ public class DivisionListFragment extends Fragment{
 				+ " division ID="  + mDivisionItem.getDivisionId()
 				+ ", name="        + mDivisionItem.getDivisionName());
 		new QueryConferenceItemsTask().execute(mDivisionItem); //TODO duplicates NEXT screen.  Move Fetch to post query? 
-		new FetchConferenceItemsTask().execute(mDivisionItem);
 	}
 	private void returnConference(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
@@ -123,13 +123,13 @@ public class DivisionListFragment extends Fragment{
 				new InsertConferenceItemsTask().execute(); 
 			}
 		}
-		if (mConferenceItems != null) {
-			int size = mConferenceItems.size();
+		if (mConferenceFetch != null) {
+			int size = mConferenceFetch.size();
 			if (size == 0) {
 				Toast.makeText(getActivity().getApplicationContext(), R.string.no_information_available, Toast.LENGTH_SHORT).show();
 			}
 			else {
-				mConferenceItem = mConferenceItems.get(0);
+				mConferenceItem = mConferenceFetch.get(0);
 				Log.d(TAG, "returnConference() about to log");
 				Log.v(TAG, "returnConference():"
 						+ " league ID="    + mConferenceItem.getLeagueId()
@@ -170,7 +170,7 @@ public class DivisionListFragment extends Fragment{
 				size = 0;
 			} else {
 				size = items.size();
-				mDivisionFetched = items;
+				mDivisionFetch = items;
 			}
 			setupDivision(GET, size);
 			cancel(true);
@@ -179,7 +179,7 @@ public class DivisionListFragment extends Fragment{
 	private class DivisionListAdapter extends ArrayAdapter<DivisionItem> {
 		public DivisionListAdapter(ArrayList<DivisionItem> items) {
 			super(getActivity(), 0, items);
-			Log.d(TAG, "DivisionListAdapter Constructor");
+			Log.i(TAG, "DivisionListAdapter Constructor");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -188,7 +188,7 @@ public class DivisionListFragment extends Fragment{
 			}
 			DivisionItem item = getItem(position);
 			TextView divisionTextView = (TextView)convertView.findViewById(R.id.row_division_name_textView);
-			Log.v(TAG, "adapter.getView() item.getDivisionName(): "+item.getDivisionName());
+			Log.v(TAG, "DivisionListAdapter getView(): "+item.getDivisionName());
 			divisionTextView.setText(item.getDivisionName());
 			return convertView;
 		}
@@ -198,7 +198,7 @@ public class DivisionListFragment extends Fragment{
 		protected Void doInBackground(Void... nada) {
 			Log.d(TAG, "InsertDivisionItemsTask.doInBackground()");
 			try {
-				((DivisionListActivity) getActivity()).insertDivisionItems(mDivisionFetched);
+				((DivisionListActivity) getActivity()).insertDivisionItems(mDivisionFetch);
 			} catch (Exception e) {
 				Log.e(TAG, "InsertDivisionItemsTask.doInBackground() Exception.", e);
 			}
@@ -230,7 +230,7 @@ public class DivisionListFragment extends Fragment{
 				size = 0;
 			} else {
 				size = items.size();
-				mDivisionQueried = items;
+				mDivisionQuery = items;
 			}
 			setupDivision(QUERY, size);
 			cancel(true);
@@ -256,7 +256,7 @@ public class DivisionListFragment extends Fragment{
 				size = 0;
 			} else {
 				size = items.size();
-				mConferenceItems = items;
+				mConferenceFetch = items;
 			}
 			returnConference(GET, size);
 			cancel(true);
@@ -267,7 +267,7 @@ public class DivisionListFragment extends Fragment{
 		protected Void doInBackground(Void... nada) {
 			Log.d(TAG, "InsertConferenceItemsTask.doInBackground()");
 			try {
-				((DivisionListActivity) getActivity()).insertConferenceItems(mConferenceItems);
+				((DivisionListActivity) getActivity()).insertConferenceItems(mConferenceFetch);
 			} catch (Exception e) {
 				Log.e(TAG, "InsertConferenceItemsTask.doInBackground() Exception.", e);
 			}
@@ -297,11 +297,12 @@ public class DivisionListFragment extends Fragment{
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;
+				new FetchConferenceItemsTask().execute(mDivisionItem);
 			} else {
 				size = items.size();
-				mConferenceItems = items;
+				mConferenceFetch = items;
+				returnConference(QUERY, size);
 			}
-			returnConference(QUERY, size);
 			cancel(true);
 		}
 	}

@@ -1,5 +1,7 @@
 package com.prouty.leagueusa.sdsolschedule;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,10 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.TeamCursor;
+
 public class TeamListActivity extends FragmentActivity {
 	private static final String TAG = "TeamListActivity";
 	private ConferenceItem   mConferenceItem = new ConferenceItem();
-	//private DatabaseHelper mHelper;
+	private DatabaseHelper mHelper;
 
 	protected void launchGameListActivity(TeamItem item) {
 		Log.d(TAG, "launchGameListActivity()");
@@ -84,9 +88,59 @@ public class TeamListActivity extends FragmentActivity {
 			.add(R.id.fragmentContainer, fragment)
 			.commit();
 		}
-        //mHelper = new DatabaseHelper(getApplicationContext());
+        mHelper = new DatabaseHelper(getApplicationContext());
 	}
 	public ConferenceItem getConferenceItem () {
 		return mConferenceItem;
 	}
+    protected void insertTeamItems(ArrayList<TeamItem> items) {
+    	TeamItem item;
+        Log.d(TAG, "insertTeamItems()");
+		mHelper.deleteTeam(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        for (int i=0; i<items.size(); i++) {
+    		item=items.get(i);
+    		Log.v(TAG, "insertTeamItems() Team: "
+    				+ " league ID="    + item.getLeagueId()
+    				+ ", url="         + item.getLeagueURL()
+    				+ " season ID="    + item.getSeasonId()
+    				+ ", name="        + item.getSeasonName() 
+    				+ " division ID="  + item.getDivisionId()
+    				+ ", name="        + item.getDivisionName()
+    				+ " conferenceId=" + item.getConferenceId()
+    				+ ", name="        + item.getConferenceName()
+    				+ ", count="       + item.getConferenceCount()
+    				+ " team ID="      + item.getTeamId()
+    				+ ", name="        + item.getTeamName());
+
+            mHelper.insertTeam(item);
+            mHelper.close();
+        }
+        return;
+    }
+    protected ArrayList<TeamItem> queryTeamByConferenceItem(ConferenceItem pk) {
+    	TeamCursor cursor;
+    	ArrayList<TeamItem> items = new ArrayList<TeamItem>();
+    	cursor = mHelper.queryTeamsByConferenceItem(pk);
+    	cursor.moveToFirst();
+    	while(!cursor.isAfterLast()) {
+    		TeamItem item = cursor.getTeamItem();
+    		items.add(item);
+    		cursor.moveToNext();
+    		Log.v(TAG, "queryDivisionItem() Division: "
+    				+ " league ID="    + item.getLeagueId()
+    				+ ", url="         + item.getLeagueURL()
+    				+ " season ID="    + item.getSeasonId()
+    				+ ", name="        + item.getSeasonName() 
+    				+ " division ID="  + item.getDivisionId()
+    				+ ", name="        + item.getDivisionName()
+    				+ " conferenceId=" + item.getConferenceId()
+    				+ ", name="        + item.getConferenceName()
+    				+ ", count="       + item.getConferenceCount()
+    				+ " team ID="      + item.getTeamId()
+    				+ ", name="        + item.getTeamName());
+    	}
+    	cursor.close();
+        mHelper.close();
+    	return items;
+    }
 }

@@ -20,7 +20,7 @@ public class ConferenceListFragment extends Fragment{
 	private static final int GET = 0;
 	private static final int QUERY = 1;
 	private DivisionItem mDivisionItem;
-	private ArrayList<ConferenceItem> mConferenceItems;
+	private ArrayList<ConferenceItem> mConferenceItems; // Query and then GET
 	private ConferenceItem mConferenceItem;
 	
 	View view;
@@ -42,7 +42,6 @@ public class ConferenceListFragment extends Fragment{
     	Log.d(TAG, "onCreateView()");
 		mDivisionItem=((ConferenceListActivity) getActivity()).getDivisionItem();
 		new QueryConferenceItemsTask().execute(mDivisionItem);
-		new FetchConferenceItemsTask().execute(mDivisionItem);
 		
 		view = inflater.inflate(R.layout.fragment_conference_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.conference_list_season_name);
@@ -159,7 +158,7 @@ public class ConferenceListFragment extends Fragment{
         	Log.d(TAG, "QueryConferenceItemsTask.doInBackground()");
     		ArrayList<ConferenceItem> items = null;
     		try {
-    			items = ((ConferenceListActivity) getActivity()).queryConferenceByDivisionItem(mDivisionItem);
+    			items = ((ConferenceListActivity) getActivity()).queryConferencesByDivisionItem(mDivisionItem);
     		} catch (Exception e) {
     			Log.e(TAG, "QueryConferenceItemsTask.doInBackground() Exception.", e);
     		}
@@ -171,11 +170,12 @@ public class ConferenceListFragment extends Fragment{
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;
+    			new FetchConferenceItemsTask().execute(mDivisionItem);
     		} else {
     			size = items.size();
     			mConferenceItems = items;
+           		setupConference(QUERY, size);
     		}
-       		setupConference(QUERY, size);
             cancel(true);
 		}
 	}

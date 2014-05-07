@@ -14,14 +14,19 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SeasonListFragment extends Fragment{
 	private static final String TAG = "SeasonListFragment";
 	private static final int GET = 0;
 	private static final int QUERY = 1;
-	private ArrayList<LeagueItem> mLeagueItems;
+	private ArrayList<LeagueItem> mLeagueQuery;
+	private ArrayList<LeagueItem> mLeagueFetch;
+	private ArrayList<LeagueItem> mLeagueDisplay;
 	private LeagueItem mLeagueItem;
-	private ArrayList<SeasonItem> mSeasonItems;
+	private ArrayList<SeasonItem> mSeasonQuery;
+	private ArrayList<SeasonItem> mSeasonFetch;
+	private ArrayList<SeasonItem> mSeasonDisplay;
 	private SeasonItem mSeasonItem;
 	
 	View view;
@@ -60,59 +65,84 @@ public class SeasonListFragment extends Fragment{
     		return;
     	}
 		Log.d(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
-
-    	if (choiceSize > 0) {
-        	if (choice == GET) {
-    			new InsertLeagueItemsTask().execute(); // save fetched to DB
-        	}
+		if (mLeagueDisplay == null || mLeagueDisplay.size() == 0) {
+			if (choiceSize > 0) {
+				if (choice == GET) {						//No results yet, but I have some
+					mLeagueDisplay = mLeagueFetch;
+					new InsertLeagueItemsTask().execute();	// Most likely Query was fast but empty
+				}
+				else {
+					mLeagueDisplay = mLeagueQuery;
+				}
+			} //[else] 1st with no results, or 2nd and nobody had results
 		}
-    	else if (choiceSize > 1) {
-    		Log.e(TAG, "setupLeague() 1 league should have been returned, received "+choiceSize+". Providing hardcode.");
-			LeagueItem item = new LeagueItem();
-			item.setLeagueId("1");
-			item.setOrgName("San Diego Sol");
-			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
-			mLeagueItems.add(item);
+		else {//else: 1st had results. I am 2nd 
+			if (choiceSize > 0) {							// Both had results
+				if (!mLeagueFetch.equals(mLeagueQuery)) {
+					Log.d(TAG, "setupLeague("+choice+") Fetched != Queried. Size info only: "
+							+ mLeagueFetch.size() + " " + mLeagueQuery.size());
+					if (choice == GET) {
+						new InsertLeagueItemsTask().execute();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					Log.d(TAG, "setupLeague("+choice+") Fetched=Queried");
+				}
+			}
+		}
+    	if (choice == QUERY) { // Special League logic, revisit if expand from SD Sol to LeagueUSA
+    		if (choiceSize != 1) { // should be 1.  Remove if expand beyond SD Sol to LeagueUSA
+        		Log.e(TAG, "setupLeague() 1 league should have been returned, received "+choiceSize+". Use hardcode.");
+    			LeagueItem item = new LeagueItem();
+    			item.setLeagueId("1");
+    			item.setOrgName("San Diego Sol");
+    			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
+    			mLeagueItem = item;
+    		}
+    		else {
+    			mLeagueItem = mLeagueQuery.get(0);
+    		}
+    		new QuerySeasonItemsTask().execute();
+    		new FetchSeasonItemsTask().execute();
     	}
-		//Change when more leagues. Currently this is the only/expected value.
-    	//Scenario is a new install: QUERY returns nothing (fast) & GET eventually errored as offline
-    	if (choice == QUERY && choiceSize == 0 && mLeagueItems == null) {
-			Log.e(TAG, "setupLeague() 1 league should have been returned, received zero. Providing hardcode");
-			LeagueItem item = new LeagueItem();
-			item.setLeagueId("1");
-			item.setOrgName("San Diego Sol");
-			item.setLeagueURL("http://www.sdsolbasketball.com/mobileschedule.php");
-			ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();  
-			items.add(item);
-			mLeagueItems = items;
-    	}
-
-    	//GET & QUERY are in parallel - picking GET as the winner (since faster & hardcode above)
-    	if (choice == QUERY) {
-			mLeagueItem = mLeagueItems.get(mLeagueItems.size()-1);
-			Log.d(TAG, "setupLeague(). [0]:"+mLeagueItem.getLeagueId()+"-"+mLeagueItem.getOrgName()+"-"+mLeagueItem.getLeagueURL());
-			new QuerySeasonItemsTask().execute(); // fast
-			new FetchSeasonItemsTask().execute(); // add in anything new
-    	}
-		Log.d(TAG, "setupSeason("+choice+").");
     }
 	private void setupSeason(int choice, int choiceSize) {
     	if (getActivity() == null || mListView == null) {
     		return;
     	}
 		Log.d(TAG, "setupSeason("+choice+") choiceSize="+choiceSize);
-    	if (choiceSize > 0) {
-        	if (choice == GET) {
-       			new InsertSeasonItemsTask().execute(); // save fetched to DB
-        	}
-			SeasonListAdapter adapter = new SeasonListAdapter(mSeasonItems);
-			mListView.setAdapter(adapter);
+		if (mSeasonDisplay == null || mSeasonDisplay.size() == 0) {
+			if (choiceSize > 0) {
+				if (choice == GET) {						//No results yet, but I have some
+					mSeasonDisplay = mSeasonFetch;
+					new InsertSeasonItemsTask().execute();	// Most likely Query was fast but empty
+				}
+				else {
+					mSeasonDisplay = mSeasonQuery;
+				}
+				SeasonListAdapter adapter = new SeasonListAdapter(mSeasonDisplay);
+				mListView.setAdapter(adapter);
+			} //[else] 1st with no results, or 2nd and nobody had results
 		}
-		//removed zero/else case: mListView.setAdapter(null);
-		Log.d(TAG, "setupSeason("+choice+").");
+		else {//else: 1st had results. I am 2nd 
+			if (choiceSize > 0) {							// Both had results
+				if (!mSeasonFetch.equals(mSeasonQuery)) {
+					Log.d(TAG, "setupSeason("+choice+") Fetched != Queried. Sizes only: "
+							+ mSeasonFetch.size() + " " + mSeasonQuery.size());
+					if (choice == GET) {
+						new InsertSeasonItemsTask().execute();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					Log.d(TAG, "setupSeason("+choice+") Fetched=Queried");
+				}
+			}
+		}
     }
     private void returnSeason(int position) {
-    	mSeasonItem = mSeasonItems.get(position);
+    	mSeasonItem = mSeasonDisplay.get(position);
 		mSeasonTextView.setText(mSeasonItem.getSeasonName());
 		Log.i(TAG, "returnSeason()=["+position+"] "
 				+ mSeasonItem.getLeagueId() + " ("
@@ -143,7 +173,7 @@ public class SeasonListFragment extends Fragment{
         			size = 0;
         		} else {
         			size = items.size();
-        			mLeagueItems = items;
+        			mLeagueFetch = items;
         		}
            		setupLeague(GET, size); // show listing
         		cancel(true);
@@ -158,7 +188,7 @@ public class SeasonListFragment extends Fragment{
     	protected Void doInBackground(Void... nada) {
     		Log.d(TAG, "InsertLeagueItemsTask.doInBackground()");
     		try {
-    			((MainActivity) getActivity()).insertLeagueItems(mLeagueItems);
+    			((MainActivity) getActivity()).insertLeagueItems(mLeagueFetch);
     		} catch (Exception e) {
     			Log.e(TAG, "InsertLeagueItemsTask.doInBackground() Exception.", e);
     		}
@@ -167,7 +197,7 @@ public class SeasonListFragment extends Fragment{
     	@Override
     	protected void onPostExecute(Void nada) {
     		Log.d(TAG, "InsertLeagueItemsTask.onPostExecute()");
-    		cancel(true); // done !
+    		cancel(true);
     	}
     }
 	private class QueryLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
@@ -190,10 +220,10 @@ public class SeasonListFragment extends Fragment{
     			size = 0;
     		} else {
     			size = items.size();
-    			mLeagueItems = items;
+    			mLeagueQuery = items;
     		}
 			setupLeague(QUERY, size);
-            cancel(true); // done !
+            cancel(true);
 		}
 	}
 	// SEASON
@@ -219,7 +249,7 @@ public class SeasonListFragment extends Fragment{
         			size = 0;
         		} else {
         			size = items.size();
-            		mSeasonItems = items;
+            		mSeasonFetch = items;
         		}
            		setupSeason(GET, size); // show listing
         		cancel(true);
@@ -229,8 +259,9 @@ public class SeasonListFragment extends Fragment{
         }
     }
     private class SeasonListAdapter extends ArrayAdapter<SeasonItem> {
-        public SeasonListAdapter(ArrayList<SeasonItem> seasonItems) {
-            super(getActivity(), 0, seasonItems);
+        public SeasonListAdapter(ArrayList<SeasonItem> items) {
+            super(getActivity(), 0, items);
+			Log.i(TAG, "SeasonListAdapter Constructor");
         }
 
         @Override
@@ -238,12 +269,10 @@ public class SeasonListFragment extends Fragment{
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.season_list_row, parent, false);
             }
-            
             SeasonItem item = getItem(position);
             TextView seasonTextView = (TextView)convertView.findViewById(R.id.row_season_name_textView);
-			Log.v(TAG, "adapter.getView() item.getSeasonName(): "+item.getSeasonName());
+			Log.v(TAG, "SeasonListAdapter getView(): "+item.getSeasonName());
             seasonTextView.setText(item.getSeasonName());
-            
             return convertView;
         }
     }
@@ -253,7 +282,7 @@ public class SeasonListFragment extends Fragment{
     	protected Void doInBackground(Void... nada) {
     		Log.d(TAG, "InsertSeasonItemsTask.doInBackground()");
     		try {
-    			((MainActivity) getActivity()).insertSeasonItems(mSeasonItems);
+    			((MainActivity) getActivity()).insertSeasonItems(mSeasonFetch);
     		} catch (Exception e) {
     			Log.e(TAG, "InsertSeasonItemsTask.doInBackground() Exception.", e);
     		}
@@ -285,7 +314,7 @@ public class SeasonListFragment extends Fragment{
     			size = 0;
     		} else {
     			size = items.size();
-        		mSeasonItems = items;
+        		mSeasonQuery = items;
     		}
        		setupSeason(QUERY, size);
             cancel(true);
