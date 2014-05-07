@@ -18,7 +18,7 @@ public class GameItem {
     private String mGameHomeTeam;
     private String mGameAwayTeam;
     private String mGameLocation;
-    private String mGameCancelled;
+    private String mGameStartTBD;
     private String mGameHomeScore;
     private String mGameAwayScore;
 
@@ -42,7 +42,7 @@ public class GameItem {
 		result = prime * result
 				+ ((mGameAwayTeam == null) ? 0 : mGameAwayTeam.hashCode());
 		result = prime * result
-				+ ((mGameCancelled == null) ? 0 : mGameCancelled.hashCode());
+				+ ((mGameStartTBD == null) ? 0 : mGameStartTBD.hashCode());
 		result = prime * result
 				+ ((mGameDateTime == null) ? 0 : mGameDateTime.hashCode());
 		result = prime * result
@@ -109,10 +109,10 @@ public class GameItem {
 				return false;
 		} else if (!mGameAwayTeam.equals(other.mGameAwayTeam))
 			return false;
-		if (mGameCancelled == null) {
-			if (other.mGameCancelled != null)
+		if (mGameStartTBD == null) {
+			if (other.mGameStartTBD != null)
 				return false;
-		} else if (!mGameCancelled.equals(other.mGameCancelled))
+		} else if (!mGameStartTBD.equals(other.mGameStartTBD))
 			return false;
 		if (mGameDateTime == null) {
 			if (other.mGameDateTime != null)
@@ -269,11 +269,11 @@ public class GameItem {
     public void setGameLocation(String gameLocation) {
         mGameLocation = gameLocation;
     }
-    public String getGameCancelled() {
-        return mGameCancelled;
+    public String getGameStartTBD() {
+        return mGameStartTBD;
     }
-    public void setGameCancelled(String gameCancelled) {
-        mGameCancelled = gameCancelled;
+    public void setGameStartTBD(String gameStartTBD) {
+        mGameStartTBD = gameStartTBD;
     }
     public String getGameHomeScore() {
         return mGameHomeScore;

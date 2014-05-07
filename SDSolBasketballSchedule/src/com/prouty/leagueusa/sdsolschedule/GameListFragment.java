@@ -160,17 +160,47 @@ public class GameListFragment extends Fragment{
 
 			TextView homeScoreTextView = (TextView)convertView.findViewById(R.id.row_game_home_score_textView);
 			TextView awayScoreTextView = (TextView)convertView.findViewById(R.id.row_game_away_score_textView);
-			if(item.getGameCancelled().equals("Yes")) {
-				Log.v(TAG, "adapter GameScores = Cancelled");
-				homeScoreTextView.setText(R.string.game_cancel_1_of_2);
-				awayScoreTextView.setText(R.string.game_cancel_2_of_2);
+			Log.v(TAG, "adapter GateStartTBD(): "+item.getGameStartTBD()+" len:"+item.getGameStartTBD().length());
+			Log.v(TAG, "adapter GameHomeScore(): "+item.getGameHomeScore()+" len:"+item.getGameHomeScore().length());
+			Log.v(TAG, "adapter GameAwayScore(): "+item.getGameAwayScore()+" len:"+item.getGameAwayScore().length());
+			if(item.getGameHomeScore().length() == 0 || item.getGameAwayScore().length() == 0) {
+				String starttbd = item.getGameStartTBD();
+				if (starttbd.equals("1")) {
+					Log.v(TAG, "adapter starttbd = Normal ="+starttbd);
+					homeScoreTextView.setText(R.string.game_home_score_hint);
+					awayScoreTextView.setText(R.string.game_away_score_hint);
+				}
+				else if (starttbd.equals("2")) {
+					Log.v(TAG, "adapter starttbd = To Be Determined ="+starttbd);
+					homeScoreTextView.setText(R.string.game_2tbd_1_of_2);
+					awayScoreTextView.setText(R.string.game_2tbd_2_of_2);
+				}
+				else if (starttbd.equals("3")) {
+					Log.v(TAG, "adapter starttbd = Rained Out ="+starttbd);
+					homeScoreTextView.setText(R.string.game_3rain_1_of_2);
+					awayScoreTextView.setText(R.string.game_3rain_2_of_2);
+				}
+				else if (starttbd.equals("4")) {
+					Log.v(TAG, "adapter starttbd = Cancelled ="+starttbd);
+					homeScoreTextView.setText(R.string.game_4cancel_1_of_2);
+					awayScoreTextView.setText(R.string.game_4cancel_2_of_2);
+				}
+				else if (starttbd.equals("5")) {
+					Log.v(TAG, "adapter starttbd = Make Up ="+starttbd);
+					homeScoreTextView.setText(R.string.game_5makeup_1_of_2);
+					awayScoreTextView.setText(R.string.game_5makeup_2_of_2);
+				}
+				else { //? ERROR... no other known codes
+					Log.e(TAG, "adapter starttbd = ? ="+starttbd);
+					homeScoreTextView.setText(R.string.game_home_score_hint);
+					awayScoreTextView.setText(R.string.game_away_score_hint);
+				}
 			}
 			else {
-				Log.v(TAG, "adapter GameHomeScore(): "+item.getGameHomeScore());
 				homeScoreTextView.setText(item.getGameHomeScore());
-				Log.v(TAG, "adapter GameAwayScore(): "+item.getGameAwayScore());
 				awayScoreTextView.setText(item.getGameAwayScore());
 			}
+			//.equals("Yes")) {
 
 			TextView locationTextView = (TextView)convertView.findViewById(R.id.row_game_location_textView);
 			Log.v(TAG, "adapter GameLocation(): "+item.getGameLocation());

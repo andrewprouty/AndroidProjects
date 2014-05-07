@@ -102,11 +102,13 @@ public class GameListLeagueUSA{
 				String awayTeamName= jsonNode.optString("awayteamname").toString();
 				String fieldName= jsonNode.optString("fieldname").toString();
 				String locationName= jsonNode.optString("locationname").toString();
-				String starttbd= jsonNode.optString("starttbd").toString();	// 4=Cancel
+				String starttbd= jsonNode.optString("starttbd").toString();
+					//1=normal, 2=to be determined, 3=rained out, 4=cancelled, 5=make-up
 				String homeScore= jsonNode.optString("homescore").toString();
 				String awayScore= jsonNode.optString("awayscore").toString();
-				Log.v(TAG, "parseList() ["+ i + "] : "+gameId+"-"+gameDate+"-"+awayTeamName+"-"+homeTeamId+"-"
-						+homeTeamName+"-"+fieldName+"-"+locationName+"-"+homeScore+"-"+awayScore+"-");
+				Log.v(TAG, "parseList() ["+ i + "] : "+gameId+"-"+gameDate+"-"+homeTeamId+"-"
+						+homeTeamName+"-"+awayTeamName+"-"+fieldName+"-"+locationName+"-"
+						+starttbd+"-"+homeScore+"-"+awayScore);
 
 				GameItem item = new GameItem();
 				item.setLeagueId(mSetupItem.getLeagueId());
@@ -137,18 +139,11 @@ public class GameListLeagueUSA{
 				else {
 					GameLocation=locationName+", "+fieldName;
 				}
-				String GameCancelled;
-				if (starttbd.equals("4")) {
-					GameCancelled="Yes";
-				}
-				else {
-					GameCancelled="No";
-				}
-
+				String GameStartTBD=starttbd;
 				Log.v(TAG, "parseList() time="+GameDateTime+
 						" away="+GameAwayTeam+
 						" home="+GameHomeTeam+
-						" cancelled="+GameCancelled+
+						" starttbd="+GameStartTBD+
 						" awayScore="+GameAwayScore+
 						" homeScore="+GameHomeScore+
 						" location="+GameLocation);
@@ -157,7 +152,7 @@ public class GameListLeagueUSA{
 				item.setGameHomeTeam(GameHomeTeam);
 				item.setGameAwayTeam(GameAwayTeam);
 				item.setGameLocation(GameLocation);
-				item.setGameCancelled(GameCancelled);
+				item.setGameStartTBD(GameStartTBD);
 				item.setGameHomeScore(GameHomeScore);
 				item.setGameAwayScore(GameAwayScore);
 				items.add(item);

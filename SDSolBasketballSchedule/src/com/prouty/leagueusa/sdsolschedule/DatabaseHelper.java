@@ -73,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_GAME_GAME_HOME_TEAM = "game_home_team";
 	private static final String COLUMN_GAME_GAME_AWAY_TEAM = "game_away_team";
 	private static final String COLUMN_GAME_GAME_LOCATION = "game_location";
-	private static final String COLUMN_GAME_GAME_CANCELLED = "game_cancelled";
+	private static final String COLUMN_GAME_GAME_START_TBD = "game_start_tbd";
 	private static final String COLUMN_GAME_GAME_HOME_SCORE = "game_home_score";
 	private static final String COLUMN_GAME_GAME_AWAY_SCORE = "game_away_score" ;
 
@@ -115,7 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" team_id varchar(10), team_name varchar(100)," +
 				" game_id varchar(10), game_date_time varchar(100)," +
 				" game_home_team varchar(100), game_away_team varchar(100)," +
-				" game_location varchar(100), game_cancelled varchar(10)," +
+				" game_location varchar(100), game_start_tbd varchar(10)," +
 				" game_home_score varchar(10), game_away_score varchar(10)," +
 				" primary key (league_id, season_id, division_id, conference_id, team_id, game_id))");
 		Log.d(TAG, "onCreate()ed");
@@ -293,14 +293,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_GAME_CONFERENCE_COUNT, item.getConferenceCount());
 		cv.put(COLUMN_GAME_TEAM_ID, item.getTeamId());
 		cv.put(COLUMN_GAME_TEAM_NAME, item.getTeamName());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameId());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameDateTime());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameHomeTeam());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameAwayTeam());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameLocation());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameCancelled());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameHomeScore());
-		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameAwayScore());
+		cv.put(COLUMN_GAME_GAME_ID, item.getGameId());
+		cv.put(COLUMN_GAME_GAME_DATE_TIME, item.getGameDateTime());
+		cv.put(COLUMN_GAME_GAME_HOME_TEAM, item.getGameHomeTeam());
+		cv.put(COLUMN_GAME_GAME_AWAY_TEAM, item.getGameAwayTeam());
+		cv.put(COLUMN_GAME_GAME_LOCATION, item.getGameLocation());
+		cv.put(COLUMN_GAME_GAME_START_TBD, item.getGameStartTBD());
+		cv.put(COLUMN_GAME_GAME_HOME_SCORE, item.getGameHomeScore());
+		cv.put(COLUMN_GAME_GAME_AWAY_SCORE, item.getGameAwayScore());
 
 		return getWritableDatabase().insert(TABLE_GAME, null, cv);
 	}
@@ -445,7 +445,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setGameHomeTeam(getString(getColumnIndex(COLUMN_GAME_GAME_HOME_TEAM)));
 			item.setGameAwayTeam(getString(getColumnIndex(COLUMN_GAME_GAME_AWAY_TEAM)));
 			item.setGameLocation(getString(getColumnIndex(COLUMN_GAME_GAME_LOCATION)));
-			item.setGameCancelled(getString(getColumnIndex(COLUMN_GAME_GAME_CANCELLED)));
+			item.setGameStartTBD(getString(getColumnIndex(COLUMN_GAME_GAME_START_TBD)));
 			item.setGameHomeScore(getString(getColumnIndex(COLUMN_GAME_GAME_HOME_SCORE)));
 			item.setGameAwayScore(getString(getColumnIndex(COLUMN_GAME_GAME_AWAY_SCORE)));
 			return item;

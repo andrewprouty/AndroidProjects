@@ -55,7 +55,6 @@ public class GameListActivity extends FragmentActivity {
 				+ ", count="       + mTeamItem.getConferenceCount()
 				+ " team ID="      + mTeamItem.getTeamId()
 				+ ", name="        + mTeamItem.getTeamName());
-
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
@@ -93,7 +92,7 @@ public class GameListActivity extends FragmentActivity {
     				+ ", hometeam="    + item.getGameHomeTeam()
     				+ ", awayteam="    + item.getGameAwayTeam()
     				+ ", location="    + item.getGameLocation()
-    				+ ", cancelled="    + item.getGameCancelled()
+    				+ ", starttbd="    + item.getGameStartTBD()
     				+ ", homescore="    + item.getGameHomeScore()
     				+ ", awayscore="    + item.getGameAwayScore());
             mHelper.insertGame(item);
@@ -127,7 +126,7 @@ public class GameListActivity extends FragmentActivity {
     				+ ", hometeam="    + item.getGameHomeTeam()
     				+ ", awayteam="    + item.getGameAwayTeam()
     				+ ", location="    + item.getGameLocation()
-    				+ ", cancelled="    + item.getGameCancelled()
+    				+ ", starttbd="    + item.getGameStartTBD()
     				+ ", homescore="    + item.getGameHomeScore()
     				+ ", awayscore="    + item.getGameAwayScore());
     	}
