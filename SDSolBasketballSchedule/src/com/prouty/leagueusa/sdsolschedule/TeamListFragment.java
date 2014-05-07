@@ -45,6 +45,9 @@ public class TeamListFragment extends Fragment{
 	{       
     	Log.d(TAG, "onCreateView()");
 		mConferenceItem=((TeamListActivity) getActivity()).getConferenceItem();
+		if (mTeamDisplay != null) {
+			mTeamDisplay.clear(); // reset in case of orientation switch
+		}
 		new QueryTeamItemsTask().execute(mConferenceItem);
 		new FetchTeamItemsTask().execute(mConferenceItem);
 		

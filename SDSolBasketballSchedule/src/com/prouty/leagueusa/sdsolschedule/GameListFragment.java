@@ -13,12 +13,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class GameListFragment extends Fragment{
 	private static final String TAG = "GameListFragment";
 	private static final int GET = 0;
+	private static final int QUERY = 1;
 	private TeamItem mTeamItem;
-	private ArrayList<GameItem> mGameItems;
+	private ArrayList<GameItem> mGameFetch;
+	private ArrayList<GameItem> mGameQuery;
+	private ArrayList<GameItem> mGameDisplay;
 	
 	View view;
 	TextView mSeasonTextView;
@@ -31,7 +35,6 @@ public class GameListFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
     	Log.d(TAG, "onCreate()");
-
 		setRetainInstance(true); // survive across Activity re-create (i.e. orientation)
 	}
 
@@ -40,6 +43,10 @@ public class GameListFragment extends Fragment{
 	{       
     	Log.d(TAG, "onCreateView()");
 		mTeamItem=((GameListActivity) getActivity()).getTeamItem();
+		if (mGameDisplay != null) {
+			mGameDisplay.clear(); // reset in case of orientation switch
+		}
+		new QueryGameItemsTask().execute(mTeamItem);
 		new FetchGameItemsTask().execute(mTeamItem);
 
 		if (mTeamItem.getConferenceCount().equals("one")) {
@@ -62,27 +69,36 @@ public class GameListFragment extends Fragment{
 		return view;
 	}
 
-	private void setupGame(int choice) {
+	private void setupGame(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
     	Log.d(TAG, "setupGame("+choice+") team: "+mTeamItem.getTeamId()+"-"+mTeamItem.getTeamName());
-    	if (choice == GET) {
-    		if (mGameItems != null && mGameItems.size()>0) {
-    			Log.w(TAG, "setupGame() replace with insert/save to DB"); //TODO Game insert DB
-    			//new InsertGameItemsTask().execute(); //save fetched to DB
-    		}
-    		else { // got none. If in DB - populate from there
-    			Log.e(TAG, "setupGame() replace with query from DB"); //TODO Game query DB
-    			//new QueryGameItemsTask().execute(mSeasonItem);
-    		}
+		if (mGameDisplay == null || mGameDisplay.size() == 0) {
+			if (choiceSize > 0) {
+				if (choice == GET) {						// No results yet, but I have some
+					mGameDisplay = mGameFetch;
+					new InsertGameItemsTask().execute();	// Most likely Query was fast but empty
+				}
+				else {
+					mGameDisplay = mGameQuery;
+				}
+				GameListAdapter adapter = new GameListAdapter(mGameDisplay);
+				mListView.setAdapter(adapter);
+			} //[else] 1st with no results, or 2nd and nobody had results
 		}
-    	if (mGameItems != null) {
-    		GameListAdapter adapter = new GameListAdapter(mGameItems);
-			mListView.setAdapter(adapter);
-		}
-		else {
-			mListView.setAdapter(null);
+		else {//else: 1st had results. I am 2nd 
+			if (choiceSize > 0) {							// Both had results
+				if (!mGameFetch.equals(mGameQuery)) {
+					if (choice == GET) {
+						new InsertGameItemsTask().execute();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					Log.d(TAG, "setupGame("+choice+") Fetched=Queried");
+				}
+			}
 		}
 	}
 	private class FetchGameItemsTask extends AsyncTask<TeamItem,Void,ArrayList<GameItem>> {
@@ -99,15 +115,26 @@ public class GameListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<GameItem> items) {
-			mGameItems = items;
-			setupGame(GET);
-            cancel(true); // done !
-        	Log.d(TAG, "FetchTeamItemsTask onPostExecute()");
+        	try {
+        		Log.d(TAG, "FetchGameItemsTask.onPostExecute() fetched=" + items.size());
+        		int size;
+        		if (items == null || items.size() == 0) {
+        			size = 0;
+        		} else {
+        			size = items.size();
+            		mGameFetch = items;
+        		}
+           		setupGame(GET, size);
+        		cancel(true);
+        	} catch (Exception e) {
+        		Log.e(TAG, "FetchGameItemsTask.doInBackground() Exception.", e);
+        	}
 		}
 	}
 	private class GameListAdapter extends ArrayAdapter<GameItem> {
 		public GameListAdapter(ArrayList<GameItem> items) {
 			super(getActivity(), 0, items);
+			Log.i(TAG, "GameListAdapter Constructor");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -116,7 +143,7 @@ public class GameListFragment extends Fragment{
 			}
 
 			GameItem item = getItem(position);
-			Log.d(TAG, "GameListAdapter ["+position+"]");
+			Log.d(TAG, "GameListAdapter getView() ["+position+"]");
 
 			TextView dateTimeTextView = (TextView)convertView.findViewById(R.id.row_game_dateTime_textView);
 			Log.v(TAG, "adapter GameDateTime(): "+item.getGameDateTime());
@@ -132,12 +159,18 @@ public class GameListFragment extends Fragment{
 			awayTeamTextView.setText(item.getGameAwayTeam());
 
 			TextView homeScoreTextView = (TextView)convertView.findViewById(R.id.row_game_home_score_textView);
-			Log.v(TAG, "adapter GameHomeScore(): "+item.getGameHomeScore());
-			homeScoreTextView.setText(item.getGameHomeScore());
-
 			TextView awayScoreTextView = (TextView)convertView.findViewById(R.id.row_game_away_score_textView);
-			Log.v(TAG, "adapter GameAwayScore(): "+item.getGameAwayScore());
-			awayScoreTextView.setText(item.getGameAwayScore());
+			if(item.getGameCancelled().equals("Yes")) {
+				Log.v(TAG, "adapter GameScores = Cancelled");
+				homeScoreTextView.setText(R.string.game_cancel_1_of_2);
+				awayScoreTextView.setText(R.string.game_cancel_2_of_2);
+			}
+			else {
+				Log.v(TAG, "adapter GameHomeScore(): "+item.getGameHomeScore());
+				homeScoreTextView.setText(item.getGameHomeScore());
+				Log.v(TAG, "adapter GameAwayScore(): "+item.getGameAwayScore());
+				awayScoreTextView.setText(item.getGameAwayScore());
+			}
 
 			TextView locationTextView = (TextView)convertView.findViewById(R.id.row_game_location_textView);
 			Log.v(TAG, "adapter GameLocation(): "+item.getGameLocation());
@@ -145,4 +178,48 @@ public class GameListFragment extends Fragment{
 			return convertView;
 		}
 	}
+    private class InsertGameItemsTask extends AsyncTask<Void,Void,Void> {
+    	@Override
+    	protected Void doInBackground(Void... nada) {
+    		Log.d(TAG, "InsertGameItemsTask.doInBackground()");
+    		try {
+    			((GameListActivity) getActivity()).insertGameItems(mGameFetch);
+    		} catch (Exception e) {
+    			Log.e(TAG, "InsertGameItemsTask.doInBackground() Exception.", e);
+    		}
+    		return null;
+    	}
+    	@Override
+    	protected void onPostExecute(Void nada) {
+    		Log.d(TAG, "InsertGameItemsTask.onPostExecute()");
+    		cancel(true); // done !
+    	}
+    }
+	private class QueryGameItemsTask extends AsyncTask<TeamItem,Void,ArrayList<GameItem>> {
+		@Override
+		protected ArrayList<GameItem> doInBackground(TeamItem... nada) {
+        	Log.d(TAG, "QueryGameItemsTask.doInBackground()");
+    		ArrayList<GameItem> items = null;
+    		try {
+    			items = ((GameListActivity) getActivity()).queryGameByTeamItem(mTeamItem);
+    		} catch (Exception e) {
+    			Log.e(TAG, "QueryGameItemsTask.doInBackground() Exception.", e);
+    		}
+        	return items;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<GameItem> items) {
+        	Log.d(TAG, "QueryGameItemsTask.onPostExecute() queried=" + items.size());
+    		int size;
+    		if (items == null || items.size() == 0) {
+    			size = 0;
+    		} else {
+    			size = items.size();
+        		mGameQuery = items;
+    		}
+       		setupGame(QUERY, size);
+            cancel(true);
+		}
+	}
+
 }

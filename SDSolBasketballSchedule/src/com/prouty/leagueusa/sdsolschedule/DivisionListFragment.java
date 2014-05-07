@@ -44,7 +44,9 @@ public class DivisionListFragment extends Fragment{
 	{       
 		Log.d(TAG, "onCreateView()");
 		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
-		// Initiate both since a lot of divisions & changes more
+		if (mDivisionDisplay != null) {
+			mDivisionDisplay.clear(); // reset in case of orientation switch
+		}
 		new QueryDivisionItemsTask().execute(mSeasonItem);
 		new FetchDivisionItemsTask().execute(mSeasonItem);
 

@@ -42,6 +42,12 @@ public class SeasonListFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
 	{       
 		Log.d(TAG, "onCreateView()");
+		if (mLeagueDisplay != null) {
+			mLeagueDisplay.clear(); // reset in case of orientation switch
+		}
+		if (mSeasonDisplay != null) {
+			mSeasonDisplay.clear(); // reset in case of orientation switch
+		}
 		new QueryLeagueItemsTask().execute();
 		new FetchLeagueItemsTask().execute();
        

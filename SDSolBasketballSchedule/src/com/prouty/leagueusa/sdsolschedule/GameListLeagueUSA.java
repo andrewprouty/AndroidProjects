@@ -102,6 +102,7 @@ public class GameListLeagueUSA{
 				String awayTeamName= jsonNode.optString("awayteamname").toString();
 				String fieldName= jsonNode.optString("fieldname").toString();
 				String locationName= jsonNode.optString("locationname").toString();
+				String starttbd= jsonNode.optString("starttbd").toString();	// 4=Cancel
 				String homeScore= jsonNode.optString("homescore").toString();
 				String awayScore= jsonNode.optString("awayscore").toString();
 				Log.v(TAG, "parseList() ["+ i + "] : "+gameId+"-"+gameDate+"-"+awayTeamName+"-"+homeTeamId+"-"
@@ -136,10 +137,18 @@ public class GameListLeagueUSA{
 				else {
 					GameLocation=locationName+", "+fieldName;
 				}
+				String GameCancelled;
+				if (starttbd.equals("4")) {
+					GameCancelled="Yes";
+				}
+				else {
+					GameCancelled="No";
+				}
 
 				Log.v(TAG, "parseList() time="+GameDateTime+
 						" away="+GameAwayTeam+
 						" home="+GameHomeTeam+
+						" cancelled="+GameCancelled+
 						" awayScore="+GameAwayScore+
 						" homeScore="+GameHomeScore+
 						" location="+GameLocation);
@@ -148,6 +157,7 @@ public class GameListLeagueUSA{
 				item.setGameHomeTeam(GameHomeTeam);
 				item.setGameAwayTeam(GameAwayTeam);
 				item.setGameLocation(GameLocation);
+				item.setGameCancelled(GameCancelled);
 				item.setGameHomeScore(GameHomeScore);
 				item.setGameAwayScore(GameAwayScore);
 				items.add(item);

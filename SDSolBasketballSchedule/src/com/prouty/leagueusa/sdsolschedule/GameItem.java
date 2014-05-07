@@ -18,6 +18,7 @@ public class GameItem {
     private String mGameHomeTeam;
     private String mGameAwayTeam;
     private String mGameLocation;
+    private String mGameCancelled;
     private String mGameHomeScore;
     private String mGameAwayScore;
 
@@ -40,6 +41,8 @@ public class GameItem {
 				+ ((mGameAwayScore == null) ? 0 : mGameAwayScore.hashCode());
 		result = prime * result
 				+ ((mGameAwayTeam == null) ? 0 : mGameAwayTeam.hashCode());
+		result = prime * result
+				+ ((mGameCancelled == null) ? 0 : mGameCancelled.hashCode());
 		result = prime * result
 				+ ((mGameDateTime == null) ? 0 : mGameDateTime.hashCode());
 		result = prime * result
@@ -105,6 +108,11 @@ public class GameItem {
 			if (other.mGameAwayTeam != null)
 				return false;
 		} else if (!mGameAwayTeam.equals(other.mGameAwayTeam))
+			return false;
+		if (mGameCancelled == null) {
+			if (other.mGameCancelled != null)
+				return false;
+		} else if (!mGameCancelled.equals(other.mGameCancelled))
 			return false;
 		if (mGameDateTime == null) {
 			if (other.mGameDateTime != null)
@@ -208,6 +216,9 @@ public class GameItem {
     public String getConferenceName() {
         return mConferenceName;
     }
+    public void setConferenceName(String conferenceName) {
+        mConferenceName = conferenceName;
+    }
     public String getConferenceCount() {
         return mConferenceCount;
     }
@@ -257,6 +268,12 @@ public class GameItem {
     }
     public void setGameLocation(String gameLocation) {
         mGameLocation = gameLocation;
+    }
+    public String getGameCancelled() {
+        return mGameCancelled;
+    }
+    public void setGameCancelled(String gameCancelled) {
+        mGameCancelled = gameCancelled;
     }
     public String getGameHomeScore() {
         return mGameHomeScore;

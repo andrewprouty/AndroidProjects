@@ -56,6 +56,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_TEAM_TEAM_ID = "team_id";
 	private static final String COLUMN_TEAM_TEAM_NAME = "team_name";
 
+	private static final String TABLE_GAME = "game";
+	private static final String COLUMN_GAME_LEAGUE_ID = "league_id";
+	private static final String COLUMN_GAME_LEAGUE_URL = "league_url";
+	private static final String COLUMN_GAME_SEASON_ID = "season_id";
+	private static final String COLUMN_GAME_SEASON_NAME = "season_name";
+	private static final String COLUMN_GAME_DIVISION_ID = "division_id";
+	private static final String COLUMN_GAME_DIVISION_NAME = "division_name";
+	private static final String COLUMN_GAME_CONFERENCE_ID = "conference_id";
+	private static final String COLUMN_GAME_CONFERENCE_NAME = "conference_name";
+	private static final String COLUMN_GAME_CONFERENCE_COUNT = "conference_count";
+	private static final String COLUMN_GAME_TEAM_ID = "team_id";
+	private static final String COLUMN_GAME_TEAM_NAME = "team_name";
+	private static final String COLUMN_GAME_GAME_ID = "game_id"; 
+	private static final String COLUMN_GAME_GAME_DATE_TIME = "game_date_time";
+	private static final String COLUMN_GAME_GAME_HOME_TEAM = "game_home_team";
+	private static final String COLUMN_GAME_GAME_AWAY_TEAM = "game_away_team";
+	private static final String COLUMN_GAME_GAME_LOCATION = "game_location";
+	private static final String COLUMN_GAME_GAME_CANCELLED = "game_cancelled";
+	private static final String COLUMN_GAME_GAME_HOME_SCORE = "game_home_score";
+	private static final String COLUMN_GAME_GAME_AWAY_SCORE = "game_away_score" ;
+
 	public DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, VERSION);
 	}
@@ -65,24 +86,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "onCreate()");
 		db.execSQL("create table league (" +
 				" league_id varchar(10) primary key, org_name varchar(100), league_url varchar(100))");
-		
 		db.execSQL("create table season (" +
 				" league_id varchar(10), league_url varchar(100), season_id varchar(10), season_name varchar(100)," +
 				" primary key (league_id, season_id))");
-
 		db.execSQL("create table division (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" primary key (league_id, season_id, division_id))");
-
 		db.execSQL("create table conference (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
 				" primary key (league_id, season_id, division_id, conference_id))");
-				
 		db.execSQL("create table team (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
@@ -90,6 +107,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
 				" team_id varchar(10), team_name varchar(100)," +
 				" primary key (league_id, season_id, division_id, conference_id, team_id))");
+		db.execSQL("create table game (" +
+				" league_id varchar(10), league_url varchar(100)," +
+				" season_id varchar(10), season_name varchar(100),"+
+				" division_id varchar(10), division_name varchar(100)," +
+				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
+				" team_id varchar(10), team_name varchar(100)," +
+				" game_id varchar(10), game_date_time varchar(100)," +
+				" game_home_team varchar(100), game_away_team varchar(100)," +
+				" game_location varchar(100), game_cancelled varchar(10)," +
+				" game_home_score varchar(10), game_away_score varchar(10)," +
+				" primary key (league_id, season_id, division_id, conference_id, team_id, game_id))");
 		Log.d(TAG, "onCreate()ed");
 	}
 
@@ -209,7 +237,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new ConferenceCursor(wrapped);
 	}
-
 	public long deleteTeam() {
 		Log.d(TAG, "deleteTeam()");
 		return getWritableDatabase().delete(TABLE_TEAM, null, null);
@@ -249,7 +276,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new TeamCursor(wrapped);
 	}
+	public long deleteGame() {
+		Log.d(TAG, "deleteGame()");
+		return getWritableDatabase().delete(TABLE_GAME, null, null);
+	}
+	public long insertGame(GameItem item) {
+		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_GAME_LEAGUE_ID, item.getLeagueId());
+		cv.put(COLUMN_GAME_LEAGUE_URL, item.getLeagueURL());
+		cv.put(COLUMN_GAME_SEASON_ID, item.getSeasonId());
+		cv.put(COLUMN_GAME_SEASON_NAME, item.getSeasonName());
+		cv.put(COLUMN_GAME_DIVISION_ID, item.getDivisionId());
+		cv.put(COLUMN_GAME_DIVISION_NAME, item.getDivisionName());
+		cv.put(COLUMN_GAME_CONFERENCE_ID, item.getConferenceId());
+		cv.put(COLUMN_GAME_CONFERENCE_NAME, item.getConferenceName());
+		cv.put(COLUMN_GAME_CONFERENCE_COUNT, item.getConferenceCount());
+		cv.put(COLUMN_GAME_TEAM_ID, item.getTeamId());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getTeamName());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameId());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameDateTime());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameHomeTeam());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameAwayTeam());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameLocation());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameCancelled());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameHomeScore());
+		cv.put(COLUMN_GAME_TEAM_NAME, item.getGameAwayScore());
 
+		return getWritableDatabase().insert(TABLE_GAME, null, cv);
+	}
+	public GameCursor queryGamesByTeamItem(TeamItem item) {
+		Log.d(TAG, "queryGamesByTeamItem()");
+		// equivalent to "select * from league order by league_id asc"
+		// sorting by user_id as an alpha... just copying JSON ordering
+		Cursor wrapped = getReadableDatabase().query(TABLE_GAME,
+				null, // all columns 
+				COLUMN_GAME_LEAGUE_ID + " = ? AND "+
+				COLUMN_GAME_SEASON_ID + " = ? AND "+
+				COLUMN_GAME_DIVISION_ID + " = ? AND "+
+				COLUMN_GAME_CONFERENCE_ID + " = ? AND "+
+				COLUMN_GAME_GAME_ID + " = ?",		// Where column
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId()),
+				String.valueOf(item.getConferenceId()),
+				String.valueOf(item.getTeamId())}, // values
+				null, // group by
+				null, // having
+				COLUMN_GAME_GAME_DATE_TIME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
+		return new GameCursor(wrapped);
+	}
 	/**
 	 * A convenience class to wrap a cursor that returns rows from the table.
 	 * The {@link getUser()} method will give you a UserItem instance for the current row.
@@ -342,6 +418,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setConferenceCount(getString(getColumnIndex(COLUMN_TEAM_CONFERENCE_COUNT)));
 			item.setTeamId(getString(getColumnIndex(COLUMN_TEAM_TEAM_ID)));
 			item.setTeamName(getString(getColumnIndex(COLUMN_TEAM_TEAM_NAME)));
+			return item;
+		}
+	}
+	public static class GameCursor extends CursorWrapper {
+		public GameCursor(Cursor c) {
+			super(c);
+		}
+		public GameItem getGameItem() {
+			if (isBeforeFirst() || isAfterLast())
+				return null;
+			GameItem item = new GameItem();
+			item.setLeagueId(getString(getColumnIndex(COLUMN_GAME_LEAGUE_ID)));
+			item.setLeagueURL(getString(getColumnIndex(COLUMN_GAME_LEAGUE_URL)));
+			item.setSeasonId(getString(getColumnIndex(COLUMN_GAME_SEASON_ID)));
+			item.setSeasonName(getString(getColumnIndex(COLUMN_GAME_SEASON_NAME)));
+			item.setDivisionId(getString(getColumnIndex(COLUMN_GAME_DIVISION_ID)));
+			item.setDivisionName(getString(getColumnIndex(COLUMN_GAME_DIVISION_NAME)));
+			item.setConferenceId(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_ID)));
+			item.setConferenceName(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_NAME)));
+			item.setConferenceCount(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_COUNT)));
+			item.setGameId(getString(getColumnIndex(COLUMN_GAME_TEAM_ID)));
+			item.setTeamName(getString(getColumnIndex(COLUMN_GAME_TEAM_NAME)));
+			item.setGameId(getString(getColumnIndex(COLUMN_GAME_GAME_ID)));
+			item.setGameDateTime(getString(getColumnIndex(COLUMN_GAME_GAME_DATE_TIME)));
+			item.setGameHomeTeam(getString(getColumnIndex(COLUMN_GAME_GAME_HOME_TEAM)));
+			item.setGameAwayTeam(getString(getColumnIndex(COLUMN_GAME_GAME_AWAY_TEAM)));
+			item.setGameLocation(getString(getColumnIndex(COLUMN_GAME_GAME_LOCATION)));
+			item.setGameCancelled(getString(getColumnIndex(COLUMN_GAME_GAME_CANCELLED)));
+			item.setGameHomeScore(getString(getColumnIndex(COLUMN_GAME_GAME_HOME_SCORE)));
+			item.setGameAwayScore(getString(getColumnIndex(COLUMN_GAME_GAME_AWAY_SCORE)));
 			return item;
 		}
 	}

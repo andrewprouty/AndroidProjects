@@ -15,6 +15,8 @@
     <string name="game_away_score_hint">Score</string>
     <string name="game_home_team_hint">Home Team</string>
     <string name="game_home_score_hint">Score</string>
+    <string name="game_cancel_1_of_2">Game</string>
+    <string name="game_cancel_2_of_2">Cancelled</string>
     <string name="action_upload_title">Upload Image</string>
     <string name="file_name_text_hint">Image File Name</string>
     <string name="image_description">Photo Image</string>
