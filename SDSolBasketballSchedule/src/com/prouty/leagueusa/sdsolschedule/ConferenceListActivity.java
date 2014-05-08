@@ -44,7 +44,7 @@ public class ConferenceListActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_masterdetail);
+		setContentView(R.layout.activity_fragment);
 		Log.d(TAG, "onCreate()");
 
 		String leagueId  = getIntent().getStringExtra("LeagueId");
