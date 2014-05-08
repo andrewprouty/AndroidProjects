@@ -25,8 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class UploadFileActivity extends Activity {
-	private static final String TAG = "UploadFileActivity";
+public class EditSettingsActivity extends Activity {
+	private static final String TAG = "EditSettingsActivity";
 	private static int RESULT_LOAD_IMAGE = 1;
 	private EditText mFileNameEditText;
 	private Button mButtonUploadFile;

@@ -60,16 +60,50 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-	        case R.id.action_upload:
-	    		Log.d(TAG, "onOptionsItemSelected() calling UploadFileActivity");
-	    		Intent i = new Intent (MainActivity.this, UploadFileActivity.class);
+	        case R.id.action_edit_settings:
+	    		Log.d(TAG, "onOptionsItemSelected() calling EditSettingsActivity");
+	    		Intent i = new Intent (MainActivity.this, EditSettingsActivity.class);
 	    		startActivity(i);
 	            return true;
+	        case R.id.action_choose_favorite:
+	    		Log.d(TAG, "onOptionsItemSelected() calling TBD Popup menu");
+	            return true;
+	        case 1:
+	    		Log.d(TAG, "onOptionsItemSelected() called from #1");
+	            return true;
+	        case 2:
+	    		Log.d(TAG, "onOptionsItemSelected() called from #2");
+	            return true;
+	        case 3:
+	    		Log.d(TAG, "onOptionsItemSelected() called from #3 ");
+	            return true;
+      	
 	        default:
 	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
 	            return super.onOptionsItemSelected(item);
+	            
 	    }
 	}
+	
+	////////////////////////// http://stackoverflow.com/questions/15580111/how-can-i-dynamically-create-menu-items
+    /* http://developer.android.com/guide/topics/ui/menus.html
+     * http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
+     * 
+     * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
+     * itemId	Unique item ID. Use NONE if you do not need a unique ID.
+     * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
+     * title	The text to display for the item.
+     */ 
+    //Gets called every time the user presses the menu button, use for dynamic menus
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        menu.add(0, 1, Menu.NONE, "First item in the list").setIcon(R.drawable.ic_action_important);
+        menu.add(0, 2, Menu.NONE, "Second Team").setIcon(R.drawable.ic_action_important);
+        menu.add(0, 3, Menu.NONE, "Nth team").setIcon(R.drawable.ic_action_important);
+        return super.onPrepareOptionsMenu(menu);
+    }
+	//////////////////////////
 	
     public Fragment createFragment() {
 		 return new SeasonListFragment();
