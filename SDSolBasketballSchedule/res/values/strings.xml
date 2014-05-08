@@ -23,8 +23,8 @@
     <string name="game_4cancel_2_of_2">Cancelled</string>
     <string name="game_5makeup_1_of_2">Make Up</string>
     <string name="game_5makeup_2_of_2">Game</string>
-    <string name="action_settings_title">Edit Favorites</string>
     <string name="action_choose_title">Choose Favorite</string>
+    <string name="action_refresh_title">Refresh Results</string>
     <string name="file_name_text_hint">Image File Name</string>
     <string name="image_description">Photo Image</string>
     <string name="menu_settings">Settings</string>

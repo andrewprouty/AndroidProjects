@@ -18,6 +18,8 @@ import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private DatabaseHelper mHelper;
+	private Menu mMenu;
+	private boolean mFavorite = true; //TODO use a rotation safe approach
 
 	protected void launchDivisionListActivity(SeasonItem item) {
 		Intent i = new Intent (MainActivity.this, DivisionListActivity.class);
@@ -52,21 +54,31 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		Log.d(TAG, "onCreateOptionsMenu()");
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.activity_main_actions, menu);
+	    mMenu=menu;
 	    return super.onCreateOptionsMenu(menu);
 	}
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-	        case R.id.action_edit_settings:
-	    		Log.d(TAG, "onOptionsItemSelected() calling EditSettingsActivity");
-	    		Intent i = new Intent (MainActivity.this, EditSettingsActivity.class);
-	    		startActivity(i);
+	        case R.id.action_refresh:
+	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
+	    		//Intent i = new Intent (MainActivity.this, EditSettingsActivity.class);
+	    		//gfwstartActivity(i);
 	            return true;
-	        case R.id.action_choose_favorite:
+	        case R.id.action_choose_important:
 	    		Log.d(TAG, "onOptionsItemSelected() calling TBD Popup menu");
+	    		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
+	    		if (mFavorite) {
+	    			starred.setIcon(R.drawable.ic_action_not_important);
+	    			mFavorite = false;
+	    		}
+	    		else {
+	    			starred.setIcon(R.drawable.ic_action_important);
+	    			mFavorite = true;
+	    		}
 	            return true;
 	        case 1:
 	    		Log.d(TAG, "onOptionsItemSelected() called from #1");
@@ -97,10 +109,13 @@ public class MainActivity extends FragmentActivity {
     //Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.clear();
-        menu.add(0, 1, Menu.NONE, "First item in the list").setIcon(R.drawable.ic_action_important);
-        menu.add(0, 2, Menu.NONE, "Second Team").setIcon(R.drawable.ic_action_important);
-        menu.add(0, 3, Menu.NONE, "Nth team").setIcon(R.drawable.ic_action_important);
+		Log.d(TAG, "onPrepareOptionsMenu()");
+        //menu.clear();
+		//menu.removeItem(R.id.action_refresh); // TODO delete for real later
+		menu.removeGroup(1);
+        menu.add(1, 1, 1, "First item in the list is really long for a list item");
+        menu.add(1, 2, 2, "Second Team");
+        menu.add(1, 3, 3, "Nth team");
         return super.onPrepareOptionsMenu(menu);
     }
 	//////////////////////////
