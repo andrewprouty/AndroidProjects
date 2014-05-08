@@ -1,5 +1,6 @@
 package com.prouty.leagueusa.sdsolschedule;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
 
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.LeagueCursor;
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
@@ -39,6 +41,7 @@ public class MainActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
+        getOverflowMenu();
         setContentView(R.layout.activity_fragment);
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
@@ -51,7 +54,20 @@ public class MainActivity extends FragmentActivity {
         }
         mHelper = new DatabaseHelper(getApplicationContext());
     }
-	
+
+	private void getOverflowMenu() {
+		// had a problem with 1 (phone http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
+	     try {
+	        ViewConfiguration config = ViewConfiguration.get(this);
+	        Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+	        if(menuKeyField != null) {
+	            menuKeyField.setAccessible(true);
+	            menuKeyField.setBoolean(config, false);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu()");
