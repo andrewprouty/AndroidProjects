@@ -15,7 +15,7 @@ public class TeamListActivity extends FragmentActivity {
 	private static final String TAG = "TeamListActivity";
 	private ConferenceItem   mConferenceItem = new ConferenceItem();
 	private DatabaseHelper mHelper;
-
+	
 	protected void launchGameListActivity(TeamItem item) {
 		Log.d(TAG, "launchGameListActivity()");
 		Intent i = new Intent (this, GameListActivity.class);
@@ -30,6 +30,7 @@ public class TeamListActivity extends FragmentActivity {
 		i.putExtra("ConferenceCount", item.getConferenceCount().toString());
 		i.putExtra("TeamId", item.getTeamId().toString());
 		i.putExtra("TeamName", item.getTeamName().toString());
+		i.putExtra("TeamURL", item.getTeamName().toString());
 		Log.v(TAG, "launchGameListActivity(): "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
@@ -82,7 +83,6 @@ public class TeamListActivity extends FragmentActivity {
 
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-
 		if (fragment == null) {
 			fragment = new TeamListFragment();
 			fm.beginTransaction()
@@ -91,6 +91,7 @@ public class TeamListActivity extends FragmentActivity {
 		}
         mHelper = new DatabaseHelper(getApplicationContext());
 	}
+
 	public ConferenceItem getConferenceItem () {
 		return mConferenceItem;
 	}

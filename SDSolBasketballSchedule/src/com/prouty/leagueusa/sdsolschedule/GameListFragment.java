@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,6 +27,12 @@ public class GameListFragment extends Fragment{
 	private ArrayList<GameItem> mGameQuery;
 	private ArrayList<GameItem> mGameDisplay;
 	
+	private Menu mMenu;
+	private ArrayList<FavoriteItem> mFavoriteItems;
+	private FavoriteItem mFavoriteItem;
+	private TeamItem mFavoriteTeam;
+	private boolean mFavorite = true; //TODO use a orientation-switch safe approach
+
 	View view;
 	TextView mSeasonTextView;
 	TextView mDivisionTextView;
@@ -43,6 +52,7 @@ public class GameListFragment extends Fragment{
 	{       
     	Log.d(TAG, "onCreateView()");
 		mTeamItem=((GameListActivity) getActivity()).getTeamItem();
+		setHasOptionsMenu(true);
 		if (mGameDisplay != null) {
 			mGameDisplay.clear(); // reset in case of orientation switch
 		}
@@ -67,6 +77,93 @@ public class GameListFragment extends Fragment{
 		mDivisionTextView.setText(mTeamItem.getDivisionName());
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		return view;
+	}
+
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		Log.d(TAG, "onCreateOptionsMenu()");
+		inflater.inflate(R.menu.activity_main_actions, menu);
+	    mMenu=menu;
+	    super.onCreateOptionsMenu(menu,inflater);
+	}
+    //Gets called every time the user presses the menu button, use for dynamic menus
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+		Log.e(TAG, "onPrepareOptionsMenu()"); //TODO from e to d
+		FavoriteListUtil util = new FavoriteListUtil();
+		FavoriteItem favItem = new FavoriteItem();
+		mFavoriteItems=util.getFavoriteList(getActivity().getApplicationContext());
+		menu.removeGroup(1);
+		Log.v(TAG, "onPrepareOptionsMenu() favorite count:"+mFavoriteItems.size());
+		for (int i=0; i<mFavoriteItems.size(); i++) {
+			favItem=mFavoriteItems.get(i);
+			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
+					+favItem.getFavoriteName()+","+favItem.getFavoriteURL());
+	        menu.add(1,i,i, favItem.getFavoriteName());
+	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
+	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
+	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
+	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
+	         * title	The text to display for the item. */
+		}
+        super.onPrepareOptionsMenu(menu);
+    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menu) {
+	    switch (menu.getItemId()) {
+	        case R.id.action_refresh:
+	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
+	            return true;
+	        case R.id.action_choose_important:
+	    		Log.e(TAG, "onOptionsItemSelected() muy importante");//TODO e to d
+	    		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
+    			FavoriteListUtil util = new FavoriteListUtil();
+    			FavoriteItem favItem = new FavoriteItem();
+	    		if (mFavorite) {
+	    			starred.setIcon(R.drawable.ic_action_not_important);
+		    		Log.d(TAG, "onOptionsItemSelected() REMOVE NEXT"); //TODO
+	    			util.removeFavoriteItem(getActivity().getApplicationContext(), mTeamItem.getTeamURL());
+	    			mFavorite = false;
+	    		}
+	    		else {
+	    			if(mTeamItem.getConferenceCount().equals("one")) {
+		    			favItem.setFavoriteName(mTeamItem.getTeamName()+"/"
+		    					+ mTeamItem.getDivisionName()+"/"
+		    					+ mTeamItem.getSeasonName());
+	    			}
+	    			else {
+		    			favItem.setFavoriteName(mTeamItem.getTeamName()+"/"
+		    					+ mTeamItem.getConferenceName()+"/"
+		    					+ mTeamItem.getDivisionName()+"/"
+		    					+ mTeamItem.getSeasonName());
+	    			}	    				
+	    			favItem.setFavoriteURL(mTeamItem.getTeamURL());
+		    		Log.d(TAG, "onOptionsItemSelected() Added: " + favItem.getFavoriteName()+
+		    				","+favItem.getFavoriteURL());
+
+	    			util.addFavoriteItem(getActivity().getApplicationContext(), favItem);
+	    			starred.setIcon(R.drawable.ic_action_important);
+	    			getActivity().supportInvalidateOptionsMenu();
+	    			mFavorite = true;
+	    		}
+	            return true;
+	        default:
+	    		Log.e(TAG, "onOptionsItemSelected() Id: "+menu.getItemId()); //TODO e to d
+	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
+	    			mFavoriteItem = mFavoriteItems.get(menu.getItemId());
+		    		Log.e(TAG, "onOptionsItemSelected() FavItem Key= " //TODO e to d
+		    				+mFavoriteItem.getFavoriteURL()+" value="+mFavoriteItem.getFavoriteName());
+		    		util = new FavoriteListUtil();
+		    		mFavoriteTeam=util.queryTeamByTeamURL(getActivity().getApplicationContext(),mFavoriteItem.getFavoriteURL());
+		    		if (mFavoriteTeam != null ) {
+			    		Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+		    			util.launchGameListActivity(getActivity().getApplicationContext(), mFavoriteTeam);
+		    		}
+		    		else {
+						Toast.makeText(getActivity().getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+		    		}
+	    		}
+	            return super.onOptionsItemSelected(menu);
+	    }
 	}
 
 	private void setupGame(int choice, int choiceSize) {

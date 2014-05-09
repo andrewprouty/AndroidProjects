@@ -1,8 +1,10 @@
 package com.prouty.leagueusa.sdsolschedule;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
@@ -15,38 +17,62 @@ public class FavoriteListUtil {
 	private DatabaseHelper mHelper;
 
 
-	public void addFavoriteItem(Context context, FavoriteItem item, int position) {
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("FavoriteName"+position, item.getFavoriteName());
-		editor.putString("FavoriteURL"+position, item.getFavoriteURL());
+	public void addFavoriteItem(Context context, FavoriteItem item) {
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		//URL is absolute, the name could change (currently if multiple conferences are added)
+		editor.putString(item.getFavoriteURL(),item.getFavoriteName());
 		editor.commit();
+		Log.d(TAG, "addFavoriteItem() Key="+item.getFavoriteURL()+" Value"+item.getFavoriteName());
 		return;
 	}
-	public void removeFavoriteItem(Context context, FavoriteItem item, int position) {
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("FavoriteName"+position, item.getFavoriteName());
-		editor.putString("FavoriteURL"+position, item.getFavoriteURL());
+	public void removeFavoriteItem(Context context, String keyTeamURL) {
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(keyTeamURL);
 		editor.commit();
+		Log.d(TAG, "removeFavoriteItem() Key="+keyTeamURL);
 		return;
 	}
 	public ArrayList<FavoriteItem> getFavoriteList(Context context) {
 		ArrayList<FavoriteItem> items = new ArrayList<FavoriteItem>();
-		FavoriteItem item = new FavoriteItem();
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-		int position = 0;
-		String name = settings.getString("FavoriteName"+position,"NONE");
-		String url = settings.getString("FavoriteURL"+position,"NONE");
- 		while (!name.equals("NONE")){
- 			item.setFavoriteName(name);
- 			item.setFavoriteURL(url);
- 			items.add(item);
- 			position++;
+		FavoriteItem item;
+
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		Boolean empty = false;
+
+		for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+            Object val = entry.getValue();
  			item = new FavoriteItem();
- 			name = settings.getString("FavoriteName"+position,"NONE");
- 			url = settings.getString("FavoriteURL"+position,"NONE");
+            if (val == null) {
+    			Log.e(TAG, "getFavoriteList() NULL Key="+entry.getKey()+" Value="+entry.getValue());
+     			item.setFavoriteURL(entry.getKey());
+    			empty = true;
+            }
+            else {
+        		Log.v(TAG, "getFavoriteList() Entry Key="+entry.getKey()+" Value="+entry.getValue());
+     			item.setFavoriteURL(entry.getKey());
+     			item.setFavoriteName(entry.getValue().toString());
+        		Log.v(TAG, "getFavoriteList() Fav Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
+            }
+ 			items.add(item);
+        }
+		if (empty) {
+			SharedPreferences.Editor editor = prefs.edit();
+	        for (int i=0; i<items.size(); i++) {
+	    		item=items.get(i);
+	    		if(item.getFavoriteName() == null){
+	    			editor.remove(item.getFavoriteURL());
+	    			Log.w(TAG, "getFavoriteList() removed Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
+	    		}
+	        }
+	        editor.commit();
 		}
+		/*
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.clear();
+		editor.commit();
+		*/
 		return items;
 	}
     protected TeamItem queryTeamByTeamURL(Context context, String teamURL) {
@@ -106,4 +132,34 @@ public class FavoriteListUtil {
         }
     	return item;
     }
+	protected void launchGameListActivity(Context context, TeamItem item) {
+		Log.d(TAG, "launchGameListActivity()");
+		Intent i = new Intent (context, GameListActivity.class);
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.putExtra("LeagueId", item.getLeagueId().toString());
+		i.putExtra("LeagueURL", item.getLeagueURL().toString());
+		i.putExtra("SeasonId", item.getSeasonId().toString());
+		i.putExtra("SeasonName", item.getSeasonName().toString());
+		i.putExtra("DivisionId", item.getDivisionId().toString());
+		i.putExtra("DivisionName", item.getDivisionName().toString());
+		i.putExtra("ConferenceId", item.getConferenceId().toString());
+		i.putExtra("ConferenceName", item.getConferenceName().toString());
+		i.putExtra("ConferenceCount", item.getConferenceCount().toString());
+		i.putExtra("TeamId", item.getTeamId().toString());
+		i.putExtra("TeamName", item.getTeamName().toString());
+		Log.v(TAG, "launchGameListActivity(): "
+				+ " league ID="    + item.getLeagueId()
+				+ ", url="         + item.getLeagueURL()
+				+ " season ID="    + item.getSeasonId()
+				+ ", name="        + item.getSeasonName() 
+				+ " division ID="  + item.getDivisionId()
+				+ ", name="        + item.getDivisionName()
+				+ " conferenceId=" + item.getConferenceId()
+				+ ", name="        + item.getConferenceName()
+				+ ", count="       + item.getConferenceCount()
+				+ " team ID="      + item.getTeamId()
+				+ ", name="        + item.getTeamName()
+				+ ", url="         + item.getTeamURL());
+		context.startActivity(i);
+	}
 }

@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
+import android.widget.Toast;
 
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.LeagueCursor;
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
@@ -56,18 +57,7 @@ public class MainActivity extends FragmentActivity {
                 .commit();
         }
         mHelper = new DatabaseHelper(getApplicationContext());
-        
-		//TODO Stub out test data for now
-		FavoriteListUtil util = new FavoriteListUtil();
-		FavoriteItem item = new FavoriteItem();
-		item.setFavoriteName("Mystery Team");
-		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=133&conference=137&team=994");
-		util.addFavoriteItem(getApplicationContext(), item, 0);
-		item.setFavoriteName("Johnson-older Team");
-		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933");
-		util.addFavoriteItem(getApplicationContext(), item, 1);
-
-    }
+	}
 
 	private void getOverflowMenu() {
 		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
@@ -90,6 +80,28 @@ public class MainActivity extends FragmentActivity {
 	    mMenu=menu;
 	    return super.onCreateOptionsMenu(menu);
 	}
+    //Gets called every time the user presses the menu button, use for dynamic menus
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.d(TAG, "onPrepareOptionsMenu()");
+		FavoriteListUtil util = new FavoriteListUtil();
+		FavoriteItem favItem = new FavoriteItem();
+		mFavoriteItems=util.getFavoriteList(getApplicationContext());
+		menu.removeGroup(1);
+		for (int i=0; i<mFavoriteItems.size(); i++) {
+			favItem=mFavoriteItems.get(i);
+			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
+					+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
+	        menu.add(1,i,i, favItem.getFavoriteName());
+	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
+	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
+	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
+	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
+	         * title	The text to display for the item. */
+		}
+        return super.onPrepareOptionsMenu(menu);
+    }
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
@@ -116,34 +128,17 @@ public class MainActivity extends FragmentActivity {
 		    				+mFavoriteItem.getFavoriteName()+"-"+mFavoriteItem.getFavoriteURL());
 		    		FavoriteListUtil util = new FavoriteListUtil();
 		    		mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
-		    		Log.d(TAG, "onOptionsItemSelected() FavTeam: "
-		    				+mFavoriteTeam.getTeamName());
+		    		if (mFavoriteTeam != null ) {
+			    		Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+		    			util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+		    		}
+		    		else {
+						Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+		    		}
 	    		}
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-    //Gets called every time the user presses the menu button, use for dynamic menus
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-		Log.d(TAG, "onPrepareOptionsMenu()");
-		FavoriteListUtil util = new FavoriteListUtil();
-		FavoriteItem favItem = new FavoriteItem();
-		mFavoriteItems=util.getFavoriteList(getApplicationContext());
-		menu.removeGroup(1);
-		for (int i=0; i<mFavoriteItems.size(); i++) {
-			favItem=mFavoriteItems.get(i);
-			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
-					+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
-	        menu.add(1,i,i, favItem.getFavoriteName());
-	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
-	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
-	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
-	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
-	         * title	The text to display for the item. */
-		}
-        return super.onPrepareOptionsMenu(menu);
-    }
 	
     public Fragment createFragment() {
 		 return new SeasonListFragment();

@@ -32,6 +32,7 @@ public class GameListActivity extends FragmentActivity {
 		String conferenceCount = getIntent().getStringExtra("ConferenceCount");
 		String teamId  = getIntent().getStringExtra("TeamId");
 		String teamName= getIntent().getStringExtra("TeamName");
+		String teamURL= getIntent().getStringExtra("TeamURL");
 		mTeamItem.setLeagueId(leagueId);
 		mTeamItem.setLeagueURL(leagueURL);
 		mTeamItem.setSeasonId(seasonId);
@@ -43,6 +44,7 @@ public class GameListActivity extends FragmentActivity {
 		mTeamItem.setConferenceCount(conferenceCount);
 		mTeamItem.setTeamId(teamId);
 		mTeamItem.setTeamName(teamName);
+		mTeamItem.setTeamURL(teamURL);
 		Log.v(TAG, "onCreate() "
 				+ " league ID="    + mTeamItem.getLeagueId()
 				+ ", url="         + mTeamItem.getLeagueURL()
@@ -50,11 +52,12 @@ public class GameListActivity extends FragmentActivity {
 				+ ", name="        + mTeamItem.getSeasonName() 
 				+ " division ID="  + mTeamItem.getDivisionId()
 				+ ", name="        + mTeamItem.getDivisionName()
-				+ " conferenceId=" + mTeamItem.getConferenceId()
+				+ " conference ID="+ mTeamItem.getConferenceId()
 				+ ", name="        + mTeamItem.getConferenceName()
 				+ ", count="       + mTeamItem.getConferenceCount()
 				+ " team ID="      + mTeamItem.getTeamId()
-				+ ", name="        + mTeamItem.getTeamName());
+				+ ", name="        + mTeamItem.getTeamName()
+				+ ", url="         + mTeamItem.getTeamURL());
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
