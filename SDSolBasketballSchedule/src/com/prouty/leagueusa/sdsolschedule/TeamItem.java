@@ -13,8 +13,9 @@ public class TeamItem {
 
     private String mTeamId;
     private String mTeamName;
-
-    @Override
+    private String mTeamURL;
+    
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -40,6 +41,8 @@ public class TeamItem {
 		result = prime * result + ((mTeamId == null) ? 0 : mTeamId.hashCode());
 		result = prime * result
 				+ ((mTeamName == null) ? 0 : mTeamName.hashCode());
+		result = prime * result
+				+ ((mTeamURL == null) ? 0 : mTeamURL.hashCode());
 		return result;
 	}
 	@Override
@@ -106,74 +109,84 @@ public class TeamItem {
 				return false;
 		} else if (!mTeamName.equals(other.mTeamName))
 			return false;
+		if (mTeamURL == null) {
+			if (other.mTeamURL != null)
+				return false;
+		} else if (!mTeamURL.equals(other.mTeamURL))
+			return false;
 		return true;
 	}
+	
 	public String getLeagueId() {
-        return mLeagueId;
-    }
-    public void setLeagueId(String leagueId) {
-        mLeagueId = leagueId;
-    }
-    public String getLeagueURL() {
-        return mLeagueURL;
-    }
-    public void setLeagueURL(String leagueURL) {
-        mLeagueURL = leagueURL;
-    }
-    public String getSeasonId() {
-        return mSeasonId;
-    }
-    public void setSeasonId(String seasonId) {
-        mSeasonId = seasonId;
-    }
-    public String getSeasonName() {
-        return mSeasonName;
-    }
-    public void setSeasonName(String seasonName) {
-        mSeasonName = seasonName;
-    }
-    public String getDivisionId() {
-        return mDivisionId;
-    }
-    public void setDivisionId(String divisionId) {
-        mDivisionId = divisionId;
-    }
-    public String getDivisionName() {
-        return mDivisionName;
-    }
-    public void setDivisionName(String divisionName) {
-        mDivisionName = divisionName;
-    }
-    public String getConferenceId() {
-        return mConferenceId;
-    }
-    public void setConferenceId(String conferenceId) {
-        mConferenceId= conferenceId;
-    }
-    public String getConferenceName() {
-        return mConferenceName;
-    }
-    public void setConferenceName(String conferenceName) {
-        mConferenceName = conferenceName;
-    }
-    public String getConferenceCount() {
-        return mConferenceCount;
-    }
-    public void setConferenceCount(String conferenceCount) {
-        mConferenceCount = conferenceCount;
-    }
-
-    //team
-    public String getTeamId() {
-        return mTeamId;
-    }
-    public void setTeamId(String teamId) {
-        mTeamId = teamId;
-    }
-    public String getTeamName() {
-        return mTeamName;
-    }
-    public void setTeamName(String teamName) {
-        mTeamName = teamName;
-    }
+		return mLeagueId;
+	}
+	public void setLeagueId(String leagueId) {
+		mLeagueId = leagueId;
+	}
+	public String getLeagueURL() {
+		return mLeagueURL;
+	}
+	public void setLeagueURL(String leagueURL) {
+		mLeagueURL = leagueURL;
+	}
+	public String getSeasonId() {
+		return mSeasonId;
+	}
+	public void setSeasonId(String seasonId) {
+		mSeasonId = seasonId;
+	}
+	public String getSeasonName() {
+		return mSeasonName;
+	}
+	public void setSeasonName(String seasonName) {
+		mSeasonName = seasonName;
+	}
+	public String getDivisionId() {
+		return mDivisionId;
+	}
+	public void setDivisionId(String divisionId) {
+		mDivisionId = divisionId;
+	}
+	public String getDivisionName() {
+		return mDivisionName;
+	}
+	public void setDivisionName(String divisionName) {
+		mDivisionName = divisionName;
+	}
+	public String getConferenceId() {
+		return mConferenceId;
+	}
+	public void setConferenceId(String conferenceId) {
+		mConferenceId = conferenceId;
+	}
+	public String getConferenceName() {
+		return mConferenceName;
+	}
+	public void setConferenceName(String conferenceName) {
+		mConferenceName = conferenceName;
+	}
+	public String getConferenceCount() {
+		return mConferenceCount;
+	}
+	public void setConferenceCount(String conferenceCount) {
+		mConferenceCount = conferenceCount;
+	}
+	public String getTeamId() {
+		return mTeamId;
+	}
+	public void setTeamId(String teamId) {
+		mTeamId = teamId;
+	}
+	public String getTeamName() {
+		return mTeamName;
+	}
+	public void setTeamName(String teamName) {
+		mTeamName = teamName;
+	}
+	public String getTeamURL() {
+		return mTeamURL;
+	}
+	public void setTeamURL(String teamURL) {
+		mTeamURL = teamURL;
+	}
 }

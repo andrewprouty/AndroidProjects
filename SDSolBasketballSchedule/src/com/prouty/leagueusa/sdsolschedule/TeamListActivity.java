@@ -41,7 +41,8 @@ public class TeamListActivity extends FragmentActivity {
 				+ ", name="        + item.getConferenceName()
 				+ ", count="       + item.getConferenceCount()
 				+ " team ID="      + item.getTeamId()
-				+ ", name="        + item.getTeamName());
+				+ ", name="        + item.getTeamName()
+				+ ", url="         + item.getTeamURL());
 		startActivity(i);
 	}
 	
@@ -110,8 +111,8 @@ public class TeamListActivity extends FragmentActivity {
     				+ ", name="        + item.getConferenceName()
     				+ ", count="       + item.getConferenceCount()
     				+ " team ID="      + item.getTeamId()
-    				+ ", name="        + item.getTeamName());
-
+    				+ ", name="        + item.getTeamName()
+    				+ ", url="         + item.getTeamURL());
             mHelper.insertTeam(item);
             mHelper.close();
         }
@@ -137,7 +138,8 @@ public class TeamListActivity extends FragmentActivity {
     				+ ", name="        + item.getConferenceName()
     				+ ", count="       + item.getConferenceCount()
     				+ " team ID="      + item.getTeamId()
-    				+ ", name="        + item.getTeamName());
+    				+ ", name="        + item.getTeamName()
+    				+ ", url="         + item.getTeamURL());
     	}
     	cursor.close();
         mHelper.close();

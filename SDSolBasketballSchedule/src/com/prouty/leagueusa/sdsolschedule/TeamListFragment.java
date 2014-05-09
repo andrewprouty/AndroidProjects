@@ -128,7 +128,8 @@ public class TeamListFragment extends Fragment{
 				+ ", name="         + mTeamItem.getConferenceName()
 				+ ", count="        + mTeamItem.getConferenceCount()
 				+ " team ID="       + mTeamItem.getTeamId()
-				+ ", name="         + mTeamItem.getTeamName());
+				+ ", name="         + mTeamItem.getTeamName()
+				+ ", url="          + mTeamItem.getTeamURL());
 
 		((TeamListActivity) getActivity()).launchGameListActivity(mTeamItem);
 	}

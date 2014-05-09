@@ -50,29 +50,29 @@ public class TeamListLeagueUSA{
 		ArrayList<TeamItem> items = new ArrayList<TeamItem>();
 		mSetupItem = setupItem; // Sets class variable
 		try {
-			String jsonString = GETList();
-			if (jsonString == null || jsonString.length() == 0) {
-				//Not online - will show an empty list if not in DB
-				Log.i(TAG, "fetchItems() Failed to fetch items");
-			}
-			else {
-				parseList(items, jsonString);
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "fetchItems() Exc:"+e.getMessage(),e);
-		}
-		return items;
-	}
-	private String GETList() {
-		String url = "";
-		String jsonString = "";
-		try {
+			String url = "";
 			// http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127
 			url = Uri.parse(mSetupItem.getLeagueURL()
 					+"?league="+mSetupItem.getLeagueId()
 					+"&season="+mSetupItem.getSeasonId()
 					+"&division="+mSetupItem.getDivisionId()
 					+"&conference="+mSetupItem.getConferenceId()).toString();
+			String jsonString = GETList(url);
+			if (jsonString == null || jsonString.length() == 0) {
+				//Not online - will show an empty list if not in DB
+				Log.i(TAG, "fetchItems() Failed to fetch items");
+			}
+			else {
+				parseList(items, jsonString, url);
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "fetchItems() Exc:"+e.getMessage(),e);
+		}
+		return items;
+	}
+	private String GETList(String url) {
+		String jsonString = "";
+		try {
 			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
 			Log.d(TAG, "GETList() Received json: " + jsonString);
@@ -83,7 +83,7 @@ public class TeamListLeagueUSA{
 		}
 		return jsonString;
 	}
-	private void parseList(ArrayList<TeamItem> items, String stringList) {
+	private void parseList(ArrayList<TeamItem> items, String stringList, String url) {
 		try {
 			JSONArray jsonSeasonList = new JSONArray (stringList);  
 			// [{"teamid":"924","teamname":"CV Hawks"}, ... 
@@ -106,6 +106,7 @@ public class TeamListLeagueUSA{
 
 				item.setTeamId(id);
 				item.setTeamName(name);
+				item.setTeamURL(url+"&team="+id);
 				items.add(item);
 			}
 			Log.d(TAG, "parseList() Items added: "+jsonSeasonList.length());

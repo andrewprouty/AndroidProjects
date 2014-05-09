@@ -55,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_TEAM_CONFERENCE_COUNT = "conference_count";
 	private static final String COLUMN_TEAM_TEAM_ID = "team_id";
 	private static final String COLUMN_TEAM_TEAM_NAME = "team_name";
+	private static final String COLUMN_TEAM_TEAM_URL = "team_url";
 
 	private static final String TABLE_GAME = "game";
 	private static final String COLUMN_GAME_LEAGUE_ID = "league_id";
@@ -105,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
-				" team_id varchar(10), team_name varchar(100)," +
+				" team_id varchar(10), team_name varchar(100), team_url varchar(300)," +
 				" primary key (league_id, season_id, division_id, conference_id, team_id))");
 		db.execSQL("create table game (" +
 				" league_id varchar(10), league_url varchar(100)," +
@@ -254,10 +255,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TEAM_CONFERENCE_COUNT, item.getConferenceCount());
 		cv.put(COLUMN_TEAM_TEAM_ID, item.getTeamId());
 		cv.put(COLUMN_TEAM_TEAM_NAME, item.getTeamName());
+		cv.put(COLUMN_TEAM_TEAM_URL, item.getTeamURL());
 		return getWritableDatabase().insert(TABLE_TEAM, null, cv);
 	}
 	public TeamCursor queryTeamsByConferenceItem(ConferenceItem item) {
-		Log.d(TAG, "queryTeams()");
+		Log.d(TAG, "queryTeamssByConferenceItem()");
 		// equivalent to "select * from league order by league_id asc"
 		// sorting by user_id as an alpha... just copying JSON ordering
 		Cursor wrapped = getReadableDatabase().query(TABLE_TEAM,
@@ -270,6 +272,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId())}, // values
+				null, // group by
+				null, // having
+				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
+		return new TeamCursor(wrapped);
+	}
+	public TeamCursor queryTeamByTeamItem(TeamItem item) {
+		Log.d(TAG, "queryTeamByTeamItem()");
+		// equivalent to "select * from league order by league_id asc"
+		// sorting by user_id as an alpha... just copying JSON ordering
+		Cursor wrapped = getReadableDatabase().query(TABLE_TEAM,
+				null, // all columns 
+				COLUMN_TEAM_LEAGUE_ID + " = ? AND "+
+				COLUMN_TEAM_SEASON_ID + " = ? AND "+
+				COLUMN_TEAM_DIVISION_ID + " = ? AND "+
+				COLUMN_TEAM_CONFERENCE_ID + " = ? AND "+
+				COLUMN_TEAM_TEAM_ID + " = ?",		// Where column TEAM
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId()),
+				String.valueOf(item.getConferenceId()),
+				String.valueOf(item.getTeamId())}, // values
 				null, // group by
 				null, // having
 				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc", // order by
@@ -418,6 +442,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setConferenceCount(getString(getColumnIndex(COLUMN_TEAM_CONFERENCE_COUNT)));
 			item.setTeamId(getString(getColumnIndex(COLUMN_TEAM_TEAM_ID)));
 			item.setTeamName(getString(getColumnIndex(COLUMN_TEAM_TEAM_NAME)));
+			item.setTeamURL(getString(getColumnIndex(COLUMN_TEAM_TEAM_URL)));
 			return item;
 		}
 	}

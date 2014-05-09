@@ -20,7 +20,7 @@
             android:id="@+id/row_game_home_team_textView"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight=".8"
+            android:layout_weight=".75"
             android:hint="@string/game_home_team_hint"
             android:textSize="18sp" />
 
@@ -28,7 +28,7 @@
             android:id="@+id/row_game_home_score_textView"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight=".2"
+            android:layout_weight=".25"
             android:hint="@string/game_home_score_hint"
             android:textSize="18sp" />
 
@@ -43,7 +43,7 @@
             android:id="@+id/row_game_away_team_textView"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight=".8"
+            android:layout_weight=".75"
             android:hint="@string/game_away_team_hint"
             android:textSize="18sp" />
 
@@ -51,7 +51,7 @@
             android:id="@+id/row_game_away_score_textView"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight=".2"
+            android:layout_weight=".25"
             android:hint="@string/game_away_score_hint"
             android:textSize="18sp" />
 

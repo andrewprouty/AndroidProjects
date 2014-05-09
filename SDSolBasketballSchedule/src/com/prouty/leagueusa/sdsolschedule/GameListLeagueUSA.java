@@ -49,7 +49,15 @@ public class GameListLeagueUSA{
 		ArrayList<GameItem> items = new ArrayList<GameItem>();
 		mSetupItem = setupItem; // Sets class variable
 		try {
-			String jsonString = GETList();
+			String url = "";
+			// http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
+			url = Uri.parse(mSetupItem.getLeagueURL()
+					+"?league="+mSetupItem.getLeagueId()
+					+"&season="+mSetupItem.getSeasonId()
+					+"&division="+mSetupItem.getDivisionId()
+					+"&conference="+mSetupItem.getConferenceId()
+					+"&team="+mSetupItem.getTeamId()).toString();
+			String jsonString = GETList(url);
 			if (jsonString == null || jsonString.length() == 0) {
 				//Not online - will show an empty list if not in DB
 				Log.i(TAG, "fetchItems() Failed to fetch items");
@@ -62,17 +70,9 @@ public class GameListLeagueUSA{
 		}
 		return items;
 	}
-	private String GETList() {
-		String url = "";
+	private String GETList(String url) {
 		String jsonString = "";
 		try {
-			// http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
-			url = Uri.parse(mSetupItem.getLeagueURL()
-					+"?league="+mSetupItem.getLeagueId()
-					+"&season="+mSetupItem.getSeasonId()
-					+"&division="+mSetupItem.getDivisionId()
-					+"&conference="+mSetupItem.getConferenceId()
-					+"&team="+mSetupItem.getTeamId()).toString();
 			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
 			Log.d(TAG, "GETList() Received json: " + jsonString);

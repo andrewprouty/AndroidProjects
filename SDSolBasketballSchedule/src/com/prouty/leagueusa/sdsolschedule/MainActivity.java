@@ -3,7 +3,6 @@ package com.prouty.leagueusa.sdsolschedule;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,6 +21,9 @@ public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private DatabaseHelper mHelper;
 	private Menu mMenu;
+	private ArrayList<FavoriteItem> mFavoriteItems;
+	private FavoriteItem mFavoriteItem;
+	private TeamItem mFavoriteTeam;
 	private boolean mFavorite = true; //TODO use a orientation-switch safe approach
 
 	protected void launchDivisionListActivity(SeasonItem item) {
@@ -55,17 +57,15 @@ public class MainActivity extends FragmentActivity {
         }
         mHelper = new DatabaseHelper(getApplicationContext());
         
-		FavoriteListUtil util = new FavoriteListUtil();
-
 		//TODO Stub out test data for now
-		Context context = this;
+		FavoriteListUtil util = new FavoriteListUtil();
 		FavoriteItem item = new FavoriteItem();
 		item.setFavoriteName("Mystery Team");
 		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=133&conference=137&team=994");
-		util.addFavoriteItem(context, item, 0);
+		util.addFavoriteItem(getApplicationContext(), item, 0);
 		item.setFavoriteName("Johnson-older Team");
 		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933");
-		util.addFavoriteItem(context, item, 1);
+		util.addFavoriteItem(getApplicationContext(), item, 1);
 
     }
 
@@ -95,8 +95,6 @@ public class MainActivity extends FragmentActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_refresh:
 	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
-	    		//Intent i = new Intent (MainActivity.this, EditSettingsActivity.class);
-	    		//startActivity(i);
 	            return true;
 	        case R.id.action_choose_important:
 	    		Log.d(TAG, "onOptionsItemSelected() muy importante");
@@ -110,17 +108,17 @@ public class MainActivity extends FragmentActivity {
 	    			mFavorite = true;
 	    		}
 	            return true;
-	        case 1:
-	    		Log.d(TAG, "onOptionsItemSelected() #1");
-	            return true;
-	        case 2:
-	    		Log.d(TAG, "onOptionsItemSelected() #2");
-	            return true;
-	        case 3:
-	    		Log.d(TAG, "onOptionsItemSelected() #3 ");
-	            return true;
 	        default:
 	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
+	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
+	    			mFavoriteItem = mFavoriteItems.get(item.getItemId());
+		    		Log.d(TAG, "onOptionsItemSelected() FavItem: "
+		    				+mFavoriteItem.getFavoriteName()+"-"+mFavoriteItem.getFavoriteURL());
+		    		FavoriteListUtil util = new FavoriteListUtil();
+		    		mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
+		    		Log.d(TAG, "onOptionsItemSelected() FavTeam: "
+		    				+mFavoriteTeam.getTeamName());
+	    		}
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
@@ -131,13 +129,11 @@ public class MainActivity extends FragmentActivity {
 		Log.d(TAG, "onPrepareOptionsMenu()");
 		FavoriteListUtil util = new FavoriteListUtil();
 		FavoriteItem favItem = new FavoriteItem();
-		Context context = this;
-		ArrayList<FavoriteItem> favItems;
-		favItems=util.getFavoriteList(context);
+		mFavoriteItems=util.getFavoriteList(getApplicationContext());
 		menu.removeGroup(1);
-		for (int i=0; i<favItems.size(); i++) {
-			favItem=favItems.get(i);
-			Log.d(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
+		for (int i=0; i<mFavoriteItems.size(); i++) {
+			favItem=mFavoriteItems.get(i);
+			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
 					+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
 	        menu.add(1,i,i, favItem.getFavoriteName());
 	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
