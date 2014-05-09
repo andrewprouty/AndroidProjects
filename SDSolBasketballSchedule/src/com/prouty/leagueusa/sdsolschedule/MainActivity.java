@@ -3,6 +3,7 @@ package com.prouty.leagueusa.sdsolschedule;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +22,7 @@ public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private DatabaseHelper mHelper;
 	private Menu mMenu;
-	private boolean mFavorite = true; //TODO use a rotation safe approach
+	private boolean mFavorite = true; //TODO use a orientation-switch safe approach
 
 	protected void launchDivisionListActivity(SeasonItem item) {
 		Intent i = new Intent (MainActivity.this, DivisionListActivity.class);
@@ -30,10 +31,10 @@ public class MainActivity extends FragmentActivity {
 		i.putExtra("SeasonId", item.getSeasonId().toString());
 		i.putExtra("SeasonName", item.getSeasonName().toString());
 		Log.d(TAG, "launchDivisionListActivity() season: "
-				+ item.getLeagueId() + " ("
-				+ item.getLeagueURL() + "); "
-				+ item.getSeasonId() + "-"
-				+ item.getSeasonName());
+				+ " league ID="    + item.getLeagueId()
+				+ ", url="         + item.getLeagueURL()
+				+ " season ID="    + item.getSeasonId()
+				+ ", name="        + item.getSeasonName()); 
 		startActivity(i);
 	}
 
@@ -53,10 +54,23 @@ public class MainActivity extends FragmentActivity {
                 .commit();
         }
         mHelper = new DatabaseHelper(getApplicationContext());
+        
+		FavoriteListUtil util = new FavoriteListUtil();
+
+		//TODO Stub out test data for now
+		Context context = this;
+		FavoriteItem item = new FavoriteItem();
+		item.setFavoriteName("Mystery Team");
+		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=133&conference=137&team=994");
+		util.addFavoriteItem(context, item, 0);
+		item.setFavoriteName("Johnson-older Team");
+		item.setFavoriteURL("http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933");
+		util.addFavoriteItem(context, item, 1);
+
     }
 
 	private void getOverflowMenu() {
-		// had a problem with 1 (phone http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
+		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
 	     try {
 	        ViewConfiguration config = ViewConfiguration.get(this);
 	        Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
@@ -82,10 +96,10 @@ public class MainActivity extends FragmentActivity {
 	        case R.id.action_refresh:
 	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
 	    		//Intent i = new Intent (MainActivity.this, EditSettingsActivity.class);
-	    		//gfwstartActivity(i);
+	    		//startActivity(i);
 	            return true;
 	        case R.id.action_choose_important:
-	    		Log.d(TAG, "onOptionsItemSelected() calling TBD Popup menu");
+	    		Log.d(TAG, "onOptionsItemSelected() muy importante");
 	    		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
 	    		if (mFavorite) {
 	    			starred.setIcon(R.drawable.ic_action_not_important);
@@ -97,44 +111,43 @@ public class MainActivity extends FragmentActivity {
 	    		}
 	            return true;
 	        case 1:
-	    		Log.d(TAG, "onOptionsItemSelected() called from #1");
+	    		Log.d(TAG, "onOptionsItemSelected() #1");
 	            return true;
 	        case 2:
-	    		Log.d(TAG, "onOptionsItemSelected() called from #2");
+	    		Log.d(TAG, "onOptionsItemSelected() #2");
 	            return true;
 	        case 3:
-	    		Log.d(TAG, "onOptionsItemSelected() called from #3 ");
+	    		Log.d(TAG, "onOptionsItemSelected() #3 ");
 	            return true;
-      	
 	        default:
 	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
 	            return super.onOptionsItemSelected(item);
-	            
 	    }
 	}
 	
-	////////////////////////// http://stackoverflow.com/questions/15580111/how-can-i-dynamically-create-menu-items
-    /* http://developer.android.com/guide/topics/ui/menus.html
-     * http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
-     * 
-     * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
-     * itemId	Unique item ID. Use NONE if you do not need a unique ID.
-     * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
-     * title	The text to display for the item.
-     */ 
     //Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.d(TAG, "onPrepareOptionsMenu()");
-        //menu.clear();
-		//menu.removeItem(R.id.action_refresh); // TODO delete for real later
+		FavoriteListUtil util = new FavoriteListUtil();
+		FavoriteItem favItem = new FavoriteItem();
+		Context context = this;
+		ArrayList<FavoriteItem> favItems;
+		favItems=util.getFavoriteList(context);
 		menu.removeGroup(1);
-        menu.add(1, 1, 1, "First item in the list is really long for a list item");
-        menu.add(1, 2, 2, "Second Team");
-        menu.add(1, 3, 3, "Nth team");
+		for (int i=0; i<favItems.size(); i++) {
+			favItem=favItems.get(i);
+			Log.d(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
+					+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
+	        menu.add(1,i,i, favItem.getFavoriteName());
+	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
+	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
+	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
+	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
+	         * title	The text to display for the item. */
+		}
         return super.onPrepareOptionsMenu(menu);
     }
-	//////////////////////////
 	
     public Fragment createFragment() {
 		 return new SeasonListFragment();

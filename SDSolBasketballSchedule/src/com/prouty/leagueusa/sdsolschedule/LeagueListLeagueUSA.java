@@ -80,7 +80,6 @@ public class LeagueListLeagueUSA{
 	private void parseList(ArrayList<LeagueItem> items, String stringLeagueList) {
 		try {
 			JSONArray jsonLeagueList = new JSONArray (stringLeagueList);  
-			// {"name":"Roger Whitney","id":"1"},...
 			// [{"leagueid":"1","orgname":"San Diego Sol"}]
 			for (int i = 0; i < jsonLeagueList.length(); i++) {
 				JSONObject jsonNode = jsonLeagueList.getJSONObject(i);
