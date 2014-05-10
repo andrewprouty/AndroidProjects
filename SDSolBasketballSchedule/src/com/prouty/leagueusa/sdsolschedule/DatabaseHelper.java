@@ -70,6 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_GAME_TEAM_ID = "team_id";
 	private static final String COLUMN_GAME_TEAM_NAME = "team_name";
 	private static final String COLUMN_GAME_GAME_ID = "game_id"; 
+	private static final String COLUMN_GAME_GAME_SORT_ID = "game_sort_id" ;
 	private static final String COLUMN_GAME_GAME_DATE_TIME = "game_date_time";
 	private static final String COLUMN_GAME_GAME_HOME_TEAM = "game_home_team";
 	private static final String COLUMN_GAME_GAME_AWAY_TEAM = "game_away_team";
@@ -114,7 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
 				" team_id varchar(10), team_name varchar(100)," +
-				" game_id varchar(10), game_date_time varchar(100)," +
+				" game_id varchar(10), game_sort_id varchar(10), game_date_time varchar(100)," +
 				" game_home_team varchar(100), game_away_team varchar(100)," +
 				" game_location varchar(100), game_start_tbd varchar(10)," +
 				" game_home_score varchar(10), game_away_score varchar(10)," +
@@ -238,9 +239,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new ConferenceCursor(wrapped);
 	}
-	public long deleteTeam() {
-		Log.d(TAG, "deleteTeam()");
-		return getWritableDatabase().delete(TABLE_TEAM, null, null);
+	public long deleteTeamsByTeamItem(TeamItem item) {
+		Log.d(TAG, "deleteTeamsByTeamItem()");
+
+		return getWritableDatabase().delete(TABLE_TEAM,
+				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
+						COLUMN_TEAM_SEASON_ID + " = ? AND " +
+						COLUMN_TEAM_DIVISION_ID + " = ? AND "+
+						COLUMN_TEAM_CONFERENCE_ID + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId()),
+				String.valueOf(item.getConferenceId())}); // values
 	}
 	public long insertTeam(TeamItem item) {
 		ContentValues cv = new ContentValues();
@@ -300,11 +310,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new TeamCursor(wrapped);
 	}
-	public long deleteGame() {
-		Log.d(TAG, "deleteGame()");
-		return getWritableDatabase().delete(TABLE_GAME, null, null);
+	
+	public long deleteGameByGameItem(GameItem item) {
+		Log.d(TAG, "deleteGameByGameItem()");
+		return getWritableDatabase().delete(TABLE_GAME,
+				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
+						COLUMN_TEAM_SEASON_ID + " = ? AND " +
+						COLUMN_TEAM_DIVISION_ID + " = ? AND "+
+						COLUMN_TEAM_CONFERENCE_ID + " = ? AND "+
+						COLUMN_TEAM_TEAM_ID + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId()),
+				String.valueOf(item.getConferenceId()),
+				String.valueOf(item.getTeamId())}); // values
 	}
-	public long insertGame(GameItem item) {
+	public long insertGame(GameItem item, int sortID) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_GAME_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_GAME_LEAGUE_URL, item.getLeagueURL());
@@ -318,6 +339,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_GAME_TEAM_ID, item.getTeamId());
 		cv.put(COLUMN_GAME_TEAM_NAME, item.getTeamName());
 		cv.put(COLUMN_GAME_GAME_ID, item.getGameId());
+		cv.put(COLUMN_GAME_GAME_SORT_ID, sortID);
 		cv.put(COLUMN_GAME_GAME_DATE_TIME, item.getGameDateTime());
 		cv.put(COLUMN_GAME_GAME_HOME_TEAM, item.getGameHomeTeam());
 		cv.put(COLUMN_GAME_GAME_AWAY_TEAM, item.getGameAwayTeam());
@@ -338,7 +360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				COLUMN_GAME_SEASON_ID + " = ? AND "+
 				COLUMN_GAME_DIVISION_ID + " = ? AND "+
 				COLUMN_GAME_CONFERENCE_ID + " = ? AND "+
-				COLUMN_GAME_GAME_ID + " = ?",		// Where column
+				COLUMN_GAME_TEAM_ID + " = ?",		// Where column
 				new String[]{ String.valueOf(item.getLeagueId()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
@@ -346,7 +368,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getTeamId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_GAME_GAME_DATE_TIME + " COLLATE NOCASE asc", // order by
+				COLUMN_GAME_GAME_SORT_ID + " COLLATE NOCASE asc", // order by
 				null); // limit of rows
 		return new GameCursor(wrapped);
 	}
@@ -466,6 +488,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setGameId(getString(getColumnIndex(COLUMN_GAME_TEAM_ID)));
 			item.setTeamName(getString(getColumnIndex(COLUMN_GAME_TEAM_NAME)));
 			item.setGameId(getString(getColumnIndex(COLUMN_GAME_GAME_ID)));
+			//item.setGameSortId(getString(getColumnIndex(COLUMN_GAME_GAME_SORT_ID)));
 			item.setGameDateTime(getString(getColumnIndex(COLUMN_GAME_GAME_DATE_TIME)));
 			item.setGameHomeTeam(getString(getColumnIndex(COLUMN_GAME_GAME_HOME_TEAM)));
 			item.setGameAwayTeam(getString(getColumnIndex(COLUMN_GAME_GAME_AWAY_TEAM)));

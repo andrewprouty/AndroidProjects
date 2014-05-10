@@ -74,8 +74,10 @@ public class GameListActivity extends FragmentActivity {
 	}
     protected void insertGameItems(ArrayList<GameItem> items) {
     	GameItem item;
-        Log.d(TAG, "insertGameItems()");
-		mHelper.deleteGame(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertGameItems() to insert count="+items.size());
+		long count=0;
+		count=mHelper.deleteGameByGameItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertGameItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertGameItems() Game: "
@@ -90,29 +92,36 @@ public class GameListActivity extends FragmentActivity {
     				+ ", count="       + item.getConferenceCount()
     				+ " team ID="      + item.getTeamId()
     				+ ", name="        + item.getTeamName()
-    				+ " Game ID="      + item.getGameId()
+    				+ " game ID="      + item.getGameId()
     				+ ", datetime="    + item.getGameDateTime()
     				+ ", hometeam="    + item.getGameHomeTeam()
     				+ ", awayteam="    + item.getGameAwayTeam()
     				+ ", location="    + item.getGameLocation()
     				+ ", starttbd="    + item.getGameStartTBD()
     				+ ", homescore="    + item.getGameHomeScore()
-    				+ ", awayscore="    + item.getGameAwayScore());
-            mHelper.insertGame(item);
+    				+ ", awayscore="    + item.getGameAwayScore()
+    				+ ", sort id="+i);
+            mHelper.insertGame(item,i);
             mHelper.close();
         }
         return;
     }
-    protected ArrayList<GameItem> queryGameByTeamItem(TeamItem pk) {
+    protected ArrayList<GameItem> queryGamesByTeamItem(TeamItem pk) {
     	GameCursor cursor;
     	ArrayList<GameItem> items = new ArrayList<GameItem>();
+		Log.d(TAG, "queryGamesByTeamItem() Team PKs: "
+				+ " league ID="    + pk.getLeagueId()
+				+ " season ID="    + pk.getSeasonId()
+				+ " division ID="  + pk.getDivisionId()
+				+ " conferenceId=" + pk.getConferenceId()
+				+ " team ID="      + pk.getTeamId());
     	cursor = mHelper.queryGamesByTeamItem(pk);
     	cursor.moveToFirst();
     	while(!cursor.isAfterLast()) {
     		GameItem item = cursor.getGameItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.v(TAG, "queryGameItem() Game: "
+    		Log.v(TAG, "queryGamesByTeamItem() Game: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
     				+ " season ID="    + item.getSeasonId()
@@ -124,7 +133,7 @@ public class GameListActivity extends FragmentActivity {
     				+ ", count="       + item.getConferenceCount()
     				+ " team ID="      + item.getTeamId()
     				+ ", name="        + item.getTeamName()
-    				+ " Game ID="      + item.getGameId()
+    				+ " game ID="      + item.getGameId()
     				+ ", datetime="    + item.getGameDateTime()
     				+ ", hometeam="    + item.getGameHomeTeam()
     				+ ", awayteam="    + item.getGameAwayTeam()
@@ -135,6 +144,7 @@ public class GameListActivity extends FragmentActivity {
     	}
     	cursor.close();
         mHelper.close();
+		Log.e(TAG, "queryGamesByTeamItem() Game Count="+items.size());//TODO e to d
     	return items;
     }
 

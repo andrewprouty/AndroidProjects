@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
@@ -72,6 +71,7 @@ public class MainActivity extends FragmentActivity {
 	        e.printStackTrace();
 	    }
 	}
+	/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu()");
@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity {
 	    inflater.inflate(R.menu.activity_main_actions, menu);
 	    mMenu=menu;
 	    return super.onCreateOptionsMenu(menu);
-	}
+	}*/
     //Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -124,8 +124,8 @@ public class MainActivity extends FragmentActivity {
 	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
 	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
 	    			mFavoriteItem = mFavoriteItems.get(item.getItemId());
-		    		Log.d(TAG, "onOptionsItemSelected() FavItem: "
-		    				+mFavoriteItem.getFavoriteName()+"-"+mFavoriteItem.getFavoriteURL());
+		    		Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
+		    				+" Value="+mFavoriteItem.getFavoriteName());
 		    		FavoriteListUtil util = new FavoriteListUtil();
 		    		mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
 		    		if (mFavoriteTeam != null ) {

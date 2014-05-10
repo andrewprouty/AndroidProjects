@@ -31,7 +31,7 @@ public class GameListFragment extends Fragment{
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	private FavoriteItem mFavoriteItem;
 	private TeamItem mFavoriteTeam;
-	private boolean mFavorite = true; //TODO use a orientation-switch safe approach
+	private boolean mFavorite = true;
 
 	View view;
 	TextView mSeasonTextView;
@@ -88,15 +88,15 @@ public class GameListFragment extends Fragment{
     //Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-		Log.e(TAG, "onPrepareOptionsMenu()"); //TODO from e to d
 		FavoriteListUtil util = new FavoriteListUtil();
 		FavoriteItem favItem = new FavoriteItem();
+		mFavorite=false;
 		mFavoriteItems=util.getFavoriteList(getActivity().getApplicationContext());
+		Log.d(TAG, "onPrepareOptionsMenu() favorite count:"+mFavoriteItems.size());
 		menu.removeGroup(1);
-		Log.v(TAG, "onPrepareOptionsMenu() favorite count:"+mFavoriteItems.size());
 		for (int i=0; i<mFavoriteItems.size(); i++) {
 			favItem=mFavoriteItems.get(i);
-			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
+			Log.d(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
 					+favItem.getFavoriteName()+","+favItem.getFavoriteURL());
 	        menu.add(1,i,i, favItem.getFavoriteName());
 	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
@@ -104,6 +104,24 @@ public class GameListFragment extends Fragment{
 	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
 	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
 	         * title	The text to display for the item. */
+	        if (favItem.getLeagueId().equals(mTeamItem.getLeagueId()) &&
+	    	    favItem.getSeasonId().equals(mTeamItem.getSeasonId()) &&
+	    	    favItem.getDivisionId().equals(mTeamItem.getDivisionId()) &&
+   	        	favItem.getConferenceId().equals(mTeamItem.getConferenceId()) &&
+   	        	favItem.getTeamId().equals(mTeamItem.getTeamId())) {
+	        	mFavorite=true;
+				Log.w(TAG, "onPrepareOptionsMenu() TRUE");
+	        }
+	        else {
+				Log.w(TAG, "onPrepareOptionsMenu() FALSE");
+    	    }
+		}
+		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
+		if (mFavorite) {
+			starred.setIcon(R.drawable.ic_action_important);
+		}
+		else {
+			starred.setIcon(R.drawable.ic_action_not_important);
 		}
         super.onPrepareOptionsMenu(menu);
     }
@@ -114,44 +132,28 @@ public class GameListFragment extends Fragment{
 	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
 	            return true;
 	        case R.id.action_choose_important:
-	    		Log.e(TAG, "onOptionsItemSelected() muy importante");//TODO e to d
-	    		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
+	    		Log.e(TAG, "onOptionsItemSelected() muy importante "+
+	    				"Team id="+mTeamItem.getTeamId() +
+	    				" name="+mTeamItem.getTeamName() +
+	    				" url="+mTeamItem.getTeamURL());//TODO e to d
     			FavoriteListUtil util = new FavoriteListUtil();
-    			FavoriteItem favItem = new FavoriteItem();
 	    		if (mFavorite) {
-	    			starred.setIcon(R.drawable.ic_action_not_important);
 		    		Log.d(TAG, "onOptionsItemSelected() REMOVE NEXT"); //TODO
 	    			util.removeFavoriteItem(getActivity().getApplicationContext(), mTeamItem.getTeamURL());
-	    			mFavorite = false;
 	    		}
 	    		else {
-	    			if(mTeamItem.getConferenceCount().equals("one")) {
-		    			favItem.setFavoriteName(mTeamItem.getTeamName()+"/"
-		    					+ mTeamItem.getDivisionName()+"/"
-		    					+ mTeamItem.getSeasonName());
-	    			}
-	    			else {
-		    			favItem.setFavoriteName(mTeamItem.getTeamName()+"/"
-		    					+ mTeamItem.getConferenceName()+"/"
-		    					+ mTeamItem.getDivisionName()+"/"
-		    					+ mTeamItem.getSeasonName());
-	    			}	    				
-	    			favItem.setFavoriteURL(mTeamItem.getTeamURL());
-		    		Log.d(TAG, "onOptionsItemSelected() Added: " + favItem.getFavoriteName()+
-		    				","+favItem.getFavoriteURL());
-
-	    			util.addFavoriteItem(getActivity().getApplicationContext(), favItem);
-	    			starred.setIcon(R.drawable.ic_action_important);
-	    			getActivity().supportInvalidateOptionsMenu();
-	    			mFavorite = true;
+		    		Log.d(TAG, "onOptionsItemSelected() adding Team ID="+mTeamItem.getTeamId() +
+		    				" Name="+mTeamItem.getTeamName());
+		    		mFavoriteItem = util.addFavoriteItem(getActivity().getApplicationContext(), mTeamItem);
 	    		}
+    			getActivity().supportInvalidateOptionsMenu(); //triggers onPrepareOptions which resets menu
 	            return true;
 	        default:
 	    		Log.e(TAG, "onOptionsItemSelected() Id: "+menu.getItemId()); //TODO e to d
 	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
 	    			mFavoriteItem = mFavoriteItems.get(menu.getItemId());
 		    		Log.e(TAG, "onOptionsItemSelected() FavItem Key= " //TODO e to d
-		    				+mFavoriteItem.getFavoriteURL()+" value="+mFavoriteItem.getFavoriteName());
+		    				+mFavoriteItem.getFavoriteURL()+" Value="+mFavoriteItem.getFavoriteName());
 		    		util = new FavoriteListUtil();
 		    		mFavoriteTeam=util.queryTeamByTeamURL(getActivity().getApplicationContext(),mFavoriteItem.getFavoriteURL());
 		    		if (mFavoriteTeam != null ) {
@@ -231,7 +233,7 @@ public class GameListFragment extends Fragment{
 	private class GameListAdapter extends ArrayAdapter<GameItem> {
 		public GameListAdapter(ArrayList<GameItem> items) {
 			super(getActivity(), 0, items);
-			Log.i(TAG, "GameListAdapter Constructor");
+			Log.d(TAG, "GameListAdapter Constructor");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -240,7 +242,7 @@ public class GameListFragment extends Fragment{
 			}
 
 			GameItem item = getItem(position);
-			Log.d(TAG, "GameListAdapter getView() ["+position+"]");
+			Log.v(TAG, "GameListAdapter getView() ["+position+"]");
 
 			TextView dateTimeTextView = (TextView)convertView.findViewById(R.id.row_game_dateTime_textView);
 			Log.v(TAG, "adapter GameDateTime(): "+item.getGameDateTime());
@@ -297,8 +299,6 @@ public class GameListFragment extends Fragment{
 				homeScoreTextView.setText(item.getGameHomeScore());
 				awayScoreTextView.setText(item.getGameAwayScore());
 			}
-			//.equals("Yes")) {
-
 			TextView locationTextView = (TextView)convertView.findViewById(R.id.row_game_location_textView);
 			Log.v(TAG, "adapter GameLocation(): "+item.getGameLocation());
 			locationTextView.setText(item.getGameLocation());
@@ -328,7 +328,7 @@ public class GameListFragment extends Fragment{
         	Log.d(TAG, "QueryGameItemsTask.doInBackground()");
     		ArrayList<GameItem> items = null;
     		try {
-    			items = ((GameListActivity) getActivity()).queryGameByTeamItem(mTeamItem);
+    			items = ((GameListActivity) getActivity()).queryGamesByTeamItem(mTeamItem);
     		} catch (Exception e) {
     			Log.e(TAG, "QueryGameItemsTask.doInBackground() Exception.", e);
     		}
@@ -348,5 +348,4 @@ public class GameListFragment extends Fragment{
             cancel(true);
 		}
 	}
-
 }

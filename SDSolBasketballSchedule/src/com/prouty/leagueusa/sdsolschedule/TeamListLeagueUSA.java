@@ -75,7 +75,7 @@ public class TeamListLeagueUSA{
 		try {
 			Log.d(TAG, "GETList():" + url);
 			jsonString = getUrl(url);
-			Log.d(TAG, "GETList() Received json: " + jsonString);
+			Log.v(TAG, "GETList() Received json: " + jsonString);
 		} catch (IOException ioe) {
 			Log.e(TAG, "GETList() IOException: "+ioe.getMessage()); // skip stack
 		} catch (Exception e) {

@@ -113,9 +113,10 @@ public class TeamListFragment extends Fragment{
 			}
 		}
 	}
-    	
+
 	private void returnTeam(int position) {
-    	mTeamItem = mTeamFetch.get(position);
+		
+    	mTeamItem = mTeamDisplay.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		Log.i(TAG, "returnTeam()=["+position+"]"
 				+ " league ID="     + mTeamItem.getLeagueId()

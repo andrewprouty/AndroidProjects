@@ -17,14 +17,28 @@ public class FavoriteListUtil {
 	private DatabaseHelper mHelper;
 
 
-	public void addFavoriteItem(Context context, FavoriteItem item) {
+	public FavoriteItem addFavoriteItem(Context context, TeamItem team) {
+		FavoriteItem fav = new FavoriteItem();
+		if(team.getConferenceCount().equals("one")) {
+			fav.setFavoriteName(team.getTeamName()+"/"
+					+ team.getDivisionName()+"/"
+					+ team.getSeasonName());
+		}
+		else {
+			fav.setFavoriteName(team.getTeamName()+"/"
+					+ team.getConferenceName()+"/"
+					+ team.getDivisionName()+"/"
+					+ team.getSeasonName());
+		}	    				
+		fav.setFavoriteURL(team.getTeamURL());
+		Log.d(TAG, "addFavoriteItem() Key="+fav.getFavoriteURL()+" Value="+fav.getFavoriteName());
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		//URL is absolute, the name could change (currently if multiple conferences are added)
-		editor.putString(item.getFavoriteURL(),item.getFavoriteName());
+		//TODO Check it is not there before adding.
+		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
-		Log.d(TAG, "addFavoriteItem() Key="+item.getFavoriteURL()+" Value"+item.getFavoriteName());
-		return;
+		return fav;
 	}
 	public void removeFavoriteItem(Context context, String keyTeamURL) {
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -32,6 +46,8 @@ public class FavoriteListUtil {
 		editor.remove(keyTeamURL);
 		editor.commit();
 		Log.d(TAG, "removeFavoriteItem() Key="+keyTeamURL);
+		//editor.clear(); 		// TODO  Add a context menu to delete & delete-all
+		editor.commit();
 		return;
 	}
 	public ArrayList<FavoriteItem> getFavoriteList(Context context) {
@@ -44,16 +60,16 @@ public class FavoriteListUtil {
 		for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
             Object val = entry.getValue();
  			item = new FavoriteItem();
+ 			item.setFavoriteURL(entry.getKey());
+            item=getFieldsFromURL(item);
             if (val == null) {
     			Log.e(TAG, "getFavoriteList() NULL Key="+entry.getKey()+" Value="+entry.getValue());
-     			item.setFavoriteURL(entry.getKey());
     			empty = true;
             }
             else {
-        		Log.v(TAG, "getFavoriteList() Entry Key="+entry.getKey()+" Value="+entry.getValue());
-     			item.setFavoriteURL(entry.getKey());
+        		//Log.v(TAG, "getFavoriteList() Entry Key="+entry.getKey()+       " Value="+entry.getValue());
      			item.setFavoriteName(entry.getValue().toString());
-        		Log.v(TAG, "getFavoriteList() Fav Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
+        		Log.v(TAG, "getFavoriteList() Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
             }
  			items.add(item);
         }
@@ -68,25 +84,32 @@ public class FavoriteListUtil {
 	        }
 	        editor.commit();
 		}
-		/*
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.clear();
-		editor.commit();
-		*/
 		return items;
 	}
-    protected TeamItem queryTeamByTeamURL(Context context, String teamURL) {
-    	//String leagueId, String seasonId, String DivisionId, String ConferenceId
-		// www...mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
-        mHelper = new DatabaseHelper(context);
-    	Uri uri = Uri.parse(teamURL);
-    	TeamItem item = new TeamItem();
+	private FavoriteItem getFieldsFromURL (FavoriteItem item) {
+    	Uri uri = Uri.parse(item.getFavoriteURL());
     	item.setLeagueId(uri.getQueryParameter("league"));
     	item.setSeasonId(uri.getQueryParameter("season"));
     	item.setDivisionId(uri.getQueryParameter("division"));
     	item.setConferenceId(uri.getQueryParameter("conference"));
     	item.setTeamId(uri.getQueryParameter("team"));
-		Log.v(TAG, "queryTeamByTeamURL() Team PK: "
+		return item; 
+	}
+	private TeamItem getFieldsFromURL (TeamItem item) {
+    	Uri uri = Uri.parse(item.getTeamURL());
+    	item.setLeagueId(uri.getQueryParameter("league"));
+    	item.setSeasonId(uri.getQueryParameter("season"));
+    	item.setDivisionId(uri.getQueryParameter("division"));
+    	item.setConferenceId(uri.getQueryParameter("conference"));
+    	item.setTeamId(uri.getQueryParameter("team"));
+		return item; 
+	}
+    protected TeamItem queryTeamByTeamURL(Context context, String teamURL) {
+		// www...mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
+    	TeamItem item = new TeamItem();
+		item.setTeamURL(teamURL);
+        item=getFieldsFromURL(item);
+		Log.e(TAG, "queryTeamByTeamURL() Team PK: "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
 				+ " season ID="    + item.getSeasonId()
@@ -99,6 +122,7 @@ public class FavoriteListUtil {
 				+ " team ID="      + item.getTeamId()
 				+ ", name="        + item.getTeamName()
 				+ ", url="         + item.getTeamURL());
+        mHelper = new DatabaseHelper(context);
     	TeamCursor cursor;
     	ArrayList<TeamItem> items = new ArrayList<TeamItem>();
     	cursor = mHelper.queryTeamByTeamItem(item);
@@ -107,7 +131,7 @@ public class FavoriteListUtil {
     		item = cursor.getTeamItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.v(TAG, "queryTeamByTeamURL() Team: "
+    		Log.e(TAG, "queryTeamByTeamURL() Team: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
     				+ " season ID="    + item.getSeasonId()
@@ -147,6 +171,7 @@ public class FavoriteListUtil {
 		i.putExtra("ConferenceCount", item.getConferenceCount().toString());
 		i.putExtra("TeamId", item.getTeamId().toString());
 		i.putExtra("TeamName", item.getTeamName().toString());
+		i.putExtra("TeamURL", item.getTeamURL().toString());
 		Log.v(TAG, "launchGameListActivity(): "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
@@ -154,7 +179,7 @@ public class FavoriteListUtil {
 				+ ", name="        + item.getSeasonName() 
 				+ " division ID="  + item.getDivisionId()
 				+ ", name="        + item.getDivisionName()
-				+ " conferenceId=" + item.getConferenceId()
+				+ " conference ID=" + item.getConferenceId()
 				+ ", name="        + item.getConferenceName()
 				+ ", count="       + item.getConferenceCount()
 				+ " team ID="      + item.getTeamId()

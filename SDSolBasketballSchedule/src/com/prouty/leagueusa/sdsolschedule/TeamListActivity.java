@@ -30,7 +30,7 @@ public class TeamListActivity extends FragmentActivity {
 		i.putExtra("ConferenceCount", item.getConferenceCount().toString());
 		i.putExtra("TeamId", item.getTeamId().toString());
 		i.putExtra("TeamName", item.getTeamName().toString());
-		i.putExtra("TeamURL", item.getTeamName().toString());
+		i.putExtra("TeamURL", item.getTeamURL().toString());
 		Log.v(TAG, "launchGameListActivity(): "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
@@ -96,9 +96,11 @@ public class TeamListActivity extends FragmentActivity {
 		return mConferenceItem;
 	}
     protected void insertTeamItems(ArrayList<TeamItem> items) {
+		Log.d(TAG, "insertTeamItems() to insert count="+items.size());
     	TeamItem item;
-        Log.d(TAG, "insertTeamItems()");
-		mHelper.deleteTeam(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        long count=0;
+		count=mHelper.deleteTeamsByTeamItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertTeamItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertTeamItems() Team: "
