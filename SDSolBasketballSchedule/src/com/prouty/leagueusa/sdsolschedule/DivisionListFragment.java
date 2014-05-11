@@ -78,8 +78,9 @@ public class DivisionListFragment extends Fragment{
 		Log.d(TAG, "setupDivision("+choice+") choiceSize="+choiceSize+" season="+mSeasonItem.getSeasonId()+"-"+mSeasonItem.getSeasonName());
 		if (mDivisionDisplay == null || mDivisionDisplay.size() == 0) {
 			if (choiceSize > 0) {
-				if (choice == GET) {						//No results yet, but I have some
+				if (choice == GET) {
 					mDivisionDisplay = mDivisionFetch;
+					Log.d(TAG, "setupDivision("+choice+") (2nd/GET) has the only results so insert them");
 					new InsertDivisionItemsTask().execute();	// Most likely Query was fast but empty
 				}
 				else {
@@ -87,14 +88,31 @@ public class DivisionListFragment extends Fragment{
 				}
 				DivisionListAdapter adapter = new DivisionListAdapter(mDivisionDisplay, choice);
 				mListView.setAdapter(adapter);
-			} //[else] 1st with no results, or 2nd and nobody had results
+			}
+
+			else {
+				if (choice == QUERY) {
+					Log.d(TAG, "setupDivision("+choice+") (1st/QUERY) has no results");
+				}
+				else {
+					Log.w(TAG, "setupDivision("+choice+") (2nd/GET) also has no results");
+					//ENH The ENH is to add to others selection screens also (rather than blank screen) 
+					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_division);
+					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
+					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+				}
+			}			
 		}
-		else {//else: 1st had results. I am 2nd 
-			if (choiceSize > 0) {							// Both had results
+		else { 
+			if (choiceSize == 0) {
+				Log.w(TAG, "setupDivision("+choice+") (1st/QUERY) had results (2nd/GET) had none. Offline?");
+			}
+			else{
 				if (!mDivisionFetch.equals(mDivisionQuery)) {
-					Log.d(TAG, "setupDivision("+choice+") Fetched != Queried. Sizes info only: "
+					Log.w(TAG, "setupDivision("+choice+") Fetched != Queried. Sizes info only: "
 							+ mDivisionFetch.size() + " " + mDivisionQuery.size());
 					if (choice == GET) {
+						Log.d(TAG, "setupDivision("+choice+") (2nd/GET) difference so inserting");
 						new InsertDivisionItemsTask().execute();
 						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
@@ -126,20 +144,17 @@ public class DivisionListFragment extends Fragment{
 		}
 		Log.d(TAG, "returnConference("+choice+") choiceSize="+choiceSize+" division="+mDivisionItem.getDivisionId()+"-"+mDivisionItem.getDivisionName());
 		if (mConferenceDisplay == null || mConferenceDisplay.size() == 0) {
-			Log.d(TAG, "returnConference("+choice+") a-NO display");
 			if (choiceSize > 0) {
-				Log.d(TAG, "returnConference("+choice+") b-yes choice");
 				if (choice == GET) {
-					Log.d(TAG, "returnConference("+choice+") c1-GET");
+					Log.d(TAG, "returnConference("+choice+") (2nd/GET) has the only results so insert them");
 					mConferenceDisplay = mConferenceFetch;
 					new InsertConferenceItemsTask().execute(); 
 				}
 				else {
-					Log.d(TAG, "returnConference("+choice+") c2-QUERY");
 					mConferenceDisplay = mConferenceQuery;
 				}
 				mConferenceItem = mConferenceDisplay.get(0);
-				Log.d(TAG, "returnConference("+choice+"):"
+				Log.i(TAG, "returnConference("+choice+"):"
 						+ " league ID="    + mConferenceItem.getLeagueId()
 						+ ", url="         + mConferenceItem.getLeagueURL()
 						+ " season ID="    + mConferenceItem.getSeasonId()
@@ -150,24 +165,34 @@ public class DivisionListFragment extends Fragment{
 						+ ", name="        + mConferenceItem.getConferenceName()
 						+ ", count="       + mConferenceItem.getConferenceCount());
 				if(mConferenceDisplay.size() == 1) {
-					Log.d(TAG, "returnConference("+choice+") d1-Team");
 					((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
 				}
 				else { // multiple conferences, the user must choose
-					Log.d(TAG, "returnConference("+choice+") d2-conference");
 					((DivisionListActivity) getActivity()).launchConferenceListActivity(mConferenceItem);
 				}
-			} //[else] 1st with no results, or 2nd and nobody had results
+			}
+			else { // 1st/QUERY had no results OR 2nd/GET and still no results
+				if (choice == QUERY) {
+					Log.d(TAG, "returnConference("+choice+") (1st/QUERY) has no results");
+				}
+				else {
+					Log.w(TAG, "returnConference("+choice+") (2nd/GET) also has no results");
+					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_conference);
+					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
+					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+				}
+			}
 		}
-		else {//else: 1st had results. I am 2nd 
-			Log.d(TAG, "returnConference("+choice+") m-ELSE, display had content already");
-			if (choiceSize > 0) {							// Both had results
-				Log.d(TAG, "returnConference("+choice+") n-yes choice size");
+		else { 
+			if (choiceSize == 0) {
+				Log.w(TAG, "returnConference("+choice+") (1st/QUERY) had results (2nd/GET) had none. Offline?");
+			}
+			else {
 				if (!mConferenceFetch.equals(mConferenceQuery)) {
 					Log.w(TAG, "returnConference("+choice+") Fetched != Queried. Sizes info only: "
 							+ mConferenceFetch.size() + " " + mConferenceQuery.size());
 					if (choice == GET) {
-						Log.d(TAG, "returnConference("+choice+") n-difference-insert");
+						Log.d(TAG, "returnConference("+choice+") (2nd/GET) difference so inserting");
 						new InsertConferenceItemsTask().execute();
 						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
@@ -175,10 +200,6 @@ public class DivisionListFragment extends Fragment{
 				else {
 					Log.d(TAG, "returnConference("+choice+") Fetched=Queried");
 				}
-			}
-			else { // No blank UI to get this point across for Conference
-				Log.d(TAG, "returnConference("+choice+") make toast");
-				Toast.makeText(getActivity().getApplicationContext(), R.string.no_information_available, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

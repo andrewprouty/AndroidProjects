@@ -4,10 +4,11 @@
     <string name="division_name_hint">Please select a Division</string>
     <string name="conference_name_hint">Please select a Conference</string>
     <string name="team_name_hint">Please select a Team</string>
-    <string name="no_information_available">No information is available.</string>
+    <string name="no_information_available">No %s information available.</string>
+    <string name="name_division">Division</string>
+    <string name="name_conference">Conference</string>
     <string name="try_again_for_update">Exit/return for updated results.</string>
     <string name="broken_must_navigate">Broken shortcut, navigate once to fix.</string>
-    <string name="fatal_conference_suggestion">Try a different division</string>
     <string name="score">score</string>
     <string name="game_dateTime_hint">Game Time and Date</string>
     <string name="game_location_hint">Game Location / Field</string>
@@ -25,5 +26,4 @@
     <string name="game_5makeup_2_of_2">Game</string>
     <string name="action_choose_title">Choose Favorite</string>
     <string name="action_refresh_title">Refresh Screen</string>
-    <string name="menu_settings">Settings</string>
 </resources>
