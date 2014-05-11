@@ -27,11 +27,11 @@ public class GameListFragment extends Fragment{
 	private ArrayList<GameItem> mGameQuery;
 	private ArrayList<GameItem> mGameDisplay;
 	
-	private Menu mMenu;
+	private Menu mMenu; //To add the important button 
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	private FavoriteItem mFavoriteItem;
 	private TeamItem mFavoriteTeam;
-	private boolean mFavorite = true;
+	private boolean mFavorite;
 
 	View view;
 	TextView mSeasonTextView;
@@ -79,13 +79,14 @@ public class GameListFragment extends Fragment{
 		return view;
 	}
 
+	//mMenu referenced used to access the starred icon 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG, "onCreateOptionsMenu()");
 		inflater.inflate(R.menu.activity_main_actions, menu);
 	    mMenu=menu;
 	    super.onCreateOptionsMenu(menu,inflater);
 	}
-    //Gets called every time the user presses the menu button, use for dynamic menus
+	//Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 		FavoriteListUtil util = new FavoriteListUtil();
@@ -96,25 +97,16 @@ public class GameListFragment extends Fragment{
 		menu.removeGroup(1);
 		for (int i=0; i<mFavoriteItems.size(); i++) {
 			favItem=mFavoriteItems.get(i);
-			Log.d(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
-					+favItem.getFavoriteName()+","+favItem.getFavoriteURL());
+			Log.d(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="+favItem.getFavoriteName()+","+favItem.getFavoriteURL());
 	        menu.add(1,i,i, favItem.getFavoriteName());
-	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
-	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
-	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
-	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
-	         * title	The text to display for the item. */
 	        if (favItem.getLeagueId().equals(mTeamItem.getLeagueId()) &&
 	    	    favItem.getSeasonId().equals(mTeamItem.getSeasonId()) &&
 	    	    favItem.getDivisionId().equals(mTeamItem.getDivisionId()) &&
    	        	favItem.getConferenceId().equals(mTeamItem.getConferenceId()) &&
    	        	favItem.getTeamId().equals(mTeamItem.getTeamId())) {
 	        	mFavorite=true;
-				Log.w(TAG, "onPrepareOptionsMenu() TRUE");
+				Log.d(TAG, "onPrepareOptionsMenu() Found the favorite");
 	        }
-	        else {
-				Log.w(TAG, "onPrepareOptionsMenu() FALSE");
-    	    }
 		}
 		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
 		if (mFavorite) {
@@ -122,6 +114,7 @@ public class GameListFragment extends Fragment{
 		}
 		else {
 			starred.setIcon(R.drawable.ic_action_not_important);
+			Log.v(TAG, "onPrepareOptionsMenu() This team was not in the favorite list");
 		}
         super.onPrepareOptionsMenu(menu);
     }
@@ -132,13 +125,14 @@ public class GameListFragment extends Fragment{
 	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
 	            return true;
 	        case R.id.action_choose_important:
-	    		Log.e(TAG, "onOptionsItemSelected() muy importante "+
-	    				"Team id="+mTeamItem.getTeamId() +
+	    		Log.d(TAG, "onOptionsItemSelected() favorite set/unset "+
+	    				"team ID="+mTeamItem.getTeamId() +
 	    				" name="+mTeamItem.getTeamName() +
-	    				" url="+mTeamItem.getTeamURL());//TODO e to d
+	    				" url="+mTeamItem.getTeamURL());
     			FavoriteListUtil util = new FavoriteListUtil();
 	    		if (mFavorite) {
-		    		Log.d(TAG, "onOptionsItemSelected() REMOVE NEXT"); //TODO
+		    		Log.d(TAG, "onOptionsItemSelected() removing Team ID="+mTeamItem.getTeamId() +
+		    				" Name="+mTeamItem.getTeamName());
 	    			util.removeFavoriteItem(getActivity().getApplicationContext(), mTeamItem.getTeamURL());
 	    		}
 	    		else {
@@ -149,15 +143,15 @@ public class GameListFragment extends Fragment{
     			getActivity().supportInvalidateOptionsMenu(); //triggers onPrepareOptions which resets menu
 	            return true;
 	        default:
-	    		Log.e(TAG, "onOptionsItemSelected() Id: "+menu.getItemId()); //TODO e to d
+	    		Log.d(TAG, "onOptionsItemSelected() chose menu ID: "+menu.getItemId());
 	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
 	    			mFavoriteItem = mFavoriteItems.get(menu.getItemId());
-		    		Log.e(TAG, "onOptionsItemSelected() FavItem Key= " //TODO e to d
+		    		Log.d(TAG, "onOptionsItemSelected() chose FavItem Key= "
 		    				+mFavoriteItem.getFavoriteURL()+" Value="+mFavoriteItem.getFavoriteName());
 		    		util = new FavoriteListUtil();
 		    		mFavoriteTeam=util.queryTeamByTeamURL(getActivity().getApplicationContext(),mFavoriteItem.getFavoriteURL());
 		    		if (mFavoriteTeam != null ) {
-			    		Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+			    		Log.d(TAG, "onOptionsItemSelected() this FavTeam: " + mFavoriteTeam.getTeamName());
 		    			util.launchGameListActivity(getActivity().getApplicationContext(), mFavoriteTeam);
 		    		}
 		    		else {
@@ -188,10 +182,14 @@ public class GameListFragment extends Fragment{
 		}
 		else {//else: 1st had results. I am 2nd 
 			if (choiceSize > 0) {							// Both had results
-				if (!mGameFetch.equals(mGameQuery)) {
+		    	if (!mGameFetch.equals(mGameQuery)) {
 					if (choice == GET) {
+						Log.d(TAG, "setupGame("+choice+") Fetched!=Queried, GET to Insert");
 						new InsertGameItemsTask().execute();
 						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+					else {
+						Log.d(TAG, "setupGame("+choice+") Fetched!=Queried, QUERY no-operation");
 					}
 				}
 				else {

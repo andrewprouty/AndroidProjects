@@ -90,8 +90,7 @@ public class MainActivity extends FragmentActivity {
 		menu.removeGroup(1);
 		for (int i=0; i<mFavoriteItems.size(); i++) {
 			favItem=mFavoriteItems.get(i);
-			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="
-					+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
+			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
 	        menu.add(1,i,i, favItem.getFavoriteName());
 	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
 	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.

@@ -35,7 +35,6 @@ public class FavoriteListUtil {
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		//URL is absolute, the name could change (currently if multiple conferences are added)
-		//TODO Check it is not there before adding.
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
 		return fav;
@@ -46,7 +45,6 @@ public class FavoriteListUtil {
 		editor.remove(keyTeamURL);
 		editor.commit();
 		Log.d(TAG, "removeFavoriteItem() Key="+keyTeamURL);
-		//editor.clear(); 		// TODO  Add a context menu to delete & delete-all
 		editor.commit();
 		return;
 	}

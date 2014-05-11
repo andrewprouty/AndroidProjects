@@ -485,7 +485,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			item.setConferenceId(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_ID)));
 			item.setConferenceName(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_NAME)));
 			item.setConferenceCount(getString(getColumnIndex(COLUMN_GAME_CONFERENCE_COUNT)));
-			item.setGameId(getString(getColumnIndex(COLUMN_GAME_TEAM_ID)));
+			item.setTeamId(getString(getColumnIndex(COLUMN_GAME_TEAM_ID)));
 			item.setTeamName(getString(getColumnIndex(COLUMN_GAME_TEAM_NAME)));
 			item.setGameId(getString(getColumnIndex(COLUMN_GAME_GAME_ID)));
 			//item.setGameSortId(getString(getColumnIndex(COLUMN_GAME_GAME_SORT_ID)));
