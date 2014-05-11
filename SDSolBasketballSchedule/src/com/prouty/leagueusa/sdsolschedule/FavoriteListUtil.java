@@ -107,7 +107,7 @@ public class FavoriteListUtil {
     	TeamItem item = new TeamItem();
 		item.setTeamURL(teamURL);
         item=getFieldsFromURL(item);
-		Log.e(TAG, "queryTeamByTeamURL() Team PK: "
+		Log.d(TAG, "queryTeamByTeamURL() Team PK: "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
 				+ " season ID="    + item.getSeasonId()
@@ -129,7 +129,7 @@ public class FavoriteListUtil {
     		item = cursor.getTeamItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.e(TAG, "queryTeamByTeamURL() Team: "
+    		Log.v(TAG, "queryTeamByTeamURL() Team: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
     				+ " season ID="    + item.getSeasonId()

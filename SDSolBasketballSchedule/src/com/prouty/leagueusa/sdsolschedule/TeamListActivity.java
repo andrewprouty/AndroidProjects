@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.TeamCursor;
 
@@ -16,6 +19,10 @@ public class TeamListActivity extends FragmentActivity {
 	private ConferenceItem   mConferenceItem = new ConferenceItem();
 	private DatabaseHelper mHelper;
 	
+	private ArrayList<FavoriteItem> mFavoriteItems;
+	private FavoriteItem mFavoriteItem;
+	private TeamItem mFavoriteTeam;
+
 	protected void launchGameListActivity(TeamItem item) {
 		Log.d(TAG, "launchGameListActivity()");
 		Intent i = new Intent (this, GameListActivity.class);
@@ -91,10 +98,49 @@ public class TeamListActivity extends FragmentActivity {
 		}
         mHelper = new DatabaseHelper(getApplicationContext());
 	}
-
 	public ConferenceItem getConferenceItem () {
 		return mConferenceItem;
 	}
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.d(TAG, "onRestart");
+		supportInvalidateOptionsMenu();
+	}
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.d(TAG, "onPrepareOptionsMenu()");
+		FavoriteListUtil util = new FavoriteListUtil();
+		FavoriteItem favItem = new FavoriteItem();
+		mFavoriteItems=util.getFavoriteList(getApplicationContext());
+		menu.removeGroup(1);
+		for (int i=0; i<mFavoriteItems.size(); i++) {
+			favItem=mFavoriteItems.get(i);
+			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
+	        menu.add(1,i,i, favItem.getFavoriteName());
+		}
+        return super.onPrepareOptionsMenu(menu);
+    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
+		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
+			mFavoriteItem = mFavoriteItems.get(item.getItemId());
+			Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
+					+" Value="+mFavoriteItem.getFavoriteName());
+			FavoriteListUtil util = new FavoriteListUtil();
+			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
+			if (mFavoriteTeam != null ) {
+				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+			}
+			else {
+				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+			}
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
     protected void insertTeamItems(ArrayList<TeamItem> items) {
 		Log.d(TAG, "insertTeamItems() to insert count="+items.size());
     	TeamItem item;

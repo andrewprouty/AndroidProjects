@@ -55,7 +55,6 @@ public class MainActivity extends FragmentActivity {
         }
         mHelper = new DatabaseHelper(getApplicationContext());
 	}
-
 	private void getOverflowMenu() {
 		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
 	     try {
@@ -68,6 +67,13 @@ public class MainActivity extends FragmentActivity {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+	}
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.d(TAG, "onRestart");
+		supportInvalidateOptionsMenu();
+		//invalidateOptionsMenu(); API 11+
 	}
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -88,31 +94,24 @@ public class MainActivity extends FragmentActivity {
 		}
         return super.onPrepareOptionsMenu(menu);
     }
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case R.id.action_refresh:
-	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
-	            return true;
-	        default:
-	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
-	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
-	    			mFavoriteItem = mFavoriteItems.get(item.getItemId());
-		    		Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
-		    				+" Value="+mFavoriteItem.getFavoriteName());
-		    		FavoriteListUtil util = new FavoriteListUtil();
-		    		mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
-		    		if (mFavoriteTeam != null ) {
-			    		Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
-		    			util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
-		    		}
-		    		else {
-						Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
-		    		}
-	    		}
-	            return super.onOptionsItemSelected(item);
-	    }
+		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
+		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
+			mFavoriteItem = mFavoriteItems.get(item.getItemId());
+			Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
+					+" Value="+mFavoriteItem.getFavoriteName());
+			FavoriteListUtil util = new FavoriteListUtil();
+			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
+			if (mFavoriteTeam != null ) {
+				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+			}
+			else {
+				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+			}
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
     public Fragment createFragment() {

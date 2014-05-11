@@ -14,7 +14,7 @@ public class GameListActivity extends FragmentActivity {
 	private static final String TAG = "GameListActivity";
 	private TeamItem   mTeamItem = new TeamItem();
 	private DatabaseHelper mHelper;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,6 +72,7 @@ public class GameListActivity extends FragmentActivity {
 	public TeamItem getTeamItem () {
 		return mTeamItem;
 	}
+
     protected void insertGameItems(ArrayList<GameItem> items) {
     	GameItem item;
 		Log.d(TAG, "insertGameItems() to insert count="+items.size());
@@ -144,7 +145,7 @@ public class GameListActivity extends FragmentActivity {
     	}
     	cursor.close();
         mHelper.close();
-		Log.e(TAG, "queryGamesByTeamItem() Game Count="+items.size());//TODO e to d
+		Log.d(TAG, "queryGamesByTeamItem() Game Count="+items.size());
     	return items;
     }
 
