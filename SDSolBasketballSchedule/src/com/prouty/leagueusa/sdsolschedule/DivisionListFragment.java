@@ -22,7 +22,9 @@ public class DivisionListFragment extends Fragment{
 	private ArrayList<DivisionItem> mDivisionQuery;
 	private ArrayList<DivisionItem> mDivisionFetch;
 	private ArrayList<DivisionItem> mDivisionDisplay;
+	private ArrayList<ConferenceItem> mConferenceQuery;
 	private ArrayList<ConferenceItem> mConferenceFetch;
+	private ArrayList<ConferenceItem> mConferenceDisplay;
 	private SeasonItem mSeasonItem;
 	private DivisionItem mDivisionItem;
 	private ConferenceItem mConferenceItem;
@@ -45,11 +47,12 @@ public class DivisionListFragment extends Fragment{
 		Log.d(TAG, "onCreateView()");
 		mSeasonItem=((DivisionListActivity) getActivity()).getSeasonItem();
 		if (mDivisionDisplay != null) {
-			mDivisionDisplay.clear(); // reset in case of orientation switch
+			mDivisionDisplay.clear();
 		}
+		if (mConferenceDisplay != null) {
+			mConferenceDisplay.clear();
+		};
 		new QueryDivisionItemsTask().execute(mSeasonItem);
-		new FetchDivisionItemsTask().execute(mSeasonItem);
-
 		view = inflater.inflate(R.layout.fragment_division_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.division_list_season_name);
 		mDivisionTextView = (TextView)view.findViewById(R.id.division_list_division_name);
@@ -62,7 +65,7 @@ public class DivisionListFragment extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				TextView textViewItem = ((TextView) view.findViewById(R.id.row_division_name_textView));
 				String listItemText = textViewItem.getText().toString();
-				Log.d(TAG, "onCreatView()setOnItemClickListener.onItemClick() Division ["+position+"]= "+listItemText);
+				Log.d(TAG, "onCreateView()setOnItemClickListener.onItemClick() Division ["+position+"]= "+listItemText);
 				selectDivision(position);
 			}
 		});
@@ -82,7 +85,7 @@ public class DivisionListFragment extends Fragment{
 				else {
 					mDivisionDisplay = mDivisionQuery;
 				}
-				DivisionListAdapter adapter = new DivisionListAdapter(mDivisionDisplay);
+				DivisionListAdapter adapter = new DivisionListAdapter(mDivisionDisplay, choice);
 				mListView.setAdapter(adapter);
 			} //[else] 1st with no results, or 2nd and nobody had results
 		}
@@ -112,27 +115,31 @@ public class DivisionListFragment extends Fragment{
 				+ ", name="        + mDivisionItem.getSeasonName() 
 				+ " division ID="  + mDivisionItem.getDivisionId()
 				+ ", name="        + mDivisionItem.getDivisionName());
-		new QueryConferenceItemsTask().execute(mDivisionItem); //TODO duplicates NEXT screen.  Move Fetch to post query? 
+		if (mConferenceDisplay != null) {
+			mConferenceDisplay.clear();
+		};
+		new QueryConferenceItemsTask().execute(mDivisionItem); 
 	}
 	private void returnConference(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
 		Log.d(TAG, "returnConference("+choice+") choiceSize="+choiceSize+" division="+mDivisionItem.getDivisionId()+"-"+mDivisionItem.getDivisionName());
-
-		if (choiceSize > 0) {
-			if (choice == GET) {
-				new InsertConferenceItemsTask().execute(); 
-			}
-		}
-		if (mConferenceFetch != null) {
-			int size = mConferenceFetch.size();
-			if (size == 0) {
-				Toast.makeText(getActivity().getApplicationContext(), R.string.no_information_available, Toast.LENGTH_SHORT).show();
-			}
-			else {
-				mConferenceItem = mConferenceFetch.get(0);
-				Log.v(TAG, "returnConference():"
+		if (mConferenceDisplay == null || mConferenceDisplay.size() == 0) {
+			Log.d(TAG, "returnConference("+choice+") a-NO display");
+			if (choiceSize > 0) {
+				Log.d(TAG, "returnConference("+choice+") b-yes choice");
+				if (choice == GET) {
+					Log.d(TAG, "returnConference("+choice+") c1-GET");
+					mConferenceDisplay = mConferenceFetch;
+					new InsertConferenceItemsTask().execute(); 
+				}
+				else {
+					Log.d(TAG, "returnConference("+choice+") c2-QUERY");
+					mConferenceDisplay = mConferenceQuery;
+				}
+				mConferenceItem = mConferenceDisplay.get(0);
+				Log.d(TAG, "returnConference("+choice+"):"
 						+ " league ID="    + mConferenceItem.getLeagueId()
 						+ ", url="         + mConferenceItem.getLeagueURL()
 						+ " season ID="    + mConferenceItem.getSeasonId()
@@ -142,15 +149,40 @@ public class DivisionListFragment extends Fragment{
 						+ " conferenceId=" + mConferenceItem.getConferenceId()
 						+ ", name="        + mConferenceItem.getConferenceName()
 						+ ", count="       + mConferenceItem.getConferenceCount());
-				if(size == 1) {
+				if(mConferenceDisplay.size() == 1) {
+					Log.d(TAG, "returnConference("+choice+") d1-Team");
 					((DivisionListActivity) getActivity()).launchTeamListActivity(mConferenceItem);
 				}
 				else { // multiple conferences, the user must choose
+					Log.d(TAG, "returnConference("+choice+") d2-conference");
 					((DivisionListActivity) getActivity()).launchConferenceListActivity(mConferenceItem);
 				}
+			} //[else] 1st with no results, or 2nd and nobody had results
+		}
+		else {//else: 1st had results. I am 2nd 
+			Log.d(TAG, "returnConference("+choice+") m-ELSE, display had content already");
+			if (choiceSize > 0) {							// Both had results
+				Log.d(TAG, "returnConference("+choice+") n-yes choice size");
+				if (!mConferenceFetch.equals(mConferenceQuery)) {
+					Log.w(TAG, "returnConference("+choice+") Fetched != Queried. Sizes info only: "
+							+ mConferenceFetch.size() + " " + mConferenceQuery.size());
+					if (choice == GET) {
+						Log.d(TAG, "returnConference("+choice+") n-difference-insert");
+						new InsertConferenceItemsTask().execute();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					Log.d(TAG, "returnConference("+choice+") Fetched=Queried");
+				}
+			}
+			else { // No blank UI to get this point across for Conference
+				Log.d(TAG, "returnConference("+choice+") make toast");
+				Toast.makeText(getActivity().getApplicationContext(), R.string.no_information_available, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
+	
 	private class FetchDivisionItemsTask extends AsyncTask<SeasonItem,Void,ArrayList<DivisionItem>> {
 		@Override
 		protected ArrayList<DivisionItem> doInBackground(SeasonItem... params) {
@@ -178,9 +210,9 @@ public class DivisionListFragment extends Fragment{
 		}
 	}
 	private class DivisionListAdapter extends ArrayAdapter<DivisionItem> {
-		public DivisionListAdapter(ArrayList<DivisionItem> items) {
+		public DivisionListAdapter(ArrayList<DivisionItem> items, int choice) {
 			super(getActivity(), 0, items);
-			Log.i(TAG, "DivisionListAdapter Constructor");
+			Log.i(TAG, "DivisionListAdapter Constructor ("+choice+")");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -235,6 +267,7 @@ public class DivisionListFragment extends Fragment{
 			}
 			setupDivision(QUERY, size);
 			cancel(true);
+			new FetchDivisionItemsTask().execute(mSeasonItem);
 		}
 	}
 	private class FetchConferenceItemsTask extends AsyncTask<DivisionItem,Void,ArrayList<ConferenceItem>> {
@@ -298,13 +331,13 @@ public class DivisionListFragment extends Fragment{
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;
-				new FetchConferenceItemsTask().execute(mDivisionItem);
 			} else {
 				size = items.size();
-				mConferenceFetch = items;
-				returnConference(QUERY, size);
+				mConferenceQuery = items;
 			}
+			returnConference(QUERY, size);
 			cancel(true);
+			new FetchConferenceItemsTask().execute(mDivisionItem);
 		}
 	}
 }

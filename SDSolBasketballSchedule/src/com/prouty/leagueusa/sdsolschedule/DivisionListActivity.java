@@ -95,9 +95,11 @@ public class DivisionListActivity extends FragmentActivity {
 		return mSeasonItem;
 	}
     protected void insertDivisionItems(ArrayList<DivisionItem> items) {
+    	Log.d(TAG, "insertDivisionItems() to insert count="+items.size());
     	DivisionItem item;
-        Log.d(TAG, "insertDivisionItems()");
-		mHelper.deleteDivision(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        long count=0;
+		count=mHelper.deleteDivisionByDivisionItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertDivisionItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertDivisionItems() Division: "
@@ -134,9 +136,11 @@ public class DivisionListActivity extends FragmentActivity {
     	return items;
     }
     protected void insertConferenceItems(ArrayList<ConferenceItem> items) {
+    	Log.d(TAG, "insertConferenceItems() to insert count="+items.size());
     	ConferenceItem item;
-        Log.d(TAG, "insertConferenceItems()");
-		mHelper.deleteConference(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        long count=0;
+		count=mHelper.deleteConferenceByConferenceItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertConferenceItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertConferenceItems() Conference: "

@@ -20,11 +20,9 @@ import com.prouty.leagueusa.sdsolschedule.DatabaseHelper.SeasonCursor;
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private DatabaseHelper mHelper;
-	private Menu mMenu;
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	private FavoriteItem mFavoriteItem;
 	private TeamItem mFavoriteTeam;
-	private boolean mFavorite = true; //TODO use a orientation-switch safe approach
 
 	protected void launchDivisionListActivity(SeasonItem item) {
 		Intent i = new Intent (MainActivity.this, DivisionListActivity.class);
@@ -71,16 +69,6 @@ public class MainActivity extends FragmentActivity {
 	        e.printStackTrace();
 	    }
 	}
-	/*
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		Log.d(TAG, "onCreateOptionsMenu()");
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.activity_main_actions, menu);
-	    mMenu=menu;
-	    return super.onCreateOptionsMenu(menu);
-	}*/
-    //Gets called every time the user presses the menu button, use for dynamic menus
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.d(TAG, "onPrepareOptionsMenu()");
@@ -107,18 +95,6 @@ public class MainActivity extends FragmentActivity {
 	        case R.id.action_refresh:
 	    		Log.d(TAG, "onOptionsItemSelected() calling refresh");
 	            return true;
-	        case R.id.action_choose_important:
-	    		Log.d(TAG, "onOptionsItemSelected() muy importante");
-	    		MenuItem starred = mMenu.findItem(R.id.action_choose_important);
-	    		if (mFavorite) {
-	    			starred.setIcon(R.drawable.ic_action_not_important);
-	    			mFavorite = false;
-	    		}
-	    		else {
-	    			starred.setIcon(R.drawable.ic_action_important);
-	    			mFavorite = true;
-	    		}
-	            return true;
 	        default:
 	    		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
 	    		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
@@ -144,9 +120,11 @@ public class MainActivity extends FragmentActivity {
 	}
 
     protected void insertLeagueItems(ArrayList<LeagueItem> items) {
+    	Log.d(TAG, "insertLeagueItems() to insert count="+items.size());
         LeagueItem item;
-        Log.d(TAG, "insertLeagueItems()");
-		mHelper.deleteLeague(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        long count=0;
+		count=mHelper.deleteLeague(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertLeagueItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertLeagueItems() league: "+item.getLeagueId()+"-"+item.getOrgName()+item.getLeagueURL());
@@ -174,9 +152,11 @@ public class MainActivity extends FragmentActivity {
     	return items;
     }
     protected void insertSeasonItems(ArrayList<SeasonItem> items) {
+		Log.d(TAG, "insertSeasonItems() to insert count="+items.size());
         SeasonItem item;
-        Log.d(TAG, "insertSeasonItems()");
-		mHelper.deleteSeason(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+        long count=0;
+		count=mHelper.deleteSeasonBySeasonItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
+		Log.d(TAG, "insertSeasonItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
     		Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-" + item.getLeagueURL() + "-"

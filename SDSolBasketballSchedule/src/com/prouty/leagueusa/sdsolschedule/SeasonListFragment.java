@@ -49,7 +49,6 @@ public class SeasonListFragment extends Fragment{
 			mSeasonDisplay.clear(); // reset in case of orientation switch
 		}
 		new QueryLeagueItemsTask().execute();
-		new FetchLeagueItemsTask().execute();
        
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
         mSeasonTextView = (TextView)view.findViewById(R.id.season_list_season_name);
@@ -109,8 +108,7 @@ public class SeasonListFragment extends Fragment{
     		else {
     			mLeagueItem = mLeagueQuery.get(0);
     		}
-    		new QuerySeasonItemsTask().execute();
-    		new FetchSeasonItemsTask().execute();
+    		new QuerySeasonItemsTask().execute(mLeagueItem);
     	}
     }
 	private void setupSeason(int choice, int choiceSize) {
@@ -127,7 +125,7 @@ public class SeasonListFragment extends Fragment{
 				else {
 					mSeasonDisplay = mSeasonQuery;
 				}
-				SeasonListAdapter adapter = new SeasonListAdapter(mSeasonDisplay);
+				SeasonListAdapter adapter = new SeasonListAdapter(mSeasonDisplay, choice);
 				mListView.setAdapter(adapter);
 			} //[else] 1st with no results, or 2nd and nobody had results
 		}
@@ -230,12 +228,13 @@ public class SeasonListFragment extends Fragment{
     		}
 			setupLeague(QUERY, size);
             cancel(true);
+    		new FetchSeasonItemsTask().execute(mLeagueItem);
 		}
 	}
 	// SEASON
-    private class FetchSeasonItemsTask extends AsyncTask<Void,Void,ArrayList<SeasonItem>> {
+    private class FetchSeasonItemsTask extends AsyncTask<LeagueItem,Void,ArrayList<SeasonItem>> {
         @Override
-        protected ArrayList<SeasonItem> doInBackground(Void... params) {
+        protected ArrayList<SeasonItem> doInBackground(LeagueItem... params) {
         	Log.d(TAG, "FetchSeasonItemsTask.doInBackground()");
     		ArrayList<SeasonItem> items = null;
     		try {
@@ -265,9 +264,9 @@ public class SeasonListFragment extends Fragment{
         }
     }
     private class SeasonListAdapter extends ArrayAdapter<SeasonItem> {
-        public SeasonListAdapter(ArrayList<SeasonItem> items) {
+        public SeasonListAdapter(ArrayList<SeasonItem> items, int choice) {
             super(getActivity(), 0, items);
-			Log.i(TAG, "SeasonListAdapter Constructor");
+			Log.i(TAG, "SeasonListAdapter Constructor ("+choice+")");
         }
 
         @Override
@@ -300,9 +299,9 @@ public class SeasonListFragment extends Fragment{
     		cancel(true); // done !
     	}
     }
-	private class QuerySeasonItemsTask extends AsyncTask<Void,Void,ArrayList<SeasonItem>> {
+	private class QuerySeasonItemsTask extends AsyncTask<LeagueItem,Void,ArrayList<SeasonItem>> {
 		@Override
-		protected ArrayList<SeasonItem> doInBackground(Void... nada) {
+		protected ArrayList<SeasonItem> doInBackground(LeagueItem... nada) {
         	Log.d(TAG, "QuerySeasonItemsTask.doInBackground()");
     		ArrayList<SeasonItem> items = null;
     		try {
@@ -324,6 +323,7 @@ public class SeasonListFragment extends Fragment{
     		}
        		setupSeason(QUERY, size);
             cancel(true);
+    		new FetchLeagueItemsTask().execute();
 		}
 	}
 }

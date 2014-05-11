@@ -149,9 +149,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return new LeagueCursor(wrapped);
 	}
 
-	public long deleteSeason() {
-		Log.d(TAG, "deleteSeason()");
-		return getWritableDatabase().delete(TABLE_SEASON, null, null);
+	public long deleteSeasonBySeasonItem(SeasonItem item) {
+		Log.d(TAG, "deleteSeasonBySeasonItem()");
+		return getWritableDatabase().delete(TABLE_SEASON,
+				COLUMN_TEAM_LEAGUE_ID + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId())}); // values
 	}
 	public long insertSeason(SeasonItem item) {
 		Log.v(TAG, "insertSeason()");
@@ -179,6 +181,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "deleteDivision()");
 		return getWritableDatabase().delete(TABLE_DIVISION, null, null);
 	}
+	public long deleteDivisionByDivisionItem(DivisionItem item) {
+		Log.d(TAG, "deleteDivisionByDivisionItem()");
+		return getWritableDatabase().delete(TABLE_DIVISION,
+				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
+						COLUMN_TEAM_SEASON_ID + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId())}); // values
+	}
 	public long insertDivision(DivisionItem item) {
 		Log.v(TAG, "insertDivision()");
 		ContentValues cv = new ContentValues();
@@ -204,10 +214,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); // limit of rows
 		return new DivisionCursor(wrapped);
 	}
-
-	public long deleteConference() {
-		Log.v(TAG, "deleteConference()");
-		return getWritableDatabase().delete(TABLE_CONFERENCE, null, null);
+	public long deleteConferenceByConferenceItem(ConferenceItem item) {
+		Log.d(TAG, "deleteConferenceByConferenceItem()");
+		return getWritableDatabase().delete(TABLE_CONFERENCE,
+				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
+						COLUMN_TEAM_SEASON_ID + " = ? AND " +
+						COLUMN_TEAM_DIVISION_ID + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getSeasonId()),
+				String.valueOf(item.getDivisionId())}); // values
 	}
 	public long insertConference(ConferenceItem item) {
 		Log.v(TAG, "insertConference()");
@@ -241,7 +256,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public long deleteTeamsByTeamItem(TeamItem item) {
 		Log.d(TAG, "deleteTeamsByTeamItem()");
-
 		return getWritableDatabase().delete(TABLE_TEAM,
 				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
 						COLUMN_TEAM_SEASON_ID + " = ? AND " +
@@ -269,7 +283,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return getWritableDatabase().insert(TABLE_TEAM, null, cv);
 	}
 	public TeamCursor queryTeamsByConferenceItem(ConferenceItem item) {
-		Log.d(TAG, "queryTeamssByConferenceItem()");
+		Log.d(TAG, "queryTeamsByConferenceItem()");
 		// equivalent to "select * from league order by league_id asc"
 		// sorting by user_id as an alpha... just copying JSON ordering
 		Cursor wrapped = getReadableDatabase().query(TABLE_TEAM,

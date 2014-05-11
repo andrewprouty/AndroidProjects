@@ -73,7 +73,7 @@ public class ConferenceListFragment extends Fragment{
         	if (choice == GET) {
     			new InsertConferenceItemsTask().execute();
     		}
-    		ConferenceListAdapter adapter = new ConferenceListAdapter(mConferenceItems);
+    		ConferenceListAdapter adapter = new ConferenceListAdapter(mConferenceItems, choice);
 			mListView.setAdapter(adapter);
     	}
 	}
@@ -119,8 +119,9 @@ public class ConferenceListFragment extends Fragment{
 		}
 	}
 	private class ConferenceListAdapter extends ArrayAdapter<ConferenceItem> {
-		public ConferenceListAdapter(ArrayList<ConferenceItem> items) {
+		public ConferenceListAdapter(ArrayList<ConferenceItem> items, int choice) {
 			super(getActivity(), 0, items);
+			Log.i(TAG, "ConferenceListAdapter Constructor ("+choice+")");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -170,13 +171,13 @@ public class ConferenceListFragment extends Fragment{
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;
-    			new FetchConferenceItemsTask().execute(mDivisionItem);
     		} else {
     			size = items.size();
     			mConferenceItems = items;
            		setupConference(QUERY, size);
     		}
             cancel(true);
+			new FetchConferenceItemsTask().execute(mDivisionItem);
 		}
 	}
 }

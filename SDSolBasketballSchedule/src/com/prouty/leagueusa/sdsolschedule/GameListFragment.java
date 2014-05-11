@@ -57,7 +57,6 @@ public class GameListFragment extends Fragment{
 			mGameDisplay.clear(); // reset in case of orientation switch
 		}
 		new QueryGameItemsTask().execute(mTeamItem);
-		new FetchGameItemsTask().execute(mTeamItem);
 
 		if (mTeamItem.getConferenceCount().equals("one")) {
 			view = inflater.inflate(R.layout.fragment_game_list_no_conference, container,false);
@@ -82,7 +81,7 @@ public class GameListFragment extends Fragment{
 	//mMenu referenced used to access the starred icon 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG, "onCreateOptionsMenu()");
-		inflater.inflate(R.menu.activity_main_actions, menu);
+		inflater.inflate(R.menu.activity_important_actions, menu);
 	    mMenu=menu;
 	    super.onCreateOptionsMenu(menu,inflater);
 	}
@@ -176,7 +175,7 @@ public class GameListFragment extends Fragment{
 				else {
 					mGameDisplay = mGameQuery;
 				}
-				GameListAdapter adapter = new GameListAdapter(mGameDisplay);
+				GameListAdapter adapter = new GameListAdapter(mGameDisplay, choice);
 				mListView.setAdapter(adapter);
 			} //[else] 1st with no results, or 2nd and nobody had results
 		}
@@ -229,9 +228,9 @@ public class GameListFragment extends Fragment{
 		}
 	}
 	private class GameListAdapter extends ArrayAdapter<GameItem> {
-		public GameListAdapter(ArrayList<GameItem> items) {
+		public GameListAdapter(ArrayList<GameItem> items, int choice) {
 			super(getActivity(), 0, items);
-			Log.d(TAG, "GameListAdapter Constructor");
+			Log.d(TAG, "GameListAdapter Constructor ("+choice+")");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -344,6 +343,7 @@ public class GameListFragment extends Fragment{
     		}
        		setupGame(QUERY, size);
             cancel(true);
+    		new FetchGameItemsTask().execute(mTeamItem);
 		}
 	}
 }

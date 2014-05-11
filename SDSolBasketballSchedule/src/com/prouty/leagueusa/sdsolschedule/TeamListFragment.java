@@ -49,7 +49,6 @@ public class TeamListFragment extends Fragment{
 			mTeamDisplay.clear(); // reset in case of orientation switch
 		}
 		new QueryTeamItemsTask().execute(mConferenceItem);
-		new FetchTeamItemsTask().execute(mConferenceItem);
 		
 		if (mConferenceItem.getConferenceCount().equals("one")) {
 			view = inflater.inflate(R.layout.fragment_team_list_no_conference, container,false);
@@ -78,7 +77,6 @@ public class TeamListFragment extends Fragment{
 		});
 		return view;
 	}
-
 	private void setupTeam(int choice, int choiceSize) {
 		if (getActivity() == null || mListView == null) {
 			return;
@@ -93,7 +91,7 @@ public class TeamListFragment extends Fragment{
 				else {
 					mTeamDisplay = mTeamQuery;
 				}
-				TeamListAdapter adapter = new TeamListAdapter(mTeamDisplay);
+				TeamListAdapter adapter = new TeamListAdapter(mTeamDisplay, choice);
 				mListView.setAdapter(adapter);
 			} //[else] 1st with no results, or 2nd and nobody had results
 		}
@@ -165,9 +163,9 @@ public class TeamListFragment extends Fragment{
 		}
 	}
 	private class TeamListAdapter extends ArrayAdapter<TeamItem> {
-		public TeamListAdapter(ArrayList<TeamItem> items) {
+		public TeamListAdapter(ArrayList<TeamItem> items, int choice) {
 			super(getActivity(), 0, items);
-			Log.i(TAG, "TeamListAdapter Constructor");
+			Log.i(TAG, "TeamListAdapter Constructor ("+choice+")");
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -222,6 +220,7 @@ public class TeamListFragment extends Fragment{
     		}
        		setupTeam(QUERY, size);
             cancel(true);
+    		new FetchTeamItemsTask().execute(mConferenceItem);
 		}
 	}
 }
