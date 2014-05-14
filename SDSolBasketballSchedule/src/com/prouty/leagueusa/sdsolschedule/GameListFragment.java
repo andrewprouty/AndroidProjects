@@ -168,30 +168,44 @@ public class GameListFragment extends Fragment{
     	Log.d(TAG, "setupGame("+choice+") team: "+mTeamItem.getTeamId()+"-"+mTeamItem.getTeamName());
 		if (mGameDisplay == null || mGameDisplay.size() == 0) {
 			if (choiceSize > 0) {
-				if (choice == GET) {						// No results yet, but I have some
+				if (choice == GET) {
+					Log.d(TAG, "setupGame("+choice+") (2nd/GET) has the only results so insert them");
 					mGameDisplay = mGameFetch;
-					new InsertGameItemsTask().execute();	// Most likely Query was fast but empty
+					new InsertGameItemsTask().execute();
 				}
 				else {
 					mGameDisplay = mGameQuery;
 				}
 				GameListAdapter adapter = new GameListAdapter(mGameDisplay, choice);
 				mListView.setAdapter(adapter);
-			} //[else] 1st with no results, or 2nd and nobody had results
+			}
+			else {
+				if (choice == QUERY) {
+					Log.d(TAG, "setupGame("+choice+") (1st/QUERY) has no results");
+				}
+				else {
+					Log.w(TAG, "setupGame("+choice+") (2nd/GET) also has no results");
+					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_game);
+					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
+					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+				}
+			}			
 		}
-		else {//else: 1st had results. I am 2nd 
-			if (choiceSize > 0) {							// Both had results
+		else { 
+			if (choiceSize == 0) {
+				Log.w(TAG, "setupGame("+choice+") (1st/QUERY) had results (2nd/GET) had none. Offline?");
+			}
+			else {
 		    	if (!mGameFetch.equals(mGameQuery)) {
+					Log.w(TAG, "setupGame("+choice+") Fetched != Queried. Sizes info only: "
+							+ mGameFetch.size() + " " + mGameQuery.size());
 					if (choice == GET) {
-						Log.d(TAG, "setupGame("+choice+") Fetched!=Queried, GET to Insert");
+						Log.w(TAG, "setupGame("+choice+") Fetched!=Queried, GET to Insert");
 						new InsertGameItemsTask().execute();
 						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
-					else {
-						Log.d(TAG, "setupGame("+choice+") Fetched!=Queried, QUERY no-operation");
-					}
-				}
-				else {
+		    	}
+		    	else {
 					Log.d(TAG, "setupGame("+choice+") Fetched=Queried");
 				}
 			}
@@ -200,7 +214,7 @@ public class GameListFragment extends Fragment{
 	private class FetchGameItemsTask extends AsyncTask<TeamItem,Void,ArrayList<GameItem>> {
 		@Override
 		protected ArrayList<GameItem> doInBackground(TeamItem... params) {
-        	Log.d(TAG, "FetchTeamTask doInBackground()");
+        	Log.d(TAG, "FetchGameItemsTask doInBackground()");
     		ArrayList<GameItem> items = null;
     		try { // pass context for app dir to cache file
         		items = new GameListLeagueUSA().fetchItems(mTeamItem, getActivity().getApplicationContext());

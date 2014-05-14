@@ -5,8 +5,12 @@
     <string name="conference_name_hint">Please select a Conference</string>
     <string name="team_name_hint">Please select a Team</string>
     <string name="no_information_available">No %s information available.</string>
+    <string name="name_league">Season</string>
+    <string name="name_season">Season</string>
     <string name="name_division">Division</string>
     <string name="name_conference">Conference</string>
+    <string name="name_team">Team</string>
+    <string name="name_game">Game</string>
     <string name="try_again_for_update">Exit/return for updated results.</string>
     <string name="broken_must_navigate">Broken shortcut, navigate once to fix.</string>
     <string name="score">score</string>

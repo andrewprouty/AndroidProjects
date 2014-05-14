@@ -21,8 +21,8 @@ public class TeamListFragment extends Fragment{
 	private static final int GET = 0;
 	private static final int QUERY = 1;
 	private ConferenceItem mConferenceItem;
-	private ArrayList<TeamItem> mTeamFetch;
 	private ArrayList<TeamItem> mTeamQuery;
+	private ArrayList<TeamItem> mTeamFetch;
 	private ArrayList<TeamItem> mTeamDisplay;
 	private TeamItem mTeamItem;
 	
@@ -85,18 +85,33 @@ public class TeamListFragment extends Fragment{
 		if (mTeamDisplay == null || mTeamDisplay.size() == 0) {
 			if (choiceSize > 0) {
 				if (choice == GET) {						// No results yet, but I have some
+					Log.d(TAG, "setupTeam("+choice+") (2nd/GET) has the only results so insert them");
 					mTeamDisplay = mTeamFetch;
-					new InsertTeamItemsTask().execute();	// Most likely Query was fast but empty
+					new InsertTeamItemsTask().execute();
 				}
 				else {
 					mTeamDisplay = mTeamQuery;
 				}
 				TeamListAdapter adapter = new TeamListAdapter(mTeamDisplay, choice);
 				mListView.setAdapter(adapter);
-			} //[else] 1st with no results, or 2nd and nobody had results
+			}
+			else {
+				if (choice == QUERY) {
+					Log.d(TAG, "setupTeam("+choice+") (1st/QUERY) has no results");
+				}
+				else {
+					Log.w(TAG, "setupTeam("+choice+") (2nd/GET) also has no results");
+					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_team);
+					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
+					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+				}
+			}
 		}
-		else {//else: 1st had results. I am 2nd 
-			if (choiceSize > 0) {							// Both had results
+		else { 
+			if (choiceSize == 0) {
+				Log.w(TAG, "setupTeam("+choice+") (1st/QUERY) had results (2nd/GET) had none. Offline?");
+			}
+			else {
 				if (!mTeamFetch.equals(mTeamQuery)) {
 					Log.w(TAG, "setupTeam("+choice+") Fetched != Queried. Sizes info only: "
 							+ mTeamFetch.size() + " " + mTeamQuery.size());
@@ -111,7 +126,6 @@ public class TeamListFragment extends Fragment{
 			}
 		}
 	}
-
 	private void returnTeam(int position) {
 		
     	mTeamItem = mTeamDisplay.get(position);
@@ -135,7 +149,7 @@ public class TeamListFragment extends Fragment{
 	private class FetchTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {
 		@Override
 		protected ArrayList<TeamItem> doInBackground(ConferenceItem... params) {
-        	Log.d(TAG, "FetchTeamTask doInBackground()");
+        	Log.d(TAG, "FetchTeamItemsTask doInBackground()");
     		ArrayList<TeamItem> items = null;
     		try { // pass context for app dir to cache file
         		items = new TeamListLeagueUSA().fetchItems(mConferenceItem, getActivity().getApplicationContext());
@@ -174,7 +188,7 @@ public class TeamListFragment extends Fragment{
 			}
 			TeamItem item = getItem(position);
 			TextView teamTextView = (TextView)convertView.findViewById(R.id.row_team_name_textView);
-			Log.v(TAG, "TeamListAdapter getView() ["+position+"] :"+item.getTeamName());
+			Log.v(TAG, "TeamListAdapter getView() ["+position+"]: "+item.getTeamName());
 			teamTextView.setText(item.getTeamName());
 			return convertView;
 		}
@@ -193,7 +207,7 @@ public class TeamListFragment extends Fragment{
     	@Override
     	protected void onPostExecute(Void nada) {
     		Log.d(TAG, "InsertTeamItemsTask.onPostExecute()");
-    		cancel(true); // done !
+    		cancel(true);
     	}
     }
 	private class QueryTeamItemsTask extends AsyncTask<ConferenceItem,Void,ArrayList<TeamItem>> {
