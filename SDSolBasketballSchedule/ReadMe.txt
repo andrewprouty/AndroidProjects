@@ -11,8 +11,7 @@ They are a very large regional club with hundred of teams and mostly play out of
 
 http://www.leagueusa.com/ourcustomers.html
 LeagueUSA is SD Sol's vendor who creates the scheduling application, builds AND hosts the web application that displays the game schedule.
-They created the web services available here: http://www.sdsolbasketball.com/mobileschedule.php
-They build JSON responses for:
+They created JSON web services responses (http://www.sdsolbasketball.com/mobileschedule.php) for:
 1-leagues
 2-seasons
 3-divisions
@@ -20,12 +19,13 @@ They build JSON responses for:
 4-teams
 5-games
 
-There currently returns only 1 league.
-Most divisions only have 1 conference; the user is only prompted if there are multiple.
+The League request takes no parameters and currently returns 1 league.
+Most divisions only have 1 conference; the user is only prompted when multiple exist within a division.
 
 Beyond browsing the 1 significant UI feature is favorites to simplify navigation to frequented teams.
-On any "team" page they use the star button to add or remove the team from the favorites list.
-Once favorites exist a menu appears everywhere to allow for immediate navigation.  It opens a new window.
+On any "team" page the star button adds/removes the team from the favorites list.
+Once favorites exist a menu appears everywhere to allow for immediate navigation.
+Favorites are opened in a new window.
 
 Everything is cached in Sqllite for off-line access and speed.
 If cached/queried content exists then it will display, and then attempt fresher results from the web service.
