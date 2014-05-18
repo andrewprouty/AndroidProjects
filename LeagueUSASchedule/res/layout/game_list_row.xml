@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/row_game_dateTime_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/game_dateTime_hint"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/row_game_home_team_textView"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".75"
+            android:hint="@string/game_home_team_hint"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/row_game_home_score_textView"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:hint="@string/game_home_score_hint"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/row_game_away_team_textView"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".75"
+            android:hint="@string/game_away_team_hint"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/row_game_away_score_textView"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:hint="@string/game_away_score_hint"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/row_game_location_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/game_location_hint"
+        android:textSize="18sp" />
+    
+</LinearLayout>

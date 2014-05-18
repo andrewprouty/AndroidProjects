@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">League Schedules</string>
+    <string name="season_name_hint">Please select a Season</string>
+    <string name="division_name_hint">Please select a Division</string>
+    <string name="conference_name_hint">Please select a Conference</string>
+    <string name="team_name_hint">Please select a Team</string>
+    <string name="no_information_available">No %s information available.</string>
+    <string name="name_league">Season</string>
+    <string name="name_season">Season</string>
+    <string name="name_division">Division</string>
+    <string name="name_conference">Conference</string>
+    <string name="name_team">Team</string>
+    <string name="name_game">Game</string>
+    <string name="try_again_for_update">Exit/return for updated results.</string>
+    <string name="broken_must_navigate">Broken shortcut, navigate once to fix.</string>
+    <string name="score">score</string>
+    <string name="game_dateTime_hint">Game Time and Date</string>
+    <string name="game_location_hint">Game Location / Field</string>
+    <string name="game_away_team_hint">Away Team</string>
+    <string name="game_home_team_hint">Home Team</string>
+    <string name="game_away_score_hint">Score</string>
+    <string name="game_home_score_hint">Score</string>
+    <string name="game_2tbd_1_of_2">To be </string>
+    <string name="game_2tbd_2_of_2">Determined</string>
+    <string name="game_3rain_1_of_2">Rained</string>
+    <string name="game_3rain_2_of_2">Out</string>
+    <string name="game_4cancel_1_of_2">Game</string>
+    <string name="game_4cancel_2_of_2">Cancelled</string>
+    <string name="game_5makeup_1_of_2">Make Up</string>
+    <string name="game_5makeup_2_of_2">Game</string>
+    <string name="action_choose_title">Choose Favorite</string>
+    <string name="action_refresh_title">Refresh Screen</string>
+</resources>
