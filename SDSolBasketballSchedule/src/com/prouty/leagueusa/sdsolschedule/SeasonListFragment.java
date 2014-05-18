@@ -115,7 +115,7 @@ public class SeasonListFragment extends Fragment{
 				}
 			}
 		}
-		if (choice == QUERY) { // ENH Revisit (remove this conditional) once expand from SD Sol to LeagueUSA
+		if (choice == QUERY) { // Condition only makes sense in limited/hard-coded SDSol-only case
 			if (choiceSize != 1) {
 				Log.e(TAG, "setupLeague() 1 league should have been returned, received "+choiceSize+". Use hardcode.");
 				LeagueItem item = new LeagueItem();

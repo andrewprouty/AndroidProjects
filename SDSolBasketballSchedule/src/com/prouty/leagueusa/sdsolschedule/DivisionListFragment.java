@@ -96,7 +96,6 @@ public class DivisionListFragment extends Fragment{
 				}
 				else {
 					Log.w(TAG, "setupDivision("+choice+") (2nd/GET) also has no results");
-					//ENH The ENH is to add to others selection screens also (rather than blank screen) 
 					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_division);
 					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
 					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
