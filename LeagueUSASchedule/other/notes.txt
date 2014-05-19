@@ -1,0 +1,73 @@
+http://www.sandiegosol.com/
+http://www.leagueusa.com/
+http://www.sdsolbasketball.com/mobileschedule.php
+
+Organization
+	League
+		Some have multiple... probably on same URL
+	Season
+	Division
+	Conference
+	Teams
+	Games
+
+TESTING PLAN
+	1-Delete/reinstall application
+	2-switch orientation every activity
+	3-different emulators
+BEFORE MARKET
+	- always give Toast if no data available (Div only now)
+		> Season / league
+		x Div / conference 
+		x Conference
+		o Team
+		o Game
+	- rename application with LeagueUSA logo
+	- add league selection
+	- Spanish translation
+	- back/up to return to league selection
+	- save league, re-start goes to Session
+	- improve refresh/update or add button
+	- switch logos for each league
+		http://developer.android.com/guide/topics/ui/menus.html
+		http://stackoverflow.com/questions/14606294/remove-icon-logo-from-action-bar-on-android
+		http://developer.android.com/reference/android/app/ActionBar.html#setLogo(int)
+	- DEMO as desired to league USA
+	- post on market https://play.google.com/apps/publish
+		LeagueUSA on Vicid.com
+		LeagueUSA Sports Scheduling
+FUTURE ENHANCEMENTS
+	- a way to clear favourites, delete without being on the page (i.e. if the link is broken)
+	- Option menu, use heart not ellipse drop-down navigation
+		http://developer.android.com/guide/topics/ui/actionbar.html#Dropdown
+	- Google calendar?
+	- location address?
+	- team contact?
+	- division ranking?
+====
+To turn in
+	test with emulators
+
+LIMITATION
+	- nothing special for tablet
+
+http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=107&conference=107&team=782
+GETs
+league		http://www.sdsolbasketball.com/mobileschedule.php
+				[{"leagueid":"1","orgname":"San Diego Sol"}]
+season		http://www.sdsolbasketball.com/mobileschedule.php?league=1
+				[{"seasonid":"7","seasonname":"Breakaway League 2014"},{"seasonid":"6","seasonname":"San Diego Sol Winter League 2014"},{"seasonid":"8","seasonname":"Spring League 2014"}]
+division	http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8
+				[{"divisionid":"107","divisionname":"Boys 3rd"},{"divisionid":"108","divisionname":"Boys 4th East"},{"divisionid":"109","divisionname":"Boys 4th West"},{"divisionid":"110","divisionname":"Boys 5th A"},{"divisionid":"111","divisionname":"Boys 5th B"},{"divisionid":"112","divisionname":"Boys 5th C"},{"divisionid":"113","divisionname":"Boys 6th East"},{"divisionid":"114","divisionname":"Boys 6th West"},{"divisionid":"115","divisionname":"Boys 7th A"},{"divisionid":"116","divisionname":"Boys 7th B"},{"divisionid":"117","divisionname":"Boys 7th C"},{"divisionid":"118","divisionname":"Boys 8th A"},{"divisionid":"119","divisionname":"Boys 8th B"},{"divisionid":"120","divisionname":"Boys 8th C"},{"divisionid":"121","divisionname":"Boys FROSH"},{"divisionid":"122","divisionname":"Boys JV A"},{"divisionid":"123","divisionname":"Boys JV B"},{"divisionid":"124","divisionname":"Boys Varsity A"},{"divisionid":"125","divisionname":"Boys Varsity B"},{"divisionid":"126","divisionname":"Girls 4th"},{"divisionid":"127","divisionname":"Girls 5th"},{"divisionid":"128","divisionname":"Girls 6th"},{"divisionid":"130","divisionname":"Girls 7\/8th"},{"divisionid":"129","divisionname":"Girls 7th"},{"divisionid":"131","divisionname":"Girls 8th"},{"divisionid":"132","divisionname":"Girls JV"},{"divisionid":"133","divisionname":"Girls Varsity"}]
+conference	http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123
+				[{"conferenceid":"127","conferencename":"Boys JV B"}]
+team		http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127
+				[{"teamid":"924","teamname":"CV Hawks"},{"teamid":"925","teamname":"CV Hawks Bravo"},{"teamid":"927","teamname":"East County Suns"},{"teamid":"928","teamname":"Fallbrook Tribe"},{"teamid":"934","teamname":"Imperial Valley Warriors"},{"teamid":"926","teamname":"La Paz"},{"teamid":"935","teamname":"Magics"},{"teamid":"929","teamname":"Marauders"},{"teamid":"930","teamname":"North County Prospects"},{"teamid":"931","teamname":"San Diego Rebels Black"},{"teamid":"933","teamname":"SD Sol-Johnson"},{"teamid":"932","teamname":"Top Tier"}]
+games		http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
+			[{"gameid":"5269","meetname":"","starttbd":"1","awayteamid":"933","hometeamid":"930","gamemonth":"04","gameyear":"2014","gamedate":"Sun, 04\/27 at 3:00 PM","gamedate2":"Sun, 04\/27","fieldname":"AIU Court 1","homescore":"42","awayscore":"24","hometeamname":"North County Prospects","awayteamname":"SD Sol-Johnson","locationname":"AIU Court 1","locationid":"15"},{"gameid":"5275","meetname":"","starttbd":"1","awayteamid":"933","hometeamid":"934","gamemonth":"05","gameyear":"2014","gamedate":"Sat, 05\/03 at 8:00 PM","gamedate2":"Sat, 05\/03","fieldname":"AIU Court 6","homescore":null,"awayscore":null,"hometeamname":"Imperial Valley Warriors","awayteamname":"SD Sol-Johnson","locationname":"AIU Court 6","locationid":"12"},{"gameid":"5276","meetname":"","starttbd":"1","awayteamid":"935","hometeamid":"933","gamemonth":"05","gameyear":"2014","gamedate":"Sun, 05\/04 at 4:00 PM","gamedate2":"Sun, 05\/04","fieldname":"AIU Court 5","homescore":null,"awayscore":null,"hometeamname":"SD Sol-Johnson","awayteamname":"Magics","locationname":"AIU Court 5","locationid":"10"},{"gameid":"5252","meetname":"","starttbd":"1","awayteamid":"926","hometeamid":"933","gamemonth":"05","gameyear":"2014","gamedate":"Sat, 05\/10 at 2:00 PM","gamedate2":"Sat, 05\/10","fieldname":"AIU Court 6","homescore":null,"awayscore":null,"hometeamname":"SD Sol-Johnson","awayteamname":"La Paz","locationname":"AIU Court 6","locationid":"12"}]
+			
+			
+http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=133&conference=137&team=994
+http://www.sdsolbasketball.com/schedule.php?month=999&year=2014&pfv=n&location=-1&leagueid=1&season=8&conference=123&division=127&team=933
+http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=124&conference=120&team=906
+http://www.sdsolbasketball.com/schedule.php?month=999&year=2014&pfv=n&location=-1&leagueid=1&season=8&conference=120&division=124&team=906

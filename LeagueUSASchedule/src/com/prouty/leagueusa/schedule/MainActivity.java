@@ -19,11 +19,19 @@ import com.prouty.leagueusa.schedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
+	private LeagueItem   mLeagueItem = new LeagueItem();
+
 	private DatabaseHelper mHelper;
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	private FavoriteItem mFavoriteItem;
 	private TeamItem mFavoriteTeam;
 
+	protected void launchLeagueListActivity() {
+		Log.d(TAG, "launchLeagueListActivity()"); 
+		Intent i = new Intent (MainActivity.this, LeagueListActivity.class);
+		i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+		startActivity(i);
+	}
 	protected void launchDivisionListActivity(SeasonItem item) {
 		Intent i = new Intent (MainActivity.this, DivisionListActivity.class);
 		i.putExtra("LeagueId", item.getLeagueId().toString());
@@ -42,18 +50,38 @@ public class MainActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
-        getOverflowMenu();
-        setContentView(R.layout.activity_fragment);
-        FragmentManager manager = getSupportFragmentManager();
-        Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
- 
-        if (fragment == null) {
-            fragment = createFragment();
-            manager.beginTransaction()
-                .add(R.id.fragmentContainer, fragment)
-                .commit();
+
+        if (needLeague()) {
+        	launchLeagueListActivity();
+        	finish();
         }
-        mHelper = new DatabaseHelper(getApplicationContext());
+        else {
+    		getOverflowMenu();
+            setContentView(R.layout.activity_fragment);
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
+     
+            if (fragment == null) {
+                fragment = new SeasonListFragment();
+                manager.beginTransaction()
+                    .add(R.id.fragmentContainer, fragment)
+                    .commit();
+            }
+            mHelper = new DatabaseHelper(getApplicationContext());
+        }
+	}
+    private boolean needLeague() {
+		FavoriteListUtil util = new FavoriteListUtil();
+		mLeagueItem=util.getHomeLeagueItem(getApplicationContext());
+		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+	public LeagueItem getLeagueItem () {
+		return mLeagueItem;
 	}
 	private void getOverflowMenu() {
 		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
@@ -114,10 +142,6 @@ public class MainActivity extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-    public Fragment createFragment() {
-		 return new SeasonListFragment();
-	}
-
     protected void insertLeagueItems(ArrayList<LeagueItem> items) {
     	Log.d(TAG, "insertLeagueItems() to insert count="+items.size());
         LeagueItem item;
@@ -141,7 +165,7 @@ public class MainActivity extends FragmentActivity {
     		LeagueItem item = cursor.getLeagueItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.d(TAG, "queryLeagueItem() league: "
+    		Log.v(TAG, "queryLeagueItem() league: "
     				+ item.getLeagueId() + "-"
     				+ item.getOrgName() + "-"
     				+ item.getLeagueURL());
@@ -174,7 +198,7 @@ public class MainActivity extends FragmentActivity {
     		SeasonItem item = cursor.getSeasonItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.d(TAG, "querySeasonItem() Season: "
+    		Log.v(TAG, "querySeasonItem() Season: "
     				+ item.getLeagueId() + "-"
     				+ item.getLeagueURL() + "-"
     				+ item.getSeasonId() + "-"

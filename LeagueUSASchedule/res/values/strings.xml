@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">League Schedule</string>
+    <string name="league_name_hint">Please select a League</string>
     <string name="season_name_hint">Please select a Season</string>
     <string name="division_name_hint">Please select a Division</string>
     <string name="conference_name_hint">Please select a Conference</string>

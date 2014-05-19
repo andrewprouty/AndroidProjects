@@ -14,8 +14,10 @@ import com.prouty.leagueusa.schedule.DatabaseHelper.TeamCursor;
 public class FavoriteListUtil {
 	private static final String TAG = "FavoriteListUtil";
 	public static final String PREFS_NAME = "MyPrefsFile";
+	public static final String HOME_ID = "HOME_ID";
+	public static final String HOME_NAME = "HOME_NAME";
+	public static final String HOME_URL = "HOME_URL";
 	private DatabaseHelper mHelper;
-
 
 	public FavoriteItem addFavoriteItem(Context context, TeamItem team) {
 		FavoriteItem fav = new FavoriteItem();
@@ -34,10 +36,27 @@ public class FavoriteListUtil {
 		Log.d(TAG, "addFavoriteItem() Key="+fav.getFavoriteURL()+" Value="+fav.getFavoriteName());
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		//URL is absolute, the name could change (currently if multiple conferences are added)
+		//editor.clear(); //truncate preferences file
+		//URL is absolute, the name could change (if team goes from single to multiple conferences division)
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
 		return fav;
+	}
+	public void setHomeLeageItem(Context context, LeagueItem item) {
+		Log.d(TAG, "setHomeLeageItem() "
+				+ item.getLeagueId() + "-"
+				+ item.getOrgName() + " ("
+				+ item.getLeagueURL() + ")");
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(HOME_ID);
+		editor.remove(HOME_NAME);
+		editor.remove(HOME_URL);
+		editor.putString(HOME_ID,item.getLeagueId());
+		editor.putString(HOME_NAME,item.getOrgName());
+		editor.putString(HOME_URL,item.getLeagueURL());
+		editor.commit();
+		return;
 	}
 	public void removeFavoriteItem(Context context, String keyTeamURL) {
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -48,28 +67,42 @@ public class FavoriteListUtil {
 		editor.commit();
 		return;
 	}
+	public LeagueItem getHomeLeagueItem(Context context) {
+		Log.d(TAG, "getHomeLeageItem()");
+		LeagueItem item = new LeagueItem();
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		item.setLeagueId(prefs.getString(HOME_ID, null));
+		item.setOrgName(prefs.getString(HOME_NAME, null));
+		item.setLeagueURL(prefs.getString(HOME_URL, null));
+		Log.d(TAG, "getHomeLeageItem() "
+				+ item.getLeagueId() + "-"
+				+ item.getOrgName() + " ("
+				+ item.getLeagueURL() + ")");
+		return item;
+	}
+
 	public ArrayList<FavoriteItem> getFavoriteList(Context context) {
 		ArrayList<FavoriteItem> items = new ArrayList<FavoriteItem>();
 		FavoriteItem item;
-
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		Boolean empty = false;
-
 		for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
             Object val = entry.getValue();
- 			item = new FavoriteItem();
- 			item.setFavoriteURL(entry.getKey());
-            item=getFieldsFromURL(item);
-            if (val == null) {
-    			Log.e(TAG, "getFavoriteList() NULL Key="+entry.getKey()+" Value="+entry.getValue());
-    			empty = true;
+            if (!entry.getKey().equals(HOME_ID) && !entry.getKey().equals(HOME_NAME) && !entry.getKey().equals(HOME_URL)) {
+     			item = new FavoriteItem();
+     			item.setFavoriteURL(entry.getKey());
+                item=getFieldsFromURL(item);
+                if (val == null) {
+        			Log.e(TAG, "getFavoriteList() NULL Key="+entry.getKey()+" Value="+entry.getValue());
+        			empty = true;
+                }
+                else {
+            		//Log.v(TAG, "getFavoriteList() Entry Key="+entry.getKey()+       " Value="+entry.getValue());
+         			item.setFavoriteName(entry.getValue().toString());
+            		Log.v(TAG, "getFavoriteList() Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
+                }
+     			items.add(item);
             }
-            else {
-        		//Log.v(TAG, "getFavoriteList() Entry Key="+entry.getKey()+       " Value="+entry.getValue());
-     			item.setFavoriteName(entry.getValue().toString());
-        		Log.v(TAG, "getFavoriteList() Key="+item.getFavoriteURL()+" Value="+item.getFavoriteName());
-            }
- 			items.add(item);
         }
 		if (empty) {
 			SharedPreferences.Editor editor = prefs.edit();
