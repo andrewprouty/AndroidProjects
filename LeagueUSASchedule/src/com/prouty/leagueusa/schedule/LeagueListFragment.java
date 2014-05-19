@@ -42,11 +42,17 @@ public class LeagueListFragment extends Fragment{
 		if (mLeagueDisplay != null) {
 			mLeagueDisplay.clear(); // reset in case of orientation switch
 		}
+		FavoriteListUtil util = new FavoriteListUtil();
+		mLeagueItem=util.getHomeLeagueItem(getActivity().getApplicationContext());
 		new QueryLeagueItemsTask().execute();
 
 		view = inflater.inflate(R.layout.fragment_league_list, container,false);
 		mLeagueTextView = (TextView)view.findViewById(R.id.league_list_league_name);
 		mListView = (ListView)view.findViewById(R.id.league_list_view);
+		if (mLeagueItem != null && mLeagueItem.getOrgName() != null) {
+			mLeagueTextView.setText(mLeagueItem.getOrgName());
+		}
+
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

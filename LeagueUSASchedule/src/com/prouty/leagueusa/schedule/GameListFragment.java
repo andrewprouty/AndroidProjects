@@ -76,6 +76,7 @@ public class GameListFragment extends Fragment{
 		mSeasonTextView.setText(mTeamItem.getSeasonName());
 		mDivisionTextView.setText(mTeamItem.getDivisionName());
 		mTeamTextView.setText(mTeamItem.getTeamName());
+
 		return view;
 	}
 

@@ -55,6 +55,9 @@ public class ConferenceListFragment extends Fragment{
 
 		mSeasonTextView.setText(mDivisionItem.getSeasonName());
 		mDivisionTextView.setText(mDivisionItem.getDivisionName());
+		if (mConferenceItem != null) {
+			mConferenceTextView.setText(mConferenceItem.getConferenceName());
+		}
 
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override

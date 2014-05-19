@@ -49,6 +49,10 @@ public class SeasonListFragment extends Fragment{
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
 		mSeasonTextView = (TextView)view.findViewById(R.id.season_list_season_name);
 		mListView = (ListView)view.findViewById(R.id.season_list_view);
+		
+		if (mSeasonItem != null) {
+			mSeasonTextView.setText(mSeasonItem.getSeasonName());
+		}
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

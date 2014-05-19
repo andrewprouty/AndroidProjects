@@ -66,6 +66,9 @@ public class TeamListFragment extends Fragment{
 
 		mSeasonTextView.setText(mConferenceItem.getSeasonName());
 		mDivisionTextView.setText(mConferenceItem.getDivisionName());
+		if (mTeamItem != null) {
+			mTeamTextView.setText(mTeamItem.getTeamName());
+		}
 
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override

@@ -60,6 +60,9 @@ public class DivisionListFragment extends Fragment{
 		mListView = (ListView)view.findViewById(R.id.division_list_view);
 
 		mSeasonTextView.setText(mSeasonItem.getSeasonName());
+		if (mDivisionItem != null) {
+			mDivisionTextView.setText(mDivisionItem.getDivisionName());
+		}
 
 		mListView.setOnItemClickListener(new OnItemClickListener () {
 			@Override
