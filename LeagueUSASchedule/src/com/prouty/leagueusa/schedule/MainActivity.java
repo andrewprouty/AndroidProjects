@@ -3,6 +3,7 @@ package com.prouty.leagueusa.schedule;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,6 +57,7 @@ public class MainActivity extends FragmentActivity {
 		else {
 			getOverflowMenu();
 			setContentView(R.layout.activity_fragment);
+			setActionBarLeague(mLeagueItem);
 			FragmentManager manager = getSupportFragmentManager();
 			Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
 
@@ -80,6 +82,23 @@ public class MainActivity extends FragmentActivity {
 	}
 	public LeagueItem getLeagueItem () {
 		return mLeagueItem;
+	}
+	private void setActionBarLeague(LeagueItem item) {
+		Log.d(TAG, "setActionBarLeague() API Level="+android.os.Build.VERSION.SDK_INT);
+		setActionBarLeagueName(item);
+		setActionBarLeagueIcon(item);
+	}
+	@TargetApi(11)
+	private void setActionBarLeagueName(LeagueItem item) {
+		if (android.os.Build.VERSION.SDK_INT >= 11){
+			getActionBar().setTitle(item.getOrgName());
+		}
+	}
+	@TargetApi(14)
+	private void setActionBarLeagueIcon(LeagueItem item) {
+		if (android.os.Build.VERSION.SDK_INT >= 14){
+			getActionBar().setIcon(R.drawable.sd_sol_icon);
+		}
 	}
 	private void getOverflowMenu() {
 		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)

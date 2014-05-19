@@ -2,6 +2,7 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,9 +45,9 @@ public class LeagueListActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_fragment);
 		Log.d(TAG, "onCreate()");
-
+		setContentView(R.layout.activity_fragment);
+		setActionBarVicid();
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
@@ -58,7 +59,23 @@ public class LeagueListActivity extends FragmentActivity {
 		}
 		mHelper = new DatabaseHelper(getApplicationContext());
 	}
-	
+	private void setActionBarVicid() {
+		Log.d(TAG, "setActionBarVicid() API Level="+android.os.Build.VERSION.SDK_INT);
+		setActionBarVicidName();
+		setActionBarVicidIcon();
+	}
+	@TargetApi(11)
+	private void setActionBarVicidName() {
+		if (android.os.Build.VERSION.SDK_INT >= 11){
+			getActionBar().setTitle("Vicid Schedules");
+		}
+	}
+	@TargetApi(14)
+	private void setActionBarVicidIcon() {
+		if (android.os.Build.VERSION.SDK_INT >= 14){
+			getActionBar().setIcon(R.drawable.vicid_logo);
+		}
+	}
 	@Override
 	protected void onRestart() {
 		super.onRestart();
