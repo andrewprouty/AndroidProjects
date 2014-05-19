@@ -26,6 +26,7 @@ public class GameListFragment extends Fragment{
 	private ArrayList<GameItem> mGameFetch;
 	private ArrayList<GameItem> mGameQuery;
 	private ArrayList<GameItem> mGameDisplay;
+	GameListAdapter adapter;
 	
 	private Menu mMenu; //To add the important button 
 	private ArrayList<FavoriteItem> mFavoriteItems;
@@ -176,7 +177,7 @@ public class GameListFragment extends Fragment{
 				else {
 					mGameDisplay = mGameQuery;
 				}
-				GameListAdapter adapter = new GameListAdapter(mGameDisplay, choice);
+				adapter = new GameListAdapter(mGameDisplay, choice);
 				mListView.setAdapter(adapter);
 			}
 			else {
@@ -201,8 +202,11 @@ public class GameListFragment extends Fragment{
 							+ mGameFetch.size() + " " + mGameQuery.size());
 					if (choice == GET) {
 						Log.w(TAG, "setupGame("+choice+") Fetched!=Queried, GET to Insert");
+						mGameDisplay.clear();
+						mGameDisplay.addAll(mGameFetch);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertGameItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 		    	}
 		    	else {

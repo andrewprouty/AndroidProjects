@@ -117,7 +117,7 @@ public class LeagueListActivity extends FragmentActivity {
     	ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
     	cursor = mHelper.queryLeagues();
     	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
+		while(!cursor.isAfterLast()) {
     		LeagueItem item = cursor.getLeagueItem();
     		items.add(item);
     		cursor.moveToNext();

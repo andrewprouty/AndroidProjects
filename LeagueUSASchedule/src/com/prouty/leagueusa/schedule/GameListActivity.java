@@ -118,7 +118,7 @@ public class GameListActivity extends FragmentActivity {
 				+ " team ID="      + pk.getTeamId());
     	cursor = mHelper.queryGamesByTeamItem(pk);
     	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
+		while(!cursor.isAfterLast()) {
     		GameItem item = cursor.getGameItem();
     		items.add(item);
     		cursor.moveToNext();

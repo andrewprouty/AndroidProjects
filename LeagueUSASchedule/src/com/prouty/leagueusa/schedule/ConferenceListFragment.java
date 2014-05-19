@@ -25,6 +25,7 @@ public class ConferenceListFragment extends Fragment{
 	private ArrayList<ConferenceItem> mConferenceFetch;
 	private ArrayList<ConferenceItem> mConferenceDisplay;
 	private ConferenceItem mConferenceItem;
+	ConferenceListAdapter adapter;
 
 	View view;
 	TextView mSeasonTextView;
@@ -82,7 +83,7 @@ public class ConferenceListFragment extends Fragment{
 				else {
 					mConferenceDisplay = mConferenceQuery;
 				}
-				ConferenceListAdapter adapter = new ConferenceListAdapter(mConferenceDisplay, choice);
+				adapter = new ConferenceListAdapter(mConferenceDisplay, choice);
 				mListView.setAdapter(adapter);
 			}
 			else {
@@ -107,8 +108,11 @@ public class ConferenceListFragment extends Fragment{
 							+ mConferenceFetch.size() + " " + mConferenceQuery.size());
 					if (choice == GET) {
 						Log.d(TAG, "setupConference("+choice+") (2nd/GET) difference so inserting");
+						mConferenceDisplay.clear();
+						mConferenceDisplay.addAll(mConferenceFetch);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertConferenceItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {

@@ -25,6 +25,7 @@ public class TeamListFragment extends Fragment{
 	private ArrayList<TeamItem> mTeamFetch;
 	private ArrayList<TeamItem> mTeamDisplay;
 	private TeamItem mTeamItem;
+	TeamListAdapter adapter;
 	
 	View view;
 	TextView mSeasonTextView;
@@ -92,7 +93,7 @@ public class TeamListFragment extends Fragment{
 				else {
 					mTeamDisplay = mTeamQuery;
 				}
-				TeamListAdapter adapter = new TeamListAdapter(mTeamDisplay, choice);
+				adapter = new TeamListAdapter(mTeamDisplay, choice);
 				mListView.setAdapter(adapter);
 			}
 			else {
@@ -116,8 +117,12 @@ public class TeamListFragment extends Fragment{
 					Log.w(TAG, "setupTeam("+choice+") Fetched != Queried. Sizes info only: "
 							+ mTeamFetch.size() + " " + mTeamQuery.size());
 					if (choice == GET) {
+						Log.d(TAG, "setupTeam("+choice+") (2nd/GET) difference so inserting");
+						mTeamDisplay.clear();
+						mTeamDisplay.addAll(mTeamFetch);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertTeamItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {
@@ -127,7 +132,6 @@ public class TeamListFragment extends Fragment{
 		}
 	}
 	private void returnTeam(int position) {
-		
     	mTeamItem = mTeamDisplay.get(position);
 		mTeamTextView.setText(mTeamItem.getTeamName());
 		Log.i(TAG, "returnTeam()=["+position+"]"

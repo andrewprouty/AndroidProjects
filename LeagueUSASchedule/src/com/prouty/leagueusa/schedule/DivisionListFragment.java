@@ -28,6 +28,7 @@ public class DivisionListFragment extends Fragment{
 	private SeasonItem mSeasonItem;
 	private DivisionItem mDivisionItem;
 	private ConferenceItem mConferenceItem;
+	DivisionListAdapter divisionAdapter;
 
 	View view;
 	TextView mSeasonTextView;
@@ -86,8 +87,8 @@ public class DivisionListFragment extends Fragment{
 				else {
 					mDivisionDisplay = mDivisionQuery;
 				}
-				DivisionListAdapter adapter = new DivisionListAdapter(mDivisionDisplay, choice);
-				mListView.setAdapter(adapter);
+				divisionAdapter = new DivisionListAdapter(mDivisionDisplay, choice);
+				mListView.setAdapter(divisionAdapter);
 			}
 
 			else {
@@ -96,7 +97,6 @@ public class DivisionListFragment extends Fragment{
 				}
 				else {
 					Log.w(TAG, "setupDivision("+choice+") (2nd/GET) also has no results");
-					//ENH The ENH is to add to others selection screens also (rather than blank screen) 
 					String msg = getActivity().getApplicationContext().getResources().getString(R.string.name_division);
 					msg = getActivity().getApplicationContext().getResources().getString(R.string.no_information_available, msg);
 					Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
@@ -113,8 +113,11 @@ public class DivisionListFragment extends Fragment{
 							+ mDivisionFetch.size() + " " + mDivisionQuery.size());
 					if (choice == GET) {
 						Log.d(TAG, "setupDivision("+choice+") (2nd/GET) difference so inserting");
+						mDivisionDisplay.clear();
+						mDivisionDisplay.addAll(mDivisionFetch);
+						divisionAdapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertDivisionItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {
@@ -193,8 +196,11 @@ public class DivisionListFragment extends Fragment{
 							+ mConferenceFetch.size() + " " + mConferenceQuery.size());
 					if (choice == GET) {
 						Log.d(TAG, "returnConference("+choice+") (2nd/GET) difference so inserting");
+						mConferenceDisplay.clear();
+						mConferenceDisplay.addAll(mConferenceFetch);
+						// Update DB, not displayed so skip Toast
+						// Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertConferenceItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {

@@ -154,7 +154,7 @@ public class ConferenceListActivity extends FragmentActivity {
     	ArrayList<ConferenceItem> items = new ArrayList<ConferenceItem>();
     	cursor = mHelper.queryConferencesByDivisionItem(pk);
     	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
+		while(!cursor.isAfterLast()) {
     		ConferenceItem item = cursor.getConferenceItem();
     		items.add(item);
     		cursor.moveToNext();

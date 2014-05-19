@@ -24,6 +24,7 @@ public class LeagueListFragment extends Fragment{
 	private ArrayList<LeagueItem> mLeagueFetch;
 	private ArrayList<LeagueItem> mLeagueDisplay;
 	private LeagueItem mLeagueItem;
+	LeagueListAdapter adapter;
 
 	View view;
 	TextView mLeagueTextView;
@@ -73,7 +74,7 @@ public class LeagueListFragment extends Fragment{
 				else {
 					mLeagueDisplay = mLeagueQuery;
 				}
-				LeagueListAdapter adapter = new LeagueListAdapter(mLeagueDisplay, choice);
+				adapter = new LeagueListAdapter(mLeagueDisplay, choice);
 				mListView.setAdapter(adapter);
 			}
 			else {
@@ -98,8 +99,11 @@ public class LeagueListFragment extends Fragment{
 							+ mLeagueFetch.size() + " " + mLeagueQuery.size());
 					if (choice == GET) {
 						Log.d(TAG, "setupLeague("+choice+") (2nd/GET) difference so inserting");
+						mLeagueDisplay.clear();
+						mLeagueDisplay.addAll(mLeagueFetch);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertLeagueItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {

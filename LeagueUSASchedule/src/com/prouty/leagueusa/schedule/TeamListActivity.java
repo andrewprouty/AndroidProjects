@@ -140,7 +140,6 @@ public class TeamListActivity extends FragmentActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
     protected void insertTeamItems(ArrayList<TeamItem> items) {
 		Log.d(TAG, "insertTeamItems() to insert count="+items.size());
     	TeamItem item;
@@ -172,7 +171,7 @@ public class TeamListActivity extends FragmentActivity {
     	ArrayList<TeamItem> items = new ArrayList<TeamItem>();
     	cursor = mHelper.queryTeamsByConferenceItem(pk);
     	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
+		while(!cursor.isAfterLast()) {
     		TeamItem item = cursor.getTeamItem();
     		items.add(item);
     		cursor.moveToNext();

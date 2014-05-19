@@ -36,7 +36,7 @@ public class FavoriteListUtil {
 		Log.d(TAG, "addFavoriteItem() Key="+fav.getFavoriteURL()+" Value="+fav.getFavoriteName());
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		//editor.clear(); //truncate preferences file
+		editor.clear(); //truncate preferences file
 		//URL is absolute, the name could change (if team goes from single to multiple conferences division)
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();

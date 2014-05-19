@@ -25,6 +25,7 @@ public class SeasonListFragment extends Fragment{
 	private ArrayList<SeasonItem> mSeasonFetch;
 	private ArrayList<SeasonItem> mSeasonDisplay;
 	private SeasonItem mSeasonItem;
+	SeasonListAdapter adapter;
 
 	View view;
 	TextView mSeasonTextView;
@@ -74,7 +75,7 @@ public class SeasonListFragment extends Fragment{
 				else {
 					mSeasonDisplay = mSeasonQuery;
 				}
-				SeasonListAdapter adapter = new SeasonListAdapter(mSeasonDisplay, choice);
+				adapter = new SeasonListAdapter(mSeasonDisplay, choice);
 				mListView.setAdapter(adapter);
 			}
 			else {
@@ -99,8 +100,11 @@ public class SeasonListFragment extends Fragment{
 							+ mSeasonFetch.size() + " " + mSeasonQuery.size());
 					if (choice == GET) {
 						Log.d(TAG, "setupSeason("+choice+") (2nd/GET) difference so inserting");
+						mSeasonDisplay.clear();
+						mSeasonDisplay.addAll(mSeasonFetch);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
 						new InsertSeasonItemsTask().execute();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.try_again_for_update, Toast.LENGTH_SHORT).show();
 					}
 				}
 				else {

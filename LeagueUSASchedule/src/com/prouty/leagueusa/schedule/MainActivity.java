@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
-import com.prouty.leagueusa.schedule.DatabaseHelper.LeagueCursor;
 import com.prouty.leagueusa.schedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
@@ -47,30 +46,29 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
+		if (needLeague()) {
+			launchLeagueListActivity();
+			finish();
+		}
+		else {
+			getOverflowMenu();
+			setContentView(R.layout.activity_fragment);
+			FragmentManager manager = getSupportFragmentManager();
+			Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
 
-        if (needLeague()) {
-        	launchLeagueListActivity();
-        	finish();
-        }
-        else {
-    		getOverflowMenu();
-            setContentView(R.layout.activity_fragment);
-            FragmentManager manager = getSupportFragmentManager();
-            Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
-     
-            if (fragment == null) {
-                fragment = new SeasonListFragment();
-                manager.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
-                    .commit();
-            }
-            mHelper = new DatabaseHelper(getApplicationContext());
-        }
+			if (fragment == null) {
+				fragment = new SeasonListFragment();
+				manager.beginTransaction()
+				.add(R.id.fragmentContainer, fragment)
+				.commit();
+			}
+			mHelper = new DatabaseHelper(getApplicationContext());
+		}
 	}
-    private boolean needLeague() {
+	private boolean needLeague() {
 		FavoriteListUtil util = new FavoriteListUtil();
 		mLeagueItem=util.getHomeLeagueItem(getApplicationContext());
 		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
@@ -79,22 +77,22 @@ public class MainActivity extends FragmentActivity {
 		else {
 			return false;
 		}
-    }
+	}
 	public LeagueItem getLeagueItem () {
 		return mLeagueItem;
 	}
 	private void getOverflowMenu() {
 		// had a problem with 1-phone (http://stackoverflow.com/questions/9739498/android-action-bar-not-showing-overflow)
-	     try {
-	        ViewConfiguration config = ViewConfiguration.get(this);
-	        Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-	        if(menuKeyField != null) {
-	            menuKeyField.setAccessible(true);
-	            menuKeyField.setBoolean(config, false);
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+			if(menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	@Override
 	protected void onRestart() {
@@ -103,8 +101,8 @@ public class MainActivity extends FragmentActivity {
 		supportInvalidateOptionsMenu();
 		//invalidateOptionsMenu(); API 11+
 	}
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.d(TAG, "onPrepareOptionsMenu()");
 		FavoriteListUtil util = new FavoriteListUtil();
 		FavoriteItem favItem = new FavoriteItem();
@@ -113,99 +111,72 @@ public class MainActivity extends FragmentActivity {
 		for (int i=0; i<mFavoriteItems.size(); i++) {
 			favItem=mFavoriteItems.get(i);
 			Log.v(TAG, "onPrepareOptionsMenu() ["+i+"] "+"fav="+favItem.getFavoriteName()+"-"+favItem.getFavoriteURL());
-	        menu.add(1,i,i, favItem.getFavoriteName());
-	    	/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
-	         * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
-	         * itemId	Unique item ID. Use NONE if you do not need a unique ID.
-	         * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
-	         * title	The text to display for the item. */
+			menu.add(1,i,i, favItem.getFavoriteName());
+			/* http://developer.android.com/reference/android/view/Menu.html#add(int, int, int, int)
+			 * groupId	The group identifier that this item should be part of. This can be used to define groups of items for batch state changes. Normally use NONE if an item should not be in a group.
+			 * itemId	Unique item ID. Use NONE if you do not need a unique ID.
+			 * order	The order for the item. Use NONE if you do not care about the order. See getOrder().
+			 * title	The text to display for the item. */
 		}
-        return super.onPrepareOptionsMenu(menu);
-    }
+		return super.onPrepareOptionsMenu(menu);
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(TAG, "onOptionsItemSelected() Id: "+item.getItemId());
-		if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
-			mFavoriteItem = mFavoriteItems.get(item.getItemId());
-			Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
-					+" Value="+mFavoriteItem.getFavoriteName());
-			FavoriteListUtil util = new FavoriteListUtil();
-			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
-			if (mFavoriteTeam != null ) {
-				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
-				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
-			}
-			else {
-				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+
+		if (item.getItemId() == android.R.id.home) {
+			launchLeagueListActivity();
+		}
+		else {
+			if (mFavoriteItems != null && mFavoriteItems.size() > 0) {
+				mFavoriteItem = mFavoriteItems.get(item.getItemId());
+				Log.d(TAG, "onOptionsItemSelected() FavItem Key="+mFavoriteItem.getFavoriteURL()
+						+" Value="+mFavoriteItem.getFavoriteName());
+				FavoriteListUtil util = new FavoriteListUtil();
+				mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
+				if (mFavoriteTeam != null ) {
+					Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
+					util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+				}
+				else {
+					Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-    protected void insertLeagueItems(ArrayList<LeagueItem> items) {
-    	Log.d(TAG, "insertLeagueItems() to insert count="+items.size());
-        LeagueItem item;
-        long count=0;
-		count=mHelper.deleteLeague(); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
-		Log.d(TAG, "insertLeagueItems() prep deleted=" +count);
-        for (int i=0; i<items.size(); i++) {
-    		item=items.get(i);
-    		Log.v(TAG, "insertLeagueItems() league: "+item.getLeagueId()+"-"+item.getOrgName()+item.getLeagueURL());
-            mHelper.insertLeague(item);
-            mHelper.close();
-        }
-        return;
-    }
-    protected ArrayList<LeagueItem> queryLeagueItems() {
-    	LeagueCursor cursor;
-    	ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
-    	cursor = mHelper.queryLeagues();
-    	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
-    		LeagueItem item = cursor.getLeagueItem();
-    		items.add(item);
-    		cursor.moveToNext();
-    		Log.v(TAG, "queryLeagueItem() league: "
-    				+ item.getLeagueId() + "-"
-    				+ item.getOrgName() + "-"
-    				+ item.getLeagueURL());
-    	}
-    	cursor.close();
-        mHelper.close();
-    	return items;
-    }
-    protected void insertSeasonItems(ArrayList<SeasonItem> items) {
+	protected void insertSeasonItems(ArrayList<SeasonItem> items) {
 		Log.d(TAG, "insertSeasonItems() to insert count="+items.size());
-        SeasonItem item;
-        long count=0;
+		SeasonItem item;
+		long count=0;
 		count=mHelper.deleteSeasonBySeasonItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
 		Log.d(TAG, "insertSeasonItems() prep deleted=" +count);
-        for (int i=0; i<items.size(); i++) {
-    		item=items.get(i);
-    		Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-" + item.getLeagueURL() + "-"
-    				+ item.getSeasonId() + "-"+ item.getSeasonName());
-            mHelper.insertSeason(item);
-            mHelper.close();
-        }
-        return;
-    }
-    protected ArrayList<SeasonItem> querySeasonItemsByLeagueId(LeagueItem pk) {
-    	SeasonCursor cursor;
-    	ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
-    	cursor = mHelper.querySeasonsByLeagueId(pk.getLeagueId());
-    	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
-    		SeasonItem item = cursor.getSeasonItem();
-    		items.add(item);
-    		cursor.moveToNext();
-    		Log.v(TAG, "querySeasonItem() Season: "
-    				+ item.getLeagueId() + "-"
-    				+ item.getLeagueURL() + "-"
-    				+ item.getSeasonId() + "-"
-    				+ item.getSeasonName());
-    	}
-    	cursor.close();
-        mHelper.close();
-    	return items;
-    }
+		for (int i=0; i<items.size(); i++) {
+			item=items.get(i);
+			Log.v(TAG, "insertSeasonItems() league: "+ item.getLeagueId() + "-" + item.getLeagueURL() + "-"
+					+ item.getSeasonId() + "-"+ item.getSeasonName());
+			mHelper.insertSeason(item);
+			mHelper.close();
+		}
+		return;
+	}
+	protected ArrayList<SeasonItem> querySeasonItemsByLeagueId(LeagueItem pk) {
+		SeasonCursor cursor;
+		ArrayList<SeasonItem> items = new ArrayList<SeasonItem>();
+		cursor = mHelper.querySeasonsByLeagueId(pk.getLeagueId());
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()) {
+			SeasonItem item = cursor.getSeasonItem();
+			items.add(item);
+			cursor.moveToNext();
+			Log.v(TAG, "querySeasonItem() Season: "
+					+ item.getLeagueId() + "-"
+					+ item.getLeagueURL() + "-"
+					+ item.getSeasonId() + "-"
+					+ item.getSeasonName());
+		}
+		cursor.close();
+		mHelper.close();
+		return items;
+	}
 }

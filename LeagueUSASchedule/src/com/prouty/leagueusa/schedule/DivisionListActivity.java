@@ -167,7 +167,7 @@ public class DivisionListActivity extends FragmentActivity {
     	ArrayList<DivisionItem> items = new ArrayList<DivisionItem>();
     	cursor = mHelper.queryDivisionsBySeasonItem(pk);
     	cursor.moveToFirst();
-    	while(!cursor.isAfterLast()) {
+		while(!cursor.isAfterLast()) {
     		DivisionItem item = cursor.getDivisionItem();
     		items.add(item);
     		cursor.moveToNext();
