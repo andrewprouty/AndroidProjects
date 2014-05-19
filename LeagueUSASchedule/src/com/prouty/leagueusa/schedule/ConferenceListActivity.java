@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.prouty.leagueusa.schedule.DatabaseHelper.ConferenceCursor;
-import com.prouty.leagueusa.sdsolschedule.R;
 
 public class ConferenceListActivity extends FragmentActivity {
 	private static final String TAG = "ConferenceListActivity";

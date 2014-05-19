@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.prouty.leagueusa.schedule.DatabaseHelper.GameCursor;
-import com.prouty.leagueusa.sdsolschedule.R;
 
 public class GameListActivity extends FragmentActivity {
 	private static final String TAG = "GameListActivity";

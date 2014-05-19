@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.prouty.leagueusa.schedule.DatabaseHelper.LeagueCursor;
 import com.prouty.leagueusa.schedule.DatabaseHelper.SeasonCursor;
-import com.prouty.leagueusa.sdsolschedule.R;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";

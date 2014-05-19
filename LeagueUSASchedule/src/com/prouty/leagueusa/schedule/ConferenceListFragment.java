@@ -2,8 +2,6 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 
-import com.prouty.leagueusa.sdsolschedule.R;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
