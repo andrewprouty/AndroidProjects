@@ -4,6 +4,7 @@ public class FavoriteItem {
 	private String mFavoriteName;
 	private String mFavoriteURL;
     private String mLeagueId;
+    private String mLeagueURL;
     private String mSeasonId;
     private String mDivisionId;
     private String mConferenceId;
@@ -22,6 +23,8 @@ public class FavoriteItem {
 				+ ((mFavoriteURL == null) ? 0 : mFavoriteURL.hashCode());
 		result = prime * result
 				+ ((mLeagueId == null) ? 0 : mLeagueId.hashCode());
+		result = prime * result
+				+ ((mLeagueURL == null) ? 0 : mLeagueURL.hashCode());
 		result = prime * result
 				+ ((mSeasonId == null) ? 0 : mSeasonId.hashCode());
 		result = prime * result + ((mTeamId == null) ? 0 : mTeamId.hashCode());
@@ -61,6 +64,11 @@ public class FavoriteItem {
 				return false;
 		} else if (!mLeagueId.equals(other.mLeagueId))
 			return false;
+		if (mLeagueURL == null) {
+			if (other.mLeagueURL != null)
+				return false;
+		} else if (!mLeagueURL.equals(other.mLeagueURL))
+			return false;
 		if (mSeasonId == null) {
 			if (other.mSeasonId != null)
 				return false;
@@ -91,6 +99,12 @@ public class FavoriteItem {
 	public void setLeagueId(String leagueId) {
 		mLeagueId = leagueId;
 	}
+	public String getLeagueURL() {
+		return mLeagueURL;
+	}
+	public void setLeagueURL(String leagueURL) {
+		mLeagueURL = leagueURL;
+	}
 	public String getSeasonId() {
 		return mSeasonId;
 	}
@@ -114,5 +128,5 @@ public class FavoriteItem {
 	}
 	public void setTeamId(String teamId) {
 		mTeamId = teamId;
-	}
+	}  
 }

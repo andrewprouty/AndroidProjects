@@ -86,7 +86,7 @@ public class MainActivity extends FragmentActivity {
 	private void setActionBarLeague(LeagueItem item) {
 		Log.d(TAG, "setActionBarLeague() API Level="+android.os.Build.VERSION.SDK_INT);
 		setActionBarLeagueName(item);
-		setActionBarLeagueIcon(item);
+		//ENH setActionBarLeagueIcon(item);
 	}
 	@TargetApi(11)
 	private void setActionBarLeagueName(LeagueItem item) {

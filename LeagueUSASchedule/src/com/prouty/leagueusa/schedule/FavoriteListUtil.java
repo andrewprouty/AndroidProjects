@@ -36,7 +36,7 @@ public class FavoriteListUtil {
 		Log.d(TAG, "addFavoriteItem() Key="+fav.getFavoriteURL()+" Value="+fav.getFavoriteName());
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.clear(); //truncate preferences file
+		//To truncate preferences file use: editor.clear();
 		//URL is absolute, the name could change (if team goes from single to multiple conferences division)
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
@@ -118,21 +118,34 @@ public class FavoriteListUtil {
 		return items;
 	}
 	private FavoriteItem getFieldsFromURL (FavoriteItem item) {
+		Log.d(TAG, "getFieldsFromURL() FavoriteItem");
     	Uri uri = Uri.parse(item.getFavoriteURL());
     	item.setLeagueId(uri.getQueryParameter("league"));
     	item.setSeasonId(uri.getQueryParameter("season"));
     	item.setDivisionId(uri.getQueryParameter("division"));
     	item.setConferenceId(uri.getQueryParameter("conference"));
     	item.setTeamId(uri.getQueryParameter("team"));
+    	int position=item.getFavoriteURL().indexOf("?");
+    	item.setLeagueURL(item.getFavoriteURL().substring(0,position));
+		Log.d(TAG, "getFieldsFromURL() FavoriteItem: "
+				+ " league ID="    + item.getLeagueId()
+				+ ", url="         + item.getLeagueURL()
+				+ " season ID="    + item.getSeasonId()
+				+ " division ID="  + item.getDivisionId()
+				+ " conferenceId=" + item.getConferenceId()
+				+ " team ID="      + item.getTeamId());
 		return item; 
 	}
 	private TeamItem getFieldsFromURL (TeamItem item) {
+		Log.d(TAG, "getFieldsFromURL() TeamItem");
     	Uri uri = Uri.parse(item.getTeamURL());
     	item.setLeagueId(uri.getQueryParameter("league"));
     	item.setSeasonId(uri.getQueryParameter("season"));
     	item.setDivisionId(uri.getQueryParameter("division"));
     	item.setConferenceId(uri.getQueryParameter("conference"));
     	item.setTeamId(uri.getQueryParameter("team"));
+    	int position=item.getTeamURL().indexOf("?");
+    	item.setLeagueURL(item.getTeamURL().substring(0,position));
 		return item; 
 	}
     protected TeamItem queryTeamByTeamURL(Context context, String teamURL) {
