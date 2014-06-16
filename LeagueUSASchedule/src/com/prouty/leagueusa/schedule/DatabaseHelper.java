@@ -87,28 +87,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		Log.d(TAG, "onCreate()");
 		db.execSQL("create table league (" +
-				" league_id varchar(10) primary key, org_name varchar(100), league_url varchar(100))");
+				" league_id varchar(10),  org_name varchar(100), league_url varchar(100)," +
+				" primary key (league_id, league_url))");
 		db.execSQL("create table season (" +
 				" league_id varchar(10), league_url varchar(100), season_id varchar(10), season_name varchar(100)," +
-				" primary key (league_id, season_id))");
+				" primary key (league_id, league_url, season_id))");
 		db.execSQL("create table division (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
-				" primary key (league_id, season_id, division_id))");
+				" primary key (league_id, league_url, season_id, division_id))");
 		db.execSQL("create table conference (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
-				" primary key (league_id, season_id, division_id, conference_id))");
+				" primary key (league_id, league_url, season_id, division_id, conference_id))");
 		db.execSQL("create table team (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
 				" division_id varchar(10), division_name varchar(100)," +
 				" conference_id varchar(10), conference_name varchar(100), conference_count varchar(10)," + 
 				" team_id varchar(10), team_name varchar(100), team_url varchar(300)," +
-				" primary key (league_id, season_id, division_id, conference_id, team_id))");
+				" primary key (league_id, league_url, season_id, division_id, conference_id, team_id))");
 		db.execSQL("create table game (" +
 				" league_id varchar(10), league_url varchar(100)," +
 				" season_id varchar(10), season_name varchar(100),"+
@@ -119,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" game_home_team varchar(100), game_away_team varchar(100)," +
 				" game_location varchar(100), game_start_tbd varchar(10)," +
 				" game_home_score varchar(10), game_away_score varchar(10)," +
-				" primary key (league_id, season_id, division_id, conference_id, team_id, game_id))");
+				" primary key (league_id, league_url, season_id, division_id, conference_id, team_id, game_id))");
 		Log.d(TAG, "onCreate()ed");
 	}
 
@@ -152,8 +153,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long deleteSeasonBySeasonItem(SeasonItem item) {
 		Log.d(TAG, "deleteSeasonBySeasonItem()");
 		return getWritableDatabase().delete(TABLE_SEASON,
-				COLUMN_TEAM_LEAGUE_ID + " = ?",		// Where column
-						new String[] {String.valueOf(item.getLeagueId())}); // values
+				COLUMN_SEASON_LEAGUE_ID + " = ? AND " +
+						COLUMN_SEASON_LEAGUE_URL + " = ?",		// Where column
+						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL())}); // values
 	}
 	public long insertSeason(SeasonItem item) {
 		Log.v(TAG, "insertSeason()");
@@ -164,12 +167,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_SEASON_SEASON_NAME, item.getSeasonName());
 		return getWritableDatabase().insert(TABLE_SEASON, null, cv);
 	}
-	public SeasonCursor querySeasonsByLeagueId(String id) {
-		Log.d(TAG, "querySeasons()");
+	public SeasonCursor querySeasonsByLeagueItem(LeagueItem item) {
+		Log.d(TAG, "querySeasonsByLeagueItem()");
 		Cursor wrapped = getReadableDatabase().query(TABLE_SEASON,
 				null, // all columns 
-				COLUMN_SEASON_LEAGUE_ID + " = ?", // THAT User Id
-				new String[]{ String.valueOf(id) }, // with this value
+				COLUMN_SEASON_LEAGUE_ID + " = ? AND "+
+				COLUMN_SEASON_LEAGUE_URL + " = ?",		// Where column
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL())}, // values
 				null, // group by
 				null, // having
 				COLUMN_SEASON_SEASON_NAME + " asc", // order by
@@ -177,16 +182,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return new SeasonCursor(wrapped);
 	}
 
-	public long deleteDivision() {
-		Log.d(TAG, "deleteDivision()");
-		return getWritableDatabase().delete(TABLE_DIVISION, null, null);
-	}
 	public long deleteDivisionByDivisionItem(DivisionItem item) {
 		Log.d(TAG, "deleteDivisionByDivisionItem()");
 		return getWritableDatabase().delete(TABLE_DIVISION,
-				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
-						COLUMN_TEAM_SEASON_ID + " = ?",		// Where column
+				COLUMN_DIVISION_LEAGUE_ID + " = ? AND " +
+						COLUMN_DIVISION_LEAGUE_URL + " = ? AND " +
+						COLUMN_DIVISION_SEASON_ID + " = ?",		// Where column
 						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId())}); // values
 	}
 	public long insertDivision(DivisionItem item) {
@@ -204,9 +207,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "queryDivisions()");
 		Cursor wrapped = getReadableDatabase().query(TABLE_DIVISION,
 				null, // all columns 
-				COLUMN_DIVISION_LEAGUE_ID + " = ? AND "+	// Where column
+				COLUMN_DIVISION_LEAGUE_ID + " = ? AND "+
+				COLUMN_DIVISION_LEAGUE_URL + " = ? AND "+
 				COLUMN_DIVISION_SEASON_ID + " = ?",		// Where column
 				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId())}, // values
 				null, // group by
 				null, // having
@@ -217,10 +222,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long deleteConferenceByConferenceItem(ConferenceItem item) {
 		Log.d(TAG, "deleteConferenceByConferenceItem()");
 		return getWritableDatabase().delete(TABLE_CONFERENCE,
-				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
-						COLUMN_TEAM_SEASON_ID + " = ? AND " +
-						COLUMN_TEAM_DIVISION_ID + " = ?",		// Where column
+				COLUMN_CONFERENCE_LEAGUE_ID + " = ? AND " +
+						COLUMN_CONFERENCE_LEAGUE_URL + " = ? AND " +
+						COLUMN_CONFERENCE_SEASON_ID + " = ? AND " +
+						COLUMN_CONFERENCE_DIVISION_ID + " = ?",		// Where column
 						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId())}); // values
 	}
@@ -243,9 +250,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor wrapped = getReadableDatabase().query(TABLE_CONFERENCE,
 				null, // all columns 
 				COLUMN_CONFERENCE_LEAGUE_ID + " = ? AND "+
+				COLUMN_CONFERENCE_LEAGUE_URL + " = ? AND "+
 				COLUMN_CONFERENCE_SEASON_ID + " = ? AND "+
 				COLUMN_CONFERENCE_DIVISION_ID + " = ?",		// Where column
 				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId())}, // values
 				null, // group by
@@ -258,10 +267,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "deleteTeamsByTeamItem()");
 		return getWritableDatabase().delete(TABLE_TEAM,
 				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
+						COLUMN_TEAM_LEAGUE_URL + " = ? AND " +
 						COLUMN_TEAM_SEASON_ID + " = ? AND " +
 						COLUMN_TEAM_DIVISION_ID + " = ? AND "+
 						COLUMN_TEAM_CONFERENCE_ID + " = ?",		// Where column
 						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId())}); // values
@@ -289,10 +300,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor wrapped = getReadableDatabase().query(TABLE_TEAM,
 				null, // all columns 
 				COLUMN_TEAM_LEAGUE_ID + " = ? AND "+
+				COLUMN_TEAM_LEAGUE_URL + " = ? AND "+
 				COLUMN_TEAM_SEASON_ID + " = ? AND "+
 				COLUMN_TEAM_DIVISION_ID + " = ? AND "+
 				COLUMN_TEAM_CONFERENCE_ID + " = ?",		// Where column
 				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId())}, // values
@@ -309,11 +322,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor wrapped = getReadableDatabase().query(TABLE_TEAM,
 				null, // all columns 
 				COLUMN_TEAM_LEAGUE_ID + " = ? AND "+
+				COLUMN_TEAM_LEAGUE_URL + " = ? AND "+
 				COLUMN_TEAM_SEASON_ID + " = ? AND "+
 				COLUMN_TEAM_DIVISION_ID + " = ? AND "+
 				COLUMN_TEAM_CONFERENCE_ID + " = ? AND "+
 				COLUMN_TEAM_TEAM_ID + " = ?",		// Where column TEAM
 				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId()),
@@ -328,12 +343,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long deleteGameByGameItem(GameItem item) {
 		Log.d(TAG, "deleteGameByGameItem()");
 		return getWritableDatabase().delete(TABLE_GAME,
-				COLUMN_TEAM_LEAGUE_ID + " = ? AND " +
-						COLUMN_TEAM_SEASON_ID + " = ? AND " +
-						COLUMN_TEAM_DIVISION_ID + " = ? AND "+
-						COLUMN_TEAM_CONFERENCE_ID + " = ? AND "+
-						COLUMN_TEAM_TEAM_ID + " = ?",		// Where column
+				COLUMN_GAME_LEAGUE_ID + " = ? AND " +
+						COLUMN_GAME_LEAGUE_URL + " = ? AND " +
+						COLUMN_GAME_SEASON_ID + " = ? AND " +
+						COLUMN_GAME_DIVISION_ID + " = ? AND "+
+						COLUMN_GAME_CONFERENCE_ID + " = ? AND "+
+						COLUMN_GAME_TEAM_ID + " = ?",		// Where column
 						new String[] {String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId()),
@@ -371,11 +388,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor wrapped = getReadableDatabase().query(TABLE_GAME,
 				null, // all columns 
 				COLUMN_GAME_LEAGUE_ID + " = ? AND "+
+				COLUMN_GAME_LEAGUE_URL + " = ? AND "+
 				COLUMN_GAME_SEASON_ID + " = ? AND "+
 				COLUMN_GAME_DIVISION_ID + " = ? AND "+
 				COLUMN_GAME_CONFERENCE_ID + " = ? AND "+
 				COLUMN_GAME_TEAM_ID + " = ?",		// Where column
 				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL()),
 				String.valueOf(item.getSeasonId()),
 				String.valueOf(item.getDivisionId()),
 				String.valueOf(item.getConferenceId()),

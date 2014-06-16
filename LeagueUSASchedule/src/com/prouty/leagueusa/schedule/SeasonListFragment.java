@@ -200,7 +200,7 @@ public class SeasonListFragment extends Fragment{
 			Log.d(TAG, "QuerySeasonItemsTask.doInBackground()");
 			ArrayList<SeasonItem> items = null;
 			try {
-				items = ((MainActivity) getActivity()).querySeasonItemsByLeagueId(mLeagueItem);
+				items = ((MainActivity) getActivity()).querySeasonItemsByLeagueItem(mLeagueItem);
 			} catch (Exception e) {
 				Log.e(TAG, "QuerySeasonItemsTask.doInBackground() Exception.", e);
 			}

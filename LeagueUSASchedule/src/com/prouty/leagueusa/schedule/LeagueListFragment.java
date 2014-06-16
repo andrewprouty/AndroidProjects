@@ -134,7 +134,7 @@ public class LeagueListFragment extends Fragment{
 			ArrayList<LeagueItem> items = null;
 			try {
 				// pass context for app dir to cache file
-				items = new LeagueListLeagueUSA().fetchItems(getActivity().getApplicationContext());
+				items = new LeagueListGoogle().fetchItems(getActivity().getApplicationContext());
 			} catch (Exception e) {
 				Log.e(TAG, "FetchLeagueItemsTask.doInBackground() Exception.", e);
 			}
