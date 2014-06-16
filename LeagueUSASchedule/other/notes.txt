@@ -16,26 +16,43 @@ TESTING PLAN
 	2-switch orientation every activity
 	3-different emulators
 BEFORE MARKET
-	- always give Toast if no data available (Div only now)
-		> Season / league
-		x Div / conference 
-		x Conference
-		o Team
-		o Game
-	- rename application with LeagueUSA logo
-	- add league selection
-	- Spanish translation
-	- back/up to return to league selection
-	- save league, re-start goes to Session
-	- improve refresh/update or add button
+	x add league selection
+	x back/up to return to league selection
+	x save league, re-start goes to Session
+	x improve refresh/update or add button
+	x rename application with LeagueUSA logo
+	x league via JSON from Google Docs
+	(my simplifying "trick" was to re-purpose an old spreadsheet that had the old naming convention with key=)
+	https://docs.google.com/spreadsheet/ccc?key=0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc&usp=drive_web#gid=3
+	(old & bad)
+	https://spreadsheets.google.com/feeds/list/0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc/od6/public/values?alt=json
+	(same & ok)
+	https://docs.google.com/spreadsheet/pub?key=0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc&output=html
+	https://docs.google.com/spreadsheet/pub?key=0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc
+	=> http://stackoverflow.com/questions/15184385/how-to-get-public-google-spreadsheet-data-using-google-spreadsheet-api-java-libr
+		https://developers.google.com/gdata/docs/directory
+		https://developers.google.com/google-apps/spreadsheets/#retrieving_a_list-based_feed
+
+	Libraries pointed to by: https://developers.google.com/google-apps/spreadsheets
+		activation.jar	http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-java-plat-419418.html#jaf-1.1.1-fcs-oth-JPR
+		javamail		http://www.oracle.com/technetwork/java/index-138643.html
+		google clients	https://code.google.com/p/gdata-java-client/downloads/list
+	x trim extra libraries
+	x comment out changing logo to SD Sol
+	> checkin to GitHub
+	- DEMO as desired to league USA
 	- switch logos for each league
 		http://developer.android.com/guide/topics/ui/menus.html
 		http://stackoverflow.com/questions/14606294/remove-icon-logo-from-action-bar-on-android
 		http://developer.android.com/reference/android/app/ActionBar.html#setLogo(int)
-	- DEMO as desired to league USA
-	- post on market https://play.google.com/apps/publish
+	- BETA posting on market https://play.google.com/apps/publish
+		123456789012345678901234567890
+		LeagueUSA/Vicid.com Sports Schedules
+		League Scheduler-Vicid website
 		LeagueUSA on Vicid.com
 		LeagueUSA Sports Scheduling
+	* PUBLIC posting on Android
+	- Spanish translation
 FUTURE ENHANCEMENTS
 	- a way to clear favourites, delete without being on the page (i.e. if the link is broken)
 	- Option menu, use heart not ellipse drop-down navigation
@@ -55,6 +72,8 @@ http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=107
 GETs
 league		http://www.sdsolbasketball.com/mobileschedule.php
 				[{"leagueid":"1","orgname":"San Diego Sol"}]
+			http://patriotsoccer.us/mobileschedule.php
+			http://twinsburgbaseball.com/mobileschedule.php
 season		http://www.sdsolbasketball.com/mobileschedule.php?league=1
 				[{"seasonid":"7","seasonname":"Breakaway League 2014"},{"seasonid":"6","seasonname":"San Diego Sol Winter League 2014"},{"seasonid":"8","seasonname":"Spring League 2014"}]
 division	http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8
@@ -65,8 +84,7 @@ team		http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&divisi
 				[{"teamid":"924","teamname":"CV Hawks"},{"teamid":"925","teamname":"CV Hawks Bravo"},{"teamid":"927","teamname":"East County Suns"},{"teamid":"928","teamname":"Fallbrook Tribe"},{"teamid":"934","teamname":"Imperial Valley Warriors"},{"teamid":"926","teamname":"La Paz"},{"teamid":"935","teamname":"Magics"},{"teamid":"929","teamname":"Marauders"},{"teamid":"930","teamname":"North County Prospects"},{"teamid":"931","teamname":"San Diego Rebels Black"},{"teamid":"933","teamname":"SD Sol-Johnson"},{"teamid":"932","teamname":"Top Tier"}]
 games		http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
 			[{"gameid":"5269","meetname":"","starttbd":"1","awayteamid":"933","hometeamid":"930","gamemonth":"04","gameyear":"2014","gamedate":"Sun, 04\/27 at 3:00 PM","gamedate2":"Sun, 04\/27","fieldname":"AIU Court 1","homescore":"42","awayscore":"24","hometeamname":"North County Prospects","awayteamname":"SD Sol-Johnson","locationname":"AIU Court 1","locationid":"15"},{"gameid":"5275","meetname":"","starttbd":"1","awayteamid":"933","hometeamid":"934","gamemonth":"05","gameyear":"2014","gamedate":"Sat, 05\/03 at 8:00 PM","gamedate2":"Sat, 05\/03","fieldname":"AIU Court 6","homescore":null,"awayscore":null,"hometeamname":"Imperial Valley Warriors","awayteamname":"SD Sol-Johnson","locationname":"AIU Court 6","locationid":"12"},{"gameid":"5276","meetname":"","starttbd":"1","awayteamid":"935","hometeamid":"933","gamemonth":"05","gameyear":"2014","gamedate":"Sun, 05\/04 at 4:00 PM","gamedate2":"Sun, 05\/04","fieldname":"AIU Court 5","homescore":null,"awayscore":null,"hometeamname":"SD Sol-Johnson","awayteamname":"Magics","locationname":"AIU Court 5","locationid":"10"},{"gameid":"5252","meetname":"","starttbd":"1","awayteamid":"926","hometeamid":"933","gamemonth":"05","gameyear":"2014","gamedate":"Sat, 05\/10 at 2:00 PM","gamedate2":"Sat, 05\/10","fieldname":"AIU Court 6","homescore":null,"awayscore":null,"hometeamname":"SD Sol-Johnson","awayteamname":"La Paz","locationname":"AIU Court 6","locationid":"12"}]
-			
-			
+
 http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=133&conference=137&team=994
 http://www.sdsolbasketball.com/schedule.php?month=999&year=2014&pfv=n&location=-1&leagueid=1&season=8&conference=123&division=127&team=933
 http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=124&conference=120&team=906
