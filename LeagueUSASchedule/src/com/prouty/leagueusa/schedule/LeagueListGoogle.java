@@ -36,7 +36,12 @@ public class LeagueListGoogle{
 		 * 1-spreadsheet with the key below
 		 * 2-list feed must be the first work sheet
 		 * 3-"Name" must be the header of column 1
-		 * 4-"URL"  must be the header of column 2
+		 * 4-"URL" must be the header of column 2
+		 * 5-"URL" formatting/cleanup rules:
+		 *     A-Trim to the left of the first "."
+		 *     B-Right trim after any "/"
+		 *     C-Prepend: "http://www."
+		 *     D-Append: "/mobileschedule.php"
 		 */
 		SpreadsheetService service = new SpreadsheetService("LeagueSchedule");
 		try {
@@ -48,19 +53,31 @@ public class LeagueListGoogle{
 			String urlString = "https://spreadsheets.google.com/feeds/list/0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc/default/public/values";
 			URL url = new URL(urlString);
 			ListFeed feed = service.getFeed(url, ListFeed.class);
+			Log.d(TAG, "GETListFeed() Title="+feed.getTitle()+ " PerPage="+feed.getItemsPerPage()+" TotalResults="+feed.getTotalResults()+" Updated="+feed.getUpdated());
 
+			// Each row in the spreadsheet
 			for (ListEntry entry : feed.getEntries()) {
 				CustomElementCollection elements = entry.getCustomElements();
 				String name = elements.getValue("Name");
-				String baseUrl = "http://"+elements.getValue("URL")+"/mobileschedule.php";
+				String origUrl = elements.getValue("URL");
+				//A-Trim to the first "."
+		    	int position=origUrl.indexOf(".");
+		    	String baseUrl=origUrl.substring(position+1);
+				//B-Right trim from "/"
+		    	position=baseUrl.indexOf("/");
+		    	if (position != -1) {
+		    		baseUrl=baseUrl.substring(0,position);
+		    	}
+				//C-Prepend: "http://www."
+				//D-Append: "/mobileschedule.php"
+		    	baseUrl = "http://www."+baseUrl+"/mobileschedule.php";
 
 				LeagueItem item = new LeagueItem();
-				item.setLeagueId("1");  // ENH Will leagues ever share the same site?
+				item.setLeagueId("1");  // ENH If multiple leagues share the site - likely have to adjust something
 				item.setOrgName(name);
 				item.setLeagueURL(baseUrl);
 				items.add(item);
-
-				Log.v(TAG, "GETListFeed() Name="+name+ " baseUrl="+baseUrl);
+				Log.v(TAG, "GETListFeed() Name="+name+ "origUrl="+origUrl+" baseUrl="+baseUrl);
 			}
 			Log.d(TAG, "GETListFeed() Items added: "+items.size());
 
