@@ -35,8 +35,8 @@ public class LeagueListGoogle{
 		 * http://blog.restphone.com/2011/05/very-simple-google-spreadsheet-code.html
 		 * 1-spreadsheet with the key below
 		 * 2-list feed must be the first work sheet
-		 * 3-"Name" must be the header of column 1
-		 * 4-"URL" must be the header of column 2
+		 * 3-"Name" must be the header of this column 
+		 * 4-"URL" must be the header of this column
 		 * 5-"URL" formatting/cleanup rules:
 		 *     A-Trim to the left of the first "."
 		 *     B-Right trim after any "/"
@@ -53,7 +53,7 @@ public class LeagueListGoogle{
 			String urlString = "https://spreadsheets.google.com/feeds/list/0ArhVkXs6F3Y4cDllVzRqUE5PYnc3TkNkVG8xRzhSTGc/default/public/values";
 			URL url = new URL(urlString);
 			ListFeed feed = service.getFeed(url, ListFeed.class);
-			Log.d(TAG, "GETListFeed() Title="+feed.getTitle()+ " PerPage="+feed.getItemsPerPage()+" TotalResults="+feed.getTotalResults()+" Updated="+feed.getUpdated());
+			Log.d(TAG, "GETListFeed() Title="+feed.getTitle()+ " TotalResults="+feed.getTotalResults()+" Updated="+feed.getUpdated());
 
 			// Each row in the spreadsheet
 			for (ListEntry entry : feed.getEntries()) {

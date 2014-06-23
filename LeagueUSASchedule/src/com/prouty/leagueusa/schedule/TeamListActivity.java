@@ -2,6 +2,7 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -57,8 +58,8 @@ public class TeamListActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_fragment);
 		Log.d(TAG, "onCreate()");
+		setContentView(R.layout.activity_fragment);
 		String leagueId  = getIntent().getStringExtra("LeagueId");
 		String leagueURL = getIntent().getStringExtra("LeagueURL");
 		String seasonId  = getIntent().getStringExtra("SeasonId");
@@ -77,6 +78,7 @@ public class TeamListActivity extends FragmentActivity {
 		mConferenceItem.setConferenceId(conferenceId);
 		mConferenceItem.setConferenceName(conferenceName);
 		mConferenceItem.setConferenceCount(conferenceCount);
+		setActionBarLeagueName();
 		Log.v(TAG, "onCreate() : "
 				+ " league ID="    + mConferenceItem.getLeagueId()
 				+ ", url="         + mConferenceItem.getLeagueURL()
@@ -101,6 +103,22 @@ public class TeamListActivity extends FragmentActivity {
 	public ConferenceItem getConferenceItem () {
 		return mConferenceItem;
 	}
+
+	@TargetApi(11)
+	private void setActionBarLeagueName() {
+		if (android.os.Build.VERSION.SDK_INT >= 11){
+			FavoriteListUtil util = new FavoriteListUtil();
+			LeagueItem item = new LeagueItem();
+			item=util.getHomeLeagueItem(getApplicationContext());
+			if (item == null || item.getLeagueId() == null) {
+				return;
+			}
+			else {
+				getActionBar().setTitle(item.getOrgName());
+			}
+		}
+	}
+
 	@Override
 	protected void onRestart() {
 		super.onRestart();
