@@ -42,9 +42,7 @@ FUTURE ENHANCEMENTS
 	- Use heart not ellipse in Options menu	(http://developer.android.com/guide/topics/ui/actionbar.html#Dropdown)
 	- division ranking: not sure how & best to get an API not download entire division
 	- test automation
-====
-LIMITATION
-	- nothing special for tablet
+	- for tablet LHS for teams & RHS for games
 ====
 Sample JSON
 http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=107&conference=107&team=782
