@@ -26,9 +26,14 @@ BEFORE MARKET
 	x comment out changing logo to SD Sol
 	x Show League in title: season, division, conference, team & game
 	o DEMO as desired to league USA
-	- posting to the Android Market https://play.google.com/apps/publish/?dev_acc=01382750548498594644#AppListPlace
+	> Android Market https://play.google.com/apps/publish/?dev_acc=01382750548498594644#AppListPlace
+		http://developer.android.com/tools/help/zipalign.html
+		http://www.coderzheaven.com/2011/04/01/android-signing-apk/
+			U:\andy docs\Other\keystore & Secure Note in LastPass
+		APK lives here: C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin\LeagueUSASchedule.apk
 
 FUTURE ENHANCEMENTS 
+	- add/switch to license key: setup & add http://developer.android.com/google/play/licensing/index.html
 	- Spanish translation
 	- switch logos for each league
 		http://developer.android.com/guide/topics/ui/menus.html
@@ -38,7 +43,7 @@ FUTURE ENHANCEMENTS
 	- game's address: get & utilize (use intent to launch map/navigation)
 	- team contact: get & utilize (i.e. call/text/email coach when cannot make practice)
 	- notification of schedule changes to favourite teams
-	- a way to clear favourites, delete without being on the page (i.e. if the link is broken somehow)
+	- a way to clear favourites, delete without being on the page (i.e. if the link is broken, season is dropped must ininstall)
 	- Use heart not ellipse in Options menu	(http://developer.android.com/guide/topics/ui/actionbar.html#Dropdown)
 	- division ranking: not sure how & best to get an API not download entire division
 	- test automation
