@@ -123,7 +123,7 @@ public class LeagueListActivity extends FragmentActivity {
 		Log.d(TAG, "insertLeagueItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
-    		Log.v(TAG, "insertLeagueItems() league: "+item.getLeagueId()+"-"+item.getOrgName()+item.getLeagueURL());
+    		Log.v(TAG, "insertLeagueItems() league: "+item.getLeagueId()+"-"+item.getOrgName()+"-"+item.getLeagueURL());
             mHelper.insertLeague(item);
             mHelper.close();
         }

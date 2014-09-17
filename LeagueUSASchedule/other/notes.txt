@@ -33,7 +33,13 @@ BEFORE MARKET
 		APK lives here: C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin\LeagueUSASchedule.apk
 
 FUTURE ENHANCEMENTS 
-	- add/switch to license key: setup & add http://developer.android.com/google/play/licensing/index.html
+	<< If add a paid feature >>
+	- add license key check: http://developer.android.com/google/play/licensing/index.html
+	- add in-app billing http://developer.android.com/google/play/billing/index.html
+	- add advertising http://developer.android.com/google/play-services/ads.html
+	- add analytic https://developers.google.com/analytics/devguides/collection/android/
+		1- each in-app purchase: https://developers.google.com/analytics/devguides/collection/android/v4/ecommerce
+		2- # from each club/league
 	- Spanish translation
 	- switch logos for each league
 		http://developer.android.com/guide/topics/ui/menus.html

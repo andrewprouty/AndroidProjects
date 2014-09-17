@@ -143,10 +143,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public LeagueCursor queryLeagues() {
 		Log.d(TAG, "queryLeagues()");
-		// equivalent to "select * from league order by league_id asc"
-		// sorting by user_id as an alpha... just copying JSON ordering
+		// equivalent to "select * from league order by lower(org_name) asc"
+		// sorting by org_name as an alpha, ignore case is how Google docs does it
 		Cursor wrapped = getReadableDatabase().query(TABLE_LEAGUE,
-				null, null, null, null, null, COLUMN_LEAGUE_ORG_NAME + " asc");
+				null, null, null, null, null, "LOWER("+ COLUMN_LEAGUE_ORG_NAME + ")");
 		return new LeagueCursor(wrapped);
 	}
 

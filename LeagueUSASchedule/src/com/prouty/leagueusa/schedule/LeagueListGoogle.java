@@ -14,7 +14,7 @@ import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.util.ServiceException;
 
 public class LeagueListGoogle{
-	private static final String TAG = "LeagueListLeagueUSA";
+	private static final String TAG = "LeagueListGoogle";
 
 	public ArrayList<LeagueItem> fetchItems(Context appContext) {
 		ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
@@ -77,7 +77,7 @@ public class LeagueListGoogle{
 				item.setOrgName(name);
 				item.setLeagueURL(baseUrl);
 				items.add(item);
-				Log.v(TAG, "GETListFeed() Name="+name+ "origUrl="+origUrl+" baseUrl="+baseUrl);
+				Log.v(TAG, "GETListFeed() Name="+name+ " origUrl="+origUrl+" baseUrl="+baseUrl);
 			}
 			Log.d(TAG, "GETListFeed() Items added: "+items.size());
 
