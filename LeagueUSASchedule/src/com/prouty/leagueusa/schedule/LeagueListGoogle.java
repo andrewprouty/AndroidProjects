@@ -38,9 +38,9 @@ public class LeagueListGoogle{
 		 * 3-"Name" must be the header of this column 
 		 * 4-"URL" must be the header of this column
 		 * 5-"URL" formatting/cleanup rules:
-		 *     A-Trim to the left of the first "."
+		 *     A-Trim to the left of the first "." <REMOVED THIS>
 		 *     B-Right trim after any "/"
-		 *     C-Prepend: "http://www."
+		 *     C-Prepend: "http://www."            <NO LONGER PREPEND 'www.', only 'http://'
 		 *     D-Append: "/mobileschedule.php"
 		 */
 		SpreadsheetService service = new SpreadsheetService("LeagueSchedule");
@@ -60,24 +60,40 @@ public class LeagueListGoogle{
 				CustomElementCollection elements = entry.getCustomElements();
 				String name = elements.getValue("Name");
 				String origUrl = elements.getValue("URL");
+				String active =  elements.getValue("Active");
+				int position;
+
+				//Do NOT show leagues that begin with Active = "No"...
+				if (active != null) {
+					if (active.indexOf("No") == 0 || active.indexOf("NO") == 0) {
+						Log.v(TAG, "GETListFeed() NOT Active: Name="+name+ " origUrl="+origUrl+" active="+active);
+						continue;
+					}
+				}
+				else {
+					Log.w(TAG, "GETListFeed() Active=NULL: Name="+name+ " origUrl="+origUrl+" active="+active);
+				}
+					
+				Log.v(TAG, "GETListFeed() NOT Active: Name="+name+ " origUrl="+origUrl+" active="+active);
 				//A-Trim to the first "."
-		    	int position=origUrl.indexOf(".");
-		    	String baseUrl=origUrl.substring(position+1);
+		    	//int position=origUrl.indexOf(".");
+		    	//String baseUrl=origUrl.substring(position+1);
 				//B-Right trim from "/"
-		    	position=baseUrl.indexOf("/");
+		    	String newUrl=origUrl;
+				position=origUrl.indexOf("/");
 		    	if (position != -1) {
-		    		baseUrl=baseUrl.substring(0,position);
+		    		newUrl=origUrl.substring(0,position);
 		    	}
 				//C-Prepend: "http://www."
 				//D-Append: "/mobileschedule.php"
-		    	baseUrl = "http://www."+baseUrl+"/mobileschedule.php";
+		    	newUrl = "http://"+origUrl+"/mobileschedule.php";
 
 				LeagueItem item = new LeagueItem();
 				item.setLeagueId("1");  // ENH If multiple leagues share the site - likely have to adjust something
 				item.setOrgName(name);
-				item.setLeagueURL(baseUrl);
+				item.setLeagueURL(newUrl);
 				items.add(item);
-				Log.v(TAG, "GETListFeed() Name="+name+ " origUrl="+origUrl+" baseUrl="+baseUrl);
+				Log.v(TAG, "GETListFeed() Name="+name+ " origUrl="+origUrl+" newUrl="+newUrl);
 			}
 			Log.d(TAG, "GETListFeed() Items added: "+items.size());
 
