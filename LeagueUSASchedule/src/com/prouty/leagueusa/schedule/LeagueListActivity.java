@@ -28,7 +28,7 @@ public class LeagueListActivity extends FragmentActivity {
 		
 		if (item.getLeagueId() != null) {
 			FavoriteListUtil util = new FavoriteListUtil();
-			util.setHomeLeageItem(getApplicationContext(),item);
+			util.setHomeLeagueItem(getApplicationContext(),item);
 		}
 	
 		Intent i = new Intent (this, MainActivity.class);

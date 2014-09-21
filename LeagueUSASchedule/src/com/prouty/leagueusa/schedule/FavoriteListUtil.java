@@ -42,8 +42,8 @@ public class FavoriteListUtil {
 		editor.commit();
 		return fav;
 	}
-	public void setHomeLeageItem(Context context, LeagueItem item) {
-		Log.d(TAG, "setHomeLeageItem() "
+	public void setHomeLeagueItem(Context context, LeagueItem item) {
+		Log.d(TAG, "setHomeLeagueItem() "
 				+ item.getLeagueId() + "-"
 				+ item.getOrgName() + " ("
 				+ item.getLeagueURL() + ")");
