@@ -146,7 +146,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// equivalent to "select * from league order by lower(org_name) asc"
 		// sorting by org_name as an alpha, ignore case is how Google docs does it
 		Cursor wrapped = getReadableDatabase().query(TABLE_LEAGUE,
-				null, null, null, null, null, "LOWER("+ COLUMN_LEAGUE_ORG_NAME + ")");
+				null, //select 
+				null, //where 
+				null, //values 
+				null, //group by
+				null, //having
+				COLUMN_LEAGUE_ORG_NAME + " COLLATE NOCASE asc", // order by
+				null); //limit of columns
 		return new LeagueCursor(wrapped);
 	}
 
@@ -177,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getLeagueURL())}, // values
 				null, // group by
 				null, // having
-				COLUMN_SEASON_SEASON_NAME + " asc", // order by
+				COLUMN_SEASON_SEASON_NAME + " COLLATE NOCASE asc", // order by
 				null); // limit of rows
 		return new SeasonCursor(wrapped);
 	}
