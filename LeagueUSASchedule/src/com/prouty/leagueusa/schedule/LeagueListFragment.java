@@ -190,7 +190,12 @@ public class LeagueListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<LeagueItem> items) {
-			Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() queried=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() queried=NULL");
+			}
+			else {
+				Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() queried=" + items.size());
+			}
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;

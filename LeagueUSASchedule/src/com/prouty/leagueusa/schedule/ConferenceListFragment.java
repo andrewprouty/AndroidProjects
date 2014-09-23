@@ -214,7 +214,12 @@ public class ConferenceListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<ConferenceItem> items) {
-			Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=NULL");
+			}
+			else {
+				Log.d(TAG, "QueryConferenceItemsTask.onPostExecute() queried=" + items.size());
+			}
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;

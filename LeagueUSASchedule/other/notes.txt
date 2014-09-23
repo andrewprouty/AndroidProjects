@@ -32,6 +32,24 @@ BEFORE MARKET
 			U:\andy docs\Other\keystore & Secure Note in LastPass
 		APK lives here: C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin\LeagueUSASchedule.apk
 
+UPDATING ON THE MARKET
+	https://support.google.com/googleplay/android-developer/answer/113476?hl=en
+	0- Rename to get the old one out of the way C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
+	1- Update version Code & Name in Manifest file
+		http://developer.android.com/tools/publishing/versioning.html
+	2- SAVE FILE.  Otherwise new version won't get into the apk, which the store will detect and give you an error for.
+	3- Follow export & sign wizard in Eclipse
+	4- U:\andy docs\Other\keystore\keystr password is in Lastpass (League Schedule Application)
+		Use existing key, repeat password again
+	5- Copy as _vx to C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin
+	
+	Update on market store 
+	1- Goto my app https://play.google.com/apps/publish/?dev_acc=01382750548498594644#MarketListingPlace:p=com.prouty.leagueusa.schedule
+	2- Click on "APK"
+	3- Upload new APK to Production
+	4- Copy new file from C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
+		
+			
 FUTURE ENHANCEMENTS 
 	<< If add a paid feature >>
 	- add license key check: http://developer.android.com/google/play/licensing/index.html

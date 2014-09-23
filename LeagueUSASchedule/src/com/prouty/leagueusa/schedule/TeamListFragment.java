@@ -231,7 +231,12 @@ public class TeamListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<TeamItem> items) {
-        	Log.d(TAG, "QueryTeamItemsTask.onPostExecute() queried=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "QueryTeamItemsTask.onPostExecute() queried=NULL");
+			}
+			else {
+				Log.d(TAG, "QueryTeamItemsTask.onPostExecute() queried=" + items.size());
+			}
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;

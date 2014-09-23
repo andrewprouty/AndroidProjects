@@ -352,7 +352,12 @@ public class GameListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<GameItem> items) {
-        	Log.d(TAG, "QueryGameItemsTask.onPostExecute() queried=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "QueryGameItemsTask.onPostExecute() queried=NULL");
+			}
+			else {
+				Log.d(TAG, "QueryGameItemsTask.onPostExecute() queried=" + items.size());
+			}
     		int size;
     		if (items == null || items.size() == 0) {
     			size = 0;

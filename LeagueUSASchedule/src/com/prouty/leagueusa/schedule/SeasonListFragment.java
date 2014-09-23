@@ -208,7 +208,12 @@ public class SeasonListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<SeasonItem> items) {
-			Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() queried=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() queried=NULL");
+			}
+			else {
+				Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() queried=" + items.size());
+			}
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;
