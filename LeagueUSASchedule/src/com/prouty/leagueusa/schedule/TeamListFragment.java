@@ -168,7 +168,12 @@ public class TeamListFragment extends Fragment{
 		@Override
 		protected void onPostExecute(ArrayList<TeamItem> items) {
         	try {
-        		Log.d(TAG, "FetchTeamItemsTask.onPostExecute() fetched=" + items.size());
+    			if (items == null) {
+            		Log.d(TAG, "FetchTeamItemsTask.onPostExecute() fetched=NULL");
+    			}
+    			else {
+            		Log.d(TAG, "FetchTeamItemsTask.onPostExecute() fetched=" + items.size());
+    			}
         		int size;
         		if (items == null || items.size() == 0) {
         			size = 0;

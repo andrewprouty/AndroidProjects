@@ -51,6 +51,8 @@ UPDATING ON THE MARKET
 		
 			
 FUTURE ENHANCEMENTS 
+	- Switch AsyncTasks to parallel
+	http://www.jayway.com/2012/11/28/is-androids-asynctask-executing-tasks-serially-or-concurrently/
 	<< If add a paid feature >>
 	- add license key check: http://developer.android.com/google/play/licensing/index.html
 	- add in-app billing http://developer.android.com/google/play/billing/index.html

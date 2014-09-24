@@ -151,8 +151,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null, //values 
 				null, //group by
 				null, //having
-				COLUMN_LEAGUE_ORG_NAME + " COLLATE NOCASE asc"); // order by
-				//null); //limit of rows
+				COLUMN_LEAGUE_ORG_NAME + " COLLATE NOCASE asc", // order by
+				null); //limit of rows
 		return new LeagueCursor(wrapped);
 	}
 
@@ -183,8 +183,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getLeagueURL())}, // values
 				null, // group by
 				null, // having
-				COLUMN_SEASON_SEASON_NAME + " COLLATE NOCASE asc");//, // order by
-				//null); // limit of rows
+				COLUMN_SEASON_SEASON_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
 		return new SeasonCursor(wrapped);
 	}
 
@@ -221,8 +221,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getSeasonId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_DIVISION_DIVISION_NAME + " COLLATE NOCASE asc");//, // order by
-				//null); // limit of rows
+				COLUMN_DIVISION_DIVISION_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
 		return new DivisionCursor(wrapped);
 	}
 	public long deleteConferenceByConferenceItem(ConferenceItem item) {
@@ -265,8 +265,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getDivisionId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_CONFERENCE_CONFERENCE_NAME + " COLLATE NOCASE asc");//, // order by
-				//null); // limit of rows
+				COLUMN_CONFERENCE_CONFERENCE_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
 		return new ConferenceCursor(wrapped);
 	}
 	public long deleteTeamsByTeamItem(TeamItem item) {
@@ -317,8 +317,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getConferenceId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc");//, // order by
-				//null); // limit of rows
+				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
 		return new TeamCursor(wrapped);
 	}
 	public TeamCursor queryTeamByTeamItem(TeamItem item) {
@@ -341,8 +341,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getTeamId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc");//, // order by
-				//null); // limit of rows
+				COLUMN_TEAM_TEAM_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
 		return new TeamCursor(wrapped);
 	}
 	
@@ -407,8 +407,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getTeamId())}, // values
 				null, // group by
 				null, // having
-				COLUMN_GAME_GAME_SORT_ID);//, // order by
-				//null); // limit of rows
+				COLUMN_GAME_GAME_SORT_ID, // order by
+				null); // limit of rows
 		return new GameCursor(wrapped);
 	}
 	/**

@@ -44,6 +44,7 @@ public class SeasonListFragment extends Fragment{
 		if (mSeasonDisplay != null) {
 			mSeasonDisplay.clear(); // reset in case of orientation switch
 		}
+		Log.d(TAG, "onCreateView() execute QuerySeasonItemsTask()");
 		new QuerySeasonItemsTask().execute();
 
 		view = inflater.inflate(R.layout.fragment_season_list, container,false);
@@ -143,7 +144,12 @@ public class SeasonListFragment extends Fragment{
 		@Override
 		protected void onPostExecute(ArrayList<SeasonItem> items) {
 			try {
-				Log.d(TAG, "FetchSeasonItemsTask.onPostExecute() fetched=" + items.size());
+				if (items == null) {
+					Log.d(TAG, "FetchSeasonItemsTask.onPostExecute() fetched=NULL");
+				}
+				else {
+					Log.d(TAG, "FetchSeasonItemsTask.onPostExecute() fetched=" + items.size());
+				}
 				int size;
 				if (items == null || items.size() == 0) {
 					size = 0;
@@ -223,6 +229,7 @@ public class SeasonListFragment extends Fragment{
 			}
 			setupSeason(QUERY, size);
 			cancel(true);
+			Log.d(TAG, "QuerySeasonItemsTask.onPostExecute() execute FetchSeasonItemsTask()");
 			new FetchSeasonItemsTask().execute();
 		}
 	}

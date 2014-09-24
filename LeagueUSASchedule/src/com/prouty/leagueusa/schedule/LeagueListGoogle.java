@@ -74,7 +74,6 @@ public class LeagueListGoogle{
 					Log.w(TAG, "GETListFeed() Active=NULL: Name="+name+ " origUrl="+origUrl+" active="+active);
 				}
 					
-				Log.v(TAG, "GETListFeed() NOT Active: Name="+name+ " origUrl="+origUrl+" active="+active);
 				//A-Trim to the first "."
 		    	//int position=origUrl.indexOf(".");
 		    	//String baseUrl=origUrl.substring(position+1);

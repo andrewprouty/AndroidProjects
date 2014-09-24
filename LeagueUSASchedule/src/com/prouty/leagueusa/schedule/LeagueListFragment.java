@@ -44,6 +44,7 @@ public class LeagueListFragment extends Fragment{
 		}
 		FavoriteListUtil util = new FavoriteListUtil();
 		mLeagueItem=util.getHomeLeagueItem(getActivity().getApplicationContext());
+		Log.d(TAG, "onCreateView() execute QueryLeagueItemsTask()");
 		new QueryLeagueItemsTask().execute();
 
 		view = inflater.inflate(R.layout.fragment_league_list, container,false);
@@ -143,7 +144,12 @@ public class LeagueListFragment extends Fragment{
 		@Override
 		protected void onPostExecute(ArrayList<LeagueItem> items) {
 			try {
-				Log.d(TAG, "FetchLeagueItemsTask.onPostExecute() fetched=" + items.size());
+				if (items == null) {
+					Log.d(TAG, "FetchLeagueItemsTask.onPostExecute() fetched=NULL");
+				}
+				else {
+					Log.d(TAG, "FetchLeagueItemsTask.onPostExecute() fetched=" + items.size());
+				}
 				int size;
 				if (items == null || items.size() == 0) {
 					size = 0;
@@ -205,6 +211,7 @@ public class LeagueListFragment extends Fragment{
 			}
 			setupLeague(QUERY, size);
 			cancel(true);
+			Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() execute FetchLeagueItemsTask()");
 			new FetchLeagueItemsTask().execute();
 		}
 	}

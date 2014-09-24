@@ -227,7 +227,12 @@ public class DivisionListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<DivisionItem> items) {
-			Log.d(TAG, "FetchDivisionItemsTask onPostExecute()");
+			if (items == null) {
+				Log.d(TAG, "FetchDivisionItemsTask.onPostExecute() fetched=NULL");
+			}
+			else {
+				Log.d(TAG, "FetchDivisionItemsTask.onPostExecute() fetched=" + items.size());
+			}
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;
@@ -319,7 +324,12 @@ public class DivisionListFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(ArrayList<ConferenceItem> items) {
-			Log.d(TAG, "FetchConferenceItemsTask.onPostExecute() fetched=" + items.size());
+			if (items == null) {
+				Log.d(TAG, "FetchConferenceItemsTask.onPostExecute() fetched=NULL");
+			}
+			else {
+				Log.d(TAG, "FetchConferenceItemsTask.onPostExecute() fetched=" + items.size());
+			}
 			int size;
 			if (items == null || items.size() == 0) {
 				size = 0;
