@@ -93,10 +93,12 @@ public class GameListActivity extends FragmentActivity {
     	GameItem item;
 		Log.d(TAG, "insertGameItems() to insert count="+items.size());
 		long count=0;
+		String sortId;
 		count=mHelper.deleteGameByGameItem(items.get(0)); // By default parent key is not "RESTRICT" from delete (http://www.sqlite.org/foreignkeys.html)
 		Log.d(TAG, "insertGameItems() prep deleted=" +count);
         for (int i=0; i<items.size(); i++) {
     		item=items.get(i);
+    		sortId=Integer.toString(i+10000).substring(1); //left pad with 3 zeros (i.e. 1 => 0001) for alpha sorting
     		Log.v(TAG, "insertGameItems() Game: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
@@ -117,8 +119,8 @@ public class GameListActivity extends FragmentActivity {
     				+ ", starttbd="    + item.getGameStartTBD()
     				+ ", homescore="    + item.getGameHomeScore()
     				+ ", awayscore="    + item.getGameAwayScore()
-    				+ ", sort id="+i);
-            mHelper.insertGame(item,i);
+    				+ ", sort id="+sortId);
+            mHelper.insertGame(item,sortId);
             mHelper.close();
         }
         return;

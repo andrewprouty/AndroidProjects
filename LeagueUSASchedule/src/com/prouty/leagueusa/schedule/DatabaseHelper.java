@@ -362,7 +362,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String.valueOf(item.getConferenceId()),
 				String.valueOf(item.getTeamId())}); // values
 	}
-	public long insertGame(GameItem item, int sortID) {
+	public long insertGame(GameItem item, String sortID) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_GAME_LEAGUE_ID, item.getLeagueId());
 		cv.put(COLUMN_GAME_LEAGUE_URL, item.getLeagueURL());
