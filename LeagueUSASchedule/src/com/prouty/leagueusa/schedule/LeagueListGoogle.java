@@ -40,7 +40,7 @@ public class LeagueListGoogle{
 		 * 5-"URL" formatting/cleanup rules:
 		 *     A-Trim to the left of the first "." <REMOVED THIS>
 		 *     B-Right trim after any "/"
-		 *     C-Prepend: "http://www."            <NO LONGER PREPEND 'www.', only 'http://'
+		 *     C-Prepend: "http://"            <NO LONGER PREPEND 'www.', only 'http://'
 		 *     D-Append: "/mobileschedule.php"
 		 */
 		SpreadsheetService service = new SpreadsheetService("LeagueSchedule");
@@ -56,6 +56,8 @@ public class LeagueListGoogle{
 			Log.d(TAG, "GETListFeed() Title="+feed.getTitle()+ " TotalResults="+feed.getTotalResults()+" Updated="+feed.getUpdated());
 
 			// Each row in the spreadsheet
+			String prevName=null;
+			int result=0;
 			for (ListEntry entry : feed.getEntries()) {
 				CustomElementCollection elements = entry.getCustomElements();
 				String name = elements.getValue("Name");
@@ -73,7 +75,15 @@ public class LeagueListGoogle{
 				else {
 					Log.w(TAG, "GETListFeed() Active=NULL: Name="+name+ " origUrl="+origUrl+" active="+active);
 				}
-					
+
+				if (prevName != null) {
+					result = prevName.compareTo(name);
+					if (result == 0)
+						Log.e(TAG, "GETListFeed() Duplicate name, prevName("+prevName+") = current name("+name+")");
+					else if (result > 0 )
+						Log.e(TAG, "GETListFeed() Non-alpha sort, prevName("+prevName+") > current name ("+name+")");
+				}
+				prevName = name;
 				//A-Trim to the first "."
 		    	//int position=origUrl.indexOf(".");
 		    	//String baseUrl=origUrl.substring(position+1);
@@ -83,7 +93,7 @@ public class LeagueListGoogle{
 		    	if (position != -1) {
 		    		newUrl=origUrl.substring(0,position);
 		    	}
-				//C-Prepend: "http://www."
+				//C-Prepend: "http://"
 				//D-Append: "/mobileschedule.php"
 		    	newUrl = "http://"+origUrl+"/mobileschedule.php";
 

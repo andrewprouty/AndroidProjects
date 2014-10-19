@@ -1,6 +1,9 @@
 package com.prouty.leagueusa.schedule;
 
+import android.util.Log;
+
 public class LeagueItem {
+	private static final String TAG = "LeagueItem";
     private String mLeagueId;
     private String mOrgName;
     private String mLeagueURL;
@@ -18,29 +21,52 @@ public class LeagueItem {
 		return result;
 	}
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object queryObj) {
+		if (this == queryObj) {
+			Log.v(TAG, "equals()=true identical objects");
 			return true;
-		if (obj == null)
+		}
+		if (queryObj == null) {
+			Log.w(TAG, "equals()=false passed (queryObj) object is null");
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != queryObj.getClass()) {
+			Log.w(TAG, "equals()=false objects of different class");
 			return false;
-		LeagueItem other = (LeagueItem) obj;
+		}
+		LeagueItem queryItem= (LeagueItem) queryObj;
 		if (mLeagueId == null) {
-			if (other.mLeagueId != null)
+			if (queryItem.mLeagueId != null) {
+				Log.w(TAG, "equals()=false mLeagueId=null, queryItem.mLeagueId !=null");
 				return false;
-		} else if (!mLeagueId.equals(other.mLeagueId))
+			}
+		} else if (!mLeagueId.equals(queryItem.mLeagueId)) {
+			Log.w(TAG, "equals()=false mLeagueId != null ("+mLeagueId+
+					"), different from queryItem.mLeagueId ("+queryItem.mLeagueId+")");
 			return false;
+		}
+		
 		if (mLeagueURL == null) {
-			if (other.mLeagueURL != null)
+			if (queryItem.mLeagueURL != null) {
+				Log.w(TAG, "equals()=false mLeagueURL=null, queryItem.mLeagueURL !=null");
 				return false;
-		} else if (!mLeagueURL.equals(other.mLeagueURL))
+			}
+		} else if (!mLeagueURL.equals(queryItem.mLeagueURL)) {
+			Log.w(TAG, "equals()=false mLeagueURL !=null ("+mLeagueURL+
+					"), different from queryItem.mLeagueURL ("+queryItem.mLeagueURL+")");
 			return false;
+		}
+		
 		if (mOrgName == null) {
-			if (other.mOrgName != null)
+			if (queryItem.mOrgName != null) {
+				Log.w(TAG, "equals()=false mOrgName=null, queryItem.mOrgName !=null");
 				return false;
-		} else if (!mOrgName.equals(other.mOrgName))
+			}
+		} else if (!mOrgName.equals(queryItem.mOrgName)) {
+			Log.w(TAG, "equals()=false mOrgName !=null ("+mOrgName+
+					"), different from queryItem.mOrgName ("+queryItem.mOrgName+")");
 			return false;
+		}
 		return true;
 	}
 	public String getOrgName() {
