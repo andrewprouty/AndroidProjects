@@ -128,14 +128,38 @@ public class SeasonListFragment extends Fragment{
 				+ mSeasonItem.getSeasonName());
 		((MainActivity) getActivity()).launchDivisionListActivity(mSeasonItem);
 	}
+	private class SeasonListAdapter extends ArrayAdapter<SeasonItem> {
+		public SeasonListAdapter(ArrayList<SeasonItem> items, int choice) {
+			super(getActivity(), 0, items);
+			Log.i(TAG, "SeasonListAdapter Constructor ("+choice+")");
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				convertView = getActivity().getLayoutInflater().inflate(R.layout.season_list_row, parent, false);
+			}
+			SeasonItem item = getItem(position);
+			TextView seasonTextView = (TextView)convertView.findViewById(R.id.row_season_name_textView);
+			Log.v(TAG, "SeasonListAdapter getView(): "+item.getSeasonName());
+			seasonTextView.setText(item.getSeasonName());
+			return convertView;
+		}
+	}
 	private class FetchSeasonItemsTask extends AsyncTask<LeagueItem,Void,ArrayList<SeasonItem>> {
+		String threadName = "*"+TAG+"-Fetch";
 		@Override
 		protected ArrayList<SeasonItem> doInBackground(LeagueItem... params) {
 			Log.d(TAG, "FetchSeasonItemsTask.doInBackground()");
 			ArrayList<SeasonItem> items = null;
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				// pass context for app dir to cache file
 				items = new SeasonListLeagueUSA().fetchItems(mLeagueItem, getActivity().getApplicationContext());
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
 				Log.e(TAG, "FetchSeasonItemsTask.doInBackground() Exception.", e);
 			}
@@ -164,31 +188,19 @@ public class SeasonListFragment extends Fragment{
 			}
 		}
 	}
-	private class SeasonListAdapter extends ArrayAdapter<SeasonItem> {
-		public SeasonListAdapter(ArrayList<SeasonItem> items, int choice) {
-			super(getActivity(), 0, items);
-			Log.i(TAG, "SeasonListAdapter Constructor ("+choice+")");
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			if (convertView == null) {
-				convertView = getActivity().getLayoutInflater().inflate(R.layout.season_list_row, parent, false);
-			}
-			SeasonItem item = getItem(position);
-			TextView seasonTextView = (TextView)convertView.findViewById(R.id.row_season_name_textView);
-			Log.v(TAG, "SeasonListAdapter getView(): "+item.getSeasonName());
-			seasonTextView.setText(item.getSeasonName());
-			return convertView;
-		}
-	}
 	private class InsertSeasonItemsTask extends AsyncTask<Void,Void,Void> {
 		//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
+		String threadName = "*"+TAG+"-Insert";
 		@Override
 		protected Void doInBackground(Void... nada) {
 			Log.d(TAG, "InsertSeasonItemsTask.doInBackground()");
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				((MainActivity) getActivity()).insertSeasonItems(mSeasonFetch);
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
 				Log.e(TAG, "InsertSeasonItemsTask.doInBackground() Exception.", e);
 			}
@@ -201,12 +213,18 @@ public class SeasonListFragment extends Fragment{
 		}
 	}
 	private class QuerySeasonItemsTask extends AsyncTask<LeagueItem,Void,ArrayList<SeasonItem>> {
+		String threadName = "*"+TAG+"-Query";
 		@Override
 		protected ArrayList<SeasonItem> doInBackground(LeagueItem... nada) {
 			Log.d(TAG, "QuerySeasonItemsTask.doInBackground()");
 			ArrayList<SeasonItem> items = null;
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				items = ((MainActivity) getActivity()).querySeasonItemsByLeagueItem(mLeagueItem);
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
 				Log.e(TAG, "QuerySeasonItemsTask.doInBackground() Exception.", e);
 			}

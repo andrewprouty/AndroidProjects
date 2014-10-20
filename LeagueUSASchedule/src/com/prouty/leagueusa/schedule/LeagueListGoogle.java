@@ -2,7 +2,9 @@ package com.prouty.leagueusa.schedule;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.content.Context;
 import android.util.Log;
@@ -56,6 +58,11 @@ public class LeagueListGoogle{
 			Log.d(TAG, "GETListFeed() Title="+feed.getTitle()+ " TotalResults="+feed.getTotalResults()+" Updated="+feed.getUpdated());
 
 			// Each row in the spreadsheet
+			// http://developer.android.com/reference/java/text/Collator.html
+			// TODO revisit this site if need to handle more internationally
+			Collator usCollator = Collator.getInstance(Locale.US);
+			usCollator.setStrength(Collator.PRIMARY);
+			
 			String prevName=null;
 			int result=0;
 			for (ListEntry entry : feed.getEntries()) {
@@ -77,13 +84,14 @@ public class LeagueListGoogle{
 				}
 
 				if (prevName != null) {
-					result = prevName.compareTo(name);
+					//result = prevName.compareTo(name)
+					result = usCollator.compare (prevName, name);
 					if (result == 0)
 						Log.e(TAG, "GETListFeed() Duplicate name, prevName("+prevName+") = current name("+name+")");
 					else if (result > 0 )
 						Log.e(TAG, "GETListFeed() Non-alpha sort, prevName("+prevName+") > current name ("+name+")");
 				}
-				prevName = name;
+				prevName=name;
 				//A-Trim to the first "."
 		    	//int position=origUrl.indexOf(".");
 		    	//String baseUrl=origUrl.substring(position+1);

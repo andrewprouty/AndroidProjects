@@ -2,7 +2,9 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -70,7 +72,7 @@ public class LeagueListFragment extends Fragment{
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
-		Log.d(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
+		Log.e(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
 		if (mLeagueDisplay == null || mLeagueDisplay.size() == 0) {
 			if (choiceSize > 0) {
 				if (choice == GET) {
@@ -129,13 +131,19 @@ public class LeagueListFragment extends Fragment{
 		((LeagueListActivity) getActivity()).launchSeasonListActivity(mLeagueItem);
 	}
 	private class FetchLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
+		String threadName = "*"+TAG+"-Fetch";
 		@Override
 		protected ArrayList<LeagueItem> doInBackground(Void... params) {
 			Log.d(TAG, "FetchLeagueItemsTask.doInBackground()");
 			ArrayList<LeagueItem> items = null;
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				// pass context for app dir to cache file
 				items = new LeagueListGoogle().fetchItems(getActivity().getApplicationContext());
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
 				Log.e(TAG, "FetchLeagueItemsTask.doInBackground() Exception.", e);
 			}
@@ -166,11 +174,17 @@ public class LeagueListFragment extends Fragment{
 	}
 	private class InsertLeagueItemsTask extends AsyncTask<Void,Void,Void> {
 		//<x,y,z> params: 1-doInBackground(x); 2-onProgressUpdate(y); 3-onPostExecute(z) 
+		String threadName = "*"+TAG+"-Insert";
 		@Override
 		protected Void doInBackground(Void... nada) {
 			Log.d(TAG, "InsertLeagueItemsTask.doInBackground()");
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				((LeagueListActivity) getActivity()).insertLeagueItems(mLeagueFetch);
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
 				Log.e(TAG, "InsertLeagueItemsTask.doInBackground() Exception.", e);
 			}
@@ -183,17 +197,24 @@ public class LeagueListFragment extends Fragment{
 		}
 	}
 	private class QueryLeagueItemsTask extends AsyncTask<Void,Void,ArrayList<LeagueItem>> {
+		String threadName = "*"+TAG+"-Query";
 		@Override
 		protected ArrayList<LeagueItem> doInBackground(Void... nada) {
 			Log.d(TAG, "QueryLeagueItemsTask.doInBackground()");
 			ArrayList<LeagueItem> items = null;
 			try {
+				String origName = Thread.currentThread().getName();
+				Log.v(TAG,".doInBackground() rename "+origName+" => "+threadName);
+				Thread.currentThread().setName(threadName);
 				items = ((LeagueListActivity) getActivity()).queryLeagueItems();
+				Log.v(TAG,".doInBackground() reset "+threadName+" => "+origName);
+				Thread.currentThread().setName(origName);
 			} catch (Exception e) {
-				Log.e(TAG, "QueryLeagueItemsTask.doInBackground() Exception.", e);
+				Log.e(TAG, ".doInBackground() Exception.", e);
 			}
 			return items;
 		}
+		@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 		@Override
 		protected void onPostExecute(ArrayList<LeagueItem> items) {
 			if (items == null) {
@@ -211,8 +232,17 @@ public class LeagueListFragment extends Fragment{
 			}
 			setupLeague(QUERY, size);
 			cancel(true);
-			Log.d(TAG, "QueryLeagueItemsTask.onPostExecute() execute FetchLeagueItemsTask()");
-			new FetchLeagueItemsTask().execute();
+			/* TODO Google Docs approach is slow... which only affects FetchLeagueItems
+			 * To work-around using parallel execution. 
+			 */
+			if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) { //API 11
+				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-serial");
+	            new FetchLeagueItemsTask().execute();
+	        } else {
+				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-parallel");
+	        	new FetchLeagueItemsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	        }
+			//new FetchLeagueItemsTask().execute();
 		}
 	}
 	private class LeagueListAdapter extends ArrayAdapter<LeagueItem> {

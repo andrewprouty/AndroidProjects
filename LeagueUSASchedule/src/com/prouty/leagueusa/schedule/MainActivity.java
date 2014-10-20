@@ -97,7 +97,7 @@ public class MainActivity extends FragmentActivity {
 	@TargetApi(14)
 	private void setActionBarLeagueIcon(LeagueItem item) {
 		if (android.os.Build.VERSION.SDK_INT >= 14){
-			//getActionBar().setIcon(R.drawable.sd_sol_icon); Need to put back into drawable folder
+			//getActionBar().setIcon(R.drawable.sd_sol_icon); Need to put back into draw-able folder
 		}
 	}
 	private void getOverflowMenu() {
