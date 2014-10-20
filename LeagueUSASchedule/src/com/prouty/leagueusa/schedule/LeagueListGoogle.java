@@ -32,7 +32,7 @@ public class LeagueListGoogle{
 		return items;
 	}
 	private void GETListFeed(ArrayList<LeagueItem> items) {
-		Log.w(TAG, "GETListFeed()");
+		Log.i(TAG, "GETListFeed()");
 		/* VERY Specific, but easiest way I could find for a public spreadsheet
 		 * http://blog.restphone.com/2011/05/very-simple-google-spreadsheet-code.html
 		 * 1-spreadsheet with the key below
