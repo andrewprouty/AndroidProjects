@@ -72,7 +72,7 @@ public class LeagueListFragment extends Fragment{
 		if (getActivity() == null || mListView == null) {
 			return;
 		}
-		Log.e(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
+		Log.d(TAG, "setupLeague("+choice+") choiceSize="+choiceSize);
 		if (mLeagueDisplay == null || mLeagueDisplay.size() == 0) {
 			if (choiceSize > 0) {
 				if (choice == GET) {
@@ -111,7 +111,7 @@ public class LeagueListFragment extends Fragment{
 						mLeagueDisplay.clear();
 						mLeagueDisplay.addAll(mLeagueFetch);
 						adapter.notifyDataSetChanged();
-						Toast.makeText(getActivity().getApplicationContext(), R.string.new_information_available, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.new_league_information, Toast.LENGTH_SHORT).show();
 						new InsertLeagueItemsTask().execute();
 					}
 				}
@@ -235,8 +235,10 @@ public class LeagueListFragment extends Fragment{
 			/* TODO Google Docs approach is slow... which only affects FetchLeagueItems
 			 * To work-around using parallel execution. 
 			 */
-			if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) { //API 11
+			if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ||
+					(size == 0)) { //API < 11, or no results from query so will have to wait anyway
 				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-serial");
+				Toast.makeText(getActivity().getApplicationContext(), R.string.serial_league_information, Toast.LENGTH_SHORT).show();
 	            new FetchLeagueItemsTask().execute();
 	        } else {
 				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-parallel");

@@ -6,7 +6,9 @@
     <string name="conference_name_hint">Please select a Conference</string>
     <string name="team_name_hint">Please select a Team</string>
     <string name="no_information_available">No %s information available.</string>
-    <string name="new_information_available">Updating with new information.</string>
+    <string name="new_information_available">Updated with new information.</string>
+    <string name="new_league_information">Updated league information.</string>
+    <string name="serial_league_information">Fetch of leagues may take 60 seconds.</string>
     <string name="name_league">Season</string>
     <string name="name_season">Season</string>
     <string name="name_division">Division</string>
