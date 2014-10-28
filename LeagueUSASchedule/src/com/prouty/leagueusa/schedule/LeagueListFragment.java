@@ -238,7 +238,12 @@ public class LeagueListFragment extends Fragment{
 			if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ||
 					(size == 0)) { //API < 11, or no results from query so will have to wait anyway
 				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-serial");
-				Toast.makeText(getActivity().getApplicationContext(), R.string.serial_league_information, Toast.LENGTH_SHORT).show();
+				if (size == 0) {
+					Toast.makeText(getActivity().getApplicationContext(), R.string.first_league_information, Toast.LENGTH_SHORT).show();
+				}
+				else {
+					Toast.makeText(getActivity().getApplicationContext(), R.string.serial_league_information, Toast.LENGTH_SHORT).show();
+				}
 	            new FetchLeagueItemsTask().execute();
 	        } else {
 				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-parallel");

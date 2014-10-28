@@ -8,6 +8,7 @@
     <string name="no_information_available">No %s information available.</string>
     <string name="new_information_available">Updated with new information.</string>
     <string name="new_league_information">Updated league information.</string>
+    <string name="first_league_information">First league listing may take 60 seconds.</string>
     <string name="serial_league_information">Fetch of leagues may take 60 seconds.</string>
     <string name="name_league">Season</string>
     <string name="name_season">Season</string>

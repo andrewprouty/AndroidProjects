@@ -26,7 +26,7 @@ BEFORE MARKET
 	x comment out changing logo to SD Sol
 	x Show League in title: season, division, conference, team & game
 	o DEMO as desired to league USA
-	> Android Market https://play.google.com/apps/publish/?dev_acc=01382750548498594644#AppListPlace
+	x Android Market https://play.google.com/apps/publish/?dev_acc=01382750548498594644#AppListPlace
 		http://developer.android.com/tools/help/zipalign.html
 		http://www.coderzheaven.com/2011/04/01/android-signing-apk/
 			U:\andy docs\Other\keystore & Secure Note in LastPass
@@ -48,32 +48,64 @@ UPDATING ON THE MARKET
 	2- Click on "APK"
 	3- Upload new APK to Production
 	4- Copy new file from C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
-		
-			
-FUTURE ENHANCEMENTS 
-	- Switch AsyncTasks to parallel
-	http://www.jayway.com/2012/11/28/is-androids-asynctask-executing-tasks-serially-or-concurrently/
-	<< If add a paid feature >>
-	- add license key check: http://developer.android.com/google/play/licensing/index.html
-	- add in-app billing http://developer.android.com/google/play/billing/index.html
-	- add advertising http://developer.android.com/google/play-services/ads.html
-	- add analytic https://developers.google.com/analytics/devguides/collection/android/
-		1- each in-app purchase: https://developers.google.com/analytics/devguides/collection/android/v4/ecommerce
-		2- # from each club/league
+	
+FUTURE ENHANCEMENTS (d=depend on Vicid)
+	x Switch AsyncTasks to parallel
+	>> add analytic
+		> Events
+		1- Set Home League Name (+1/-1)
+		2- Number of favorites per user
+		3- Game schedule view (if favorite or not)
+		My Dashboard:	https://www.google.com/analytics/web/
+			Account ID:		55871696
+			Account Name:	LeagueSchedule
+				Property Name:	HomeOrgName
+					Tracking ID:	UA-55871696-1
+					Questions:
+						- Where do I market harder?
+						- (future) share usage with leagues?
+				Property Name:	FavoriteTeam
+					Tracking ID:	UA-55871696-2
+					What is it: # Favorites per person
+					Questions:
+						- How popular is this feature
+						- (future) How much load would a  notification service put on vicid?
+						- (future) share most popular teams?
+				Property Name:	GameListing
+					Tracking ID:	(pending)
+					What is it:	"favorite", "non-favorite", +1
+					Questions:
+						- How much do people really view?
+						- # per session
+						- # % of views that are "favorites" (or not)
+		end to end ex:	https://developers.google.com/mobile/articles/analytics_end_to_end
+		overview:		https://support.google.com/analytics/answer/2587086?hl=en
+		instructions:	https://developers.google.com/analytics/devguides/collection/android/v4/#tracking-methods
+		example:		https://developers.google.com/analytics/solutions/mobile-implementation-guide
+		ideas
+			count of favorites
+			home league
+	* notification of schedule changes to favourite teams
 	- Spanish translation
 	- switch logos for each league
 		http://developer.android.com/guide/topics/ui/menus.html
 		http://stackoverflow.com/questions/14606294/remove-icon-logo-from-action-bar-on-android
 		http://developer.android.com/reference/android/app/ActionBar.html#setLogo(int)
-	- Google calendar integration (would require a feed from leagueUSA)
-	- game's address: get & utilize (use intent to launch map/navigation)
-	- team contact: get & utilize (i.e. call/text/email coach when cannot make practice)
-	- notification of schedule changes to favourite teams
+	- make use of ACCESS_NETWORK_STATE for more sophisticated way to determine whether offline?
+	d Google calendar integration (would require a feed from leagueUSA)
+	d game's address: get & utilize (use intent to launch map/navigation)
+	d team contact: get & utilize (i.e. call/text/email coach when cannot make practice)
 	- a way to clear favourites, delete without being on the page (i.e. if the link is broken, season is dropped must ininstall)
 	- Use heart not ellipse in Options menu	(http://developer.android.com/guide/topics/ui/actionbar.html#Dropdown)
-	- division ranking: not sure how & best to get an API not download entire division
+	d division ranking: not sure how & best to get an API not download entire division
 	- test automation
 	- for tablet LHS for teams & RHS for games
+	if add a paid feature
+		- add license key check: http://developer.android.com/google/play/licensing/index.html
+		- add in-app billing http://developer.android.com/google/play/billing/index.html
+		- add advertising http://developer.android.com/google/play-services/ads.html
+			1- each in-app purchase: https://developers.google.com/analytics/devguides/collection/android/v4/ecommerce
+			2- # from each club/league
 ====
 Sample JSON
 http://www.sdsolbasketball.com/mobileschedule.php?league=1&season=8&division=107&conference=107&team=782
