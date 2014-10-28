@@ -52,32 +52,59 @@ UPDATING ON THE MARKET
 FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
 	>> add analytic
+	
+	1- finish with step #5 onStart() & onStop()
+	2- add Screens https://developers.google.com/analytics/devguides/collection/android/v4/screens
+	3- add Events  https://developers.google.com/analytics/devguides/collection/android/v4/events
+	4- Add a bogus global ID for myApplication
+	
+	http://www.javacodegeeks.com/2014/04/working-with-google-analytics-api-v4-for-android.html
+	
 		> Events
 		1- Set Home League Name (+1/-1)
 		2- Number of favorites per user
 		3- Game schedule view (if favorite or not)
 		My Dashboard:	https://www.google.com/analytics/web/
+
 			Account ID:		55871696
 			Account Name:	LeagueSchedule
-				Property Name:	HomeOrgName
+				Property Name:	SeasonList
 					Tracking ID:	UA-55871696-1
+					Detail Design:	SeasonList (actually called MainActivity)
+						WHERE TO CREATE, DESTROY and COUNT?
+						MainActivity.onCreate()
+							seasonListTracker = GoogleAnalyticsTracker.getInstance();
+							seasonListTracker.start("UA-55871696-1", 10, this);
+						MainActivity.onDestroy()	
+							@Override
+							public void onDestroy() {
+							  seasonListTracker.stop();
+							  super.onDestroy();
+							}
+						- seasonListTracker.trackPageView("/SeasonListActivity");
+						- seasonListTracker.trackEvent("SeasonList", "homeLeague", <orgName>, -1); // remove
+						- seasonListTracker.trackEvent("SeasonList", "homeLeague", <orgName>, +1); // add
 					Questions:
-						- Where do I market harder?
+						- How many page views to League Season Listings?
+						- Which Leagues?  AKA - Where do I market harder?
 						- (future) share usage with leagues?
-				Property Name:	FavoriteTeam
+				Property Name:	GameList
 					Tracking ID:	UA-55871696-2
-					What is it: # Favorites per person
+					Detail Design:	Listing of games with "favorite" vs. "navigate" distinction
+						WHERE TO CREATE, DESTROY and COUNT?
+						- gameListTracker = GoogleAnalyticsTracker.getInstance();
+						- gameListTracker.trackPageView("/GameListActivity");
+						- gameListTracker.trackEvent("GameList", "favoriteList", "", -1);
+						- gameListTracker.trackEvent("GameList", "navigateList", "", -1);
+						- gameListTracker.trackEvent("GameList", "favoriteTeam",<teamName>, -1); // remove
+						- gameListTracker.trackEvent("GameList", "favoriteTeam",<teamName>, -1); // add
 					Questions:
-						- How popular is this feature
-						- (future) How much load would a  notification service put on vicid?
+						- How many game list viewing are there really?
+						- # game listings per session
+						- % of views that are "favorites" (or not)
+						- # of favorites per person
+						- (future) How much load would a "team schedule change" notification service put on vicid?
 						- (future) share most popular teams?
-				Property Name:	GameListing
-					Tracking ID:	(pending)
-					What is it:	"favorite", "non-favorite", +1
-					Questions:
-						- How much do people really view?
-						- # per session
-						- # % of views that are "favorites" (or not)
 		end to end ex:	https://developers.google.com/mobile/articles/analytics_end_to_end
 		overview:		https://support.google.com/analytics/answer/2587086?hl=en
 		instructions:	https://developers.google.com/analytics/devguides/collection/android/v4/#tracking-methods

@@ -15,12 +15,13 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.prouty.leagueusa.schedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private LeagueItem   mLeagueItem = new LeagueItem();
-
+	
 	private DatabaseHelper mHelper;
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	private FavoriteItem mFavoriteItem;
@@ -55,6 +56,10 @@ public class MainActivity extends FragmentActivity {
 			finish();
 		}
 		else {
+
+			// Get the SeasonList tracker (should auto-report)
+			((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.SEASON_LIST_TRACKER);
+			
 			getOverflowMenu();
 			setContentView(R.layout.activity_fragment);
 			setActionBarLeague(mLeagueItem);
@@ -70,6 +75,23 @@ public class MainActivity extends FragmentActivity {
 			mHelper = new DatabaseHelper(getApplicationContext());
 		}
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart()");
+		//Start the analytics tracking
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.i(TAG, "onStop()");
+		//Stop the analytics tracking
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+	}
+	
 	private boolean needLeague() {
 		FavoriteListUtil util = new FavoriteListUtil();
 		mLeagueItem=util.getHomeLeagueItem(getApplicationContext());
