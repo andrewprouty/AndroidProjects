@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.LeagueCursor;
 
 public class LeagueListActivity extends FragmentActivity {
@@ -27,8 +29,12 @@ public class LeagueListActivity extends FragmentActivity {
 		Log.d(TAG, "launchSeasonListActivity()");
 		
 		if (item.getLeagueId() != null) {
+
+			Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+			t.setScreenName(TAG);
+
 			FavoriteListUtil util = new FavoriteListUtil();
-			util.setHomeLeagueItem(getApplicationContext(),item);
+			util.setHomeLeagueItem(getApplicationContext(),item, t);
 		}
 	
 		Intent i = new Intent (this, MainActivity.class);
@@ -81,6 +87,14 @@ public class LeagueListActivity extends FragmentActivity {
 		super.onRestart();
 		Log.d(TAG, "onRestart");
 		supportInvalidateOptionsMenu();
+	}
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart()");
+		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		t.setScreenName(TAG);
+        t.send(new HitBuilders.AppViewBuilder().build());
 	}
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

@@ -12,7 +12,7 @@ public class MyApplication extends Application {
 	//Based largely on this-- http://www.javacodegeeks.com/2014/04/working-with-google-analytics-api-v4-for-android.html
 
 	// The following line should be changed to include the correct property id.
-	private static final String PROPERTY_ID = "UA-55871696-2";
+	private static final String PROPERTY_ID = "UA-55871696-2"; // currently global == money tracker
 
 	//Logging TAG
 	private static final String TAG = "MyApplication";
@@ -20,8 +20,8 @@ public class MyApplication extends Application {
 	public static int GENERAL_TRACKER = 0;
 
 	public enum TrackerName {
-		SEASON_LIST_TRACKER, // Tracker used only in this app.
-		GAME_LIST_TRACKER, // Tracker used only in this app.
+		APP_TRACKER, // Tracker used only in this apps.
+		MONEY_TRACKER, // Tracker used for all money across applications
 		GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
 	}
 
@@ -32,11 +32,11 @@ public class MyApplication extends Application {
 	}
 
 	synchronized Tracker getTracker(TrackerName trackerId) {
-		Log.v(TAG, "getTracker()");
+		Log.d(TAG, "getTracker()");
 		if (!mTrackers.containsKey(trackerId)) {
 			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-			Tracker t = (trackerId == TrackerName.SEASON_LIST_TRACKER) ? analytics.newTracker(R.xml.season_list_tracker)
-					  : (trackerId == TrackerName.GAME_LIST_TRACKER)   ? analytics.newTracker(R.xml.game_list_tracker)
+			Tracker t = (trackerId == TrackerName.APP_TRACKER)  ? analytics.newTracker(R.xml.app_tracker)
+					  : (trackerId == TrackerName.MONEY_TRACKER)? analytics.newTracker(R.xml.money_tracker)
 					  : analytics.newTracker(PROPERTY_ID);	//else GLOBAL_TRACKER
 					mTrackers.put(trackerId, t);
 		}

@@ -20,6 +20,8 @@
 substitute for the full length canonical Activity name in screen view hit. In order to
 specify an alternate screen name use an <screenName> element, with the name attribute
 specifying the canonical name, and the value the alias to use instead. -->
-<screenName name="com.prouty.leagueusa.schedule.MainActivity">SeasonList Activity</screenName>
+<screenName name="com.prouty.leagueusa.schedule.LeagueListActivity">LeagueMain Activity</screenName>
+<screenName name="com.prouty.leagueusa.schedule.MainActivity">Main Activity</screenName>
+<screenName name="com.prouty.leagueusa.schedule.GameListActivity">GameList Activity</screenName>
 
 </resources>

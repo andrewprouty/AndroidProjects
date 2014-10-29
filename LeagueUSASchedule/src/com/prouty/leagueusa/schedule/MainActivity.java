@@ -15,7 +15,8 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.SeasonCursor;
 
 public class MainActivity extends FragmentActivity {
@@ -56,10 +57,6 @@ public class MainActivity extends FragmentActivity {
 			finish();
 		}
 		else {
-
-			// Get the SeasonList tracker (should auto-report)
-			((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.SEASON_LIST_TRACKER);
-			
 			getOverflowMenu();
 			setContentView(R.layout.activity_fragment);
 			setActionBarLeague(mLeagueItem);
@@ -79,18 +76,24 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart()");
+		Log.d(TAG, "onStart()");
+		// Set & send the screen view.
+		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		t.setScreenName(TAG);
+        t.send(new HitBuilders.AppViewBuilder().build());
+        
 		//Start the analytics tracking
-		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+		//For timing?  GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
 
+	/* TODO remove if going to use
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop()");
+		Log.d(TAG, "onStop()");
 		//Stop the analytics tracking
-		GoogleAnalytics.getInstance(this).reportActivityStop(this);
-	}
+		//For timing?  GoogleAnalytics.getInstance(this).reportActivityStop(this);
+	}*/
 	
 	private boolean needLeague() {
 		FavoriteListUtil util = new FavoriteListUtil();

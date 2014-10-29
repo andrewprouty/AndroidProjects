@@ -51,6 +51,7 @@ UPDATING ON THE MARKET
 	
 FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
+	
 	>> add analytic
 	
 	1- finish with step #5 onStart() & onStop()

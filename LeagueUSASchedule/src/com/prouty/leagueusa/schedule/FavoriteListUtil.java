@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.TeamCursor;
 
 public class FavoriteListUtil {
@@ -18,6 +20,9 @@ public class FavoriteListUtil {
 	public static final String HOME_NAME = "HOME_NAME";
 	public static final String HOME_URL = "HOME_URL";
 	private DatabaseHelper mHelper;
+	
+	private LeagueItem   mOldLeagueItem = new LeagueItem();
+
 
 	public FavoriteItem addFavoriteItem(Context context, TeamItem team) {
 		FavoriteItem fav = new FavoriteItem();
@@ -42,11 +47,37 @@ public class FavoriteListUtil {
 		editor.commit();
 		return fav;
 	}
-	public void setHomeLeagueItem(Context context, LeagueItem item) {
+	public void setHomeLeagueItem(Context context, LeagueItem item, Tracker t) {
 		Log.d(TAG, "setHomeLeagueItem() "
 				+ item.getLeagueId() + "-"
 				+ item.getOrgName() + " ("
 				+ item.getLeagueURL() + ")");
+		
+		mOldLeagueItem=getHomeLeagueItem(context);
+		if (mOldLeagueItem == null || mOldLeagueItem.getLeagueId() == null) {
+			// ADD, nothing currently
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(TAG)
+			    .setAction("homeLeague")
+			    .setLabel(item.getOrgName())
+			    .setValue(1)
+			    .build());
+		}
+		else { // remove old homeleague, add a new one
+			t.send(new HitBuilders.EventBuilder()
+				.setCategory(TAG)
+				.setAction("homeLeague")
+				.setLabel(mOldLeagueItem.getOrgName())
+				.setValue(-1)
+				.build());
+			t.send(new HitBuilders.EventBuilder()
+				.setCategory(TAG)
+				.setAction("homeLeague")
+				.setLabel(item.getOrgName())
+				.setValue(1)
+				.build());
+		}
+		
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(HOME_ID);
