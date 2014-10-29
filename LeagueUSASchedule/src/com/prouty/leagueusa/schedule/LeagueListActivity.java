@@ -31,7 +31,6 @@ public class LeagueListActivity extends FragmentActivity {
 		if (item.getLeagueId() != null) {
 
 			Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-			t.setScreenName(TAG);
 
 			FavoriteListUtil util = new FavoriteListUtil();
 			util.setHomeLeagueItem(getApplicationContext(),item, t);
@@ -93,7 +92,7 @@ public class LeagueListActivity extends FragmentActivity {
 		super.onStart();
 		Log.d(TAG, "onStart()");
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		t.setScreenName(TAG);
+		//t.setScreenName(TAG);
         t.send(new HitBuilders.AppViewBuilder().build());
 	}
     @Override

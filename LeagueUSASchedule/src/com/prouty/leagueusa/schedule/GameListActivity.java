@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.GameCursor;
 
 public class GameListActivity extends FragmentActivity {
@@ -72,6 +73,11 @@ public class GameListActivity extends FragmentActivity {
 	}
 	public TeamItem getTeamItem () {
 		return mTeamItem;
+	}
+
+	public Tracker getAppTracker () {
+		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		return t;
 	}
 
 	@TargetApi(11)

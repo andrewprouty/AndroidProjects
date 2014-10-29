@@ -83,7 +83,7 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 							  super.onDestroy();
 							}
 						- seasonListTracker.trackPageView("/SeasonListActivity");
-						- seasonListTracker.trackEvent("SeasonList", "homeLeague", <orgName>, -1); // remove
+						- "homeLeague", <orgName>, -1); // remove
 						- seasonListTracker.trackEvent("SeasonList", "homeLeague", <orgName>, +1); // add
 					Questions:
 						- How many page views to League Season Listings?

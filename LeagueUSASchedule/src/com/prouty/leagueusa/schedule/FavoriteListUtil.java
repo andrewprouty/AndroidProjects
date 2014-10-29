@@ -21,10 +21,63 @@ public class FavoriteListUtil {
 	public static final String HOME_URL = "HOME_URL";
 	private DatabaseHelper mHelper;
 	
-	private LeagueItem   mOldLeagueItem = new LeagueItem();
+	private LeagueItem mLeagueItem = new LeagueItem();
 
-
-	public FavoriteItem addFavoriteItem(Context context, TeamItem team) {
+	public LeagueItem getHomeLeagueItem(Context context) {
+		Log.d(TAG, "getHomeLeageItem()");
+		LeagueItem item = new LeagueItem();
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		item.setLeagueId(prefs.getString(HOME_ID, null));
+		item.setOrgName(prefs.getString(HOME_NAME, null));
+		item.setLeagueURL(prefs.getString(HOME_URL, null));
+		Log.d(TAG, "getHomeLeageItem() "
+				+ item.getLeagueId() + "-"
+				+ item.getOrgName() + " ("
+				+ item.getLeagueURL() + ")");
+		return item;
+	}
+	public void setHomeLeagueItem(Context context, LeagueItem item, Tracker t) {
+		Log.d(TAG, "setHomeLeagueItem() "
+				+ item.getLeagueId() + "-"
+				+ item.getOrgName() + " ("
+				+ item.getLeagueURL() + ")");
+		
+		mLeagueItem=getHomeLeagueItem(context);
+		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
+			// ADD, nothing currently
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(TAG)
+			    .setAction("homeLeague")
+			    .setLabel(item.getOrgName())
+			    .setValue(1)
+			    .build());
+		}
+		else { // REMOVE old homeleague, ADD the new one
+			t.send(new HitBuilders.EventBuilder()
+				.setCategory(TAG)
+				.setAction("homeLeague")
+				.setLabel(mLeagueItem.getOrgName())
+				.setValue(-1)
+				.build());
+			t.send(new HitBuilders.EventBuilder()
+				.setCategory(TAG)
+				.setAction("homeLeague")
+				.setLabel(item.getOrgName())
+				.setValue(1)
+				.build());
+		}
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(HOME_ID);
+		editor.remove(HOME_NAME);
+		editor.remove(HOME_URL);
+		editor.putString(HOME_ID,item.getLeagueId());
+		editor.putString(HOME_NAME,item.getOrgName());
+		editor.putString(HOME_URL,item.getLeagueURL());
+		editor.commit();
+		return;
+	}
+	public FavoriteItem addFavoriteTeamItem(Context context, TeamItem team, Tracker t) {
 		FavoriteItem fav = new FavoriteItem();
 		if(team.getConferenceCount().equals("one")) {
 			fav.setFavoriteName(team.getTeamName()+"/"
@@ -45,71 +98,48 @@ public class FavoriteListUtil {
 		//URL is absolute, the name could change (if team goes from single to multiple conferences division)
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
+		String fullName;
+		if(team.getConferenceCount().equals("one")) {
+			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+					+team.getDivisionName()+"/"+"/"+team.getTeamName();
+		}
+		else {
+			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
+		}
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory(TAG)
+		.setAction("favoriteTeam")
+		.setLabel(fullName)
+		.setValue(1) // Add 1
+		.build());
 		return fav;
 	}
-	public void setHomeLeagueItem(Context context, LeagueItem item, Tracker t) {
-		Log.d(TAG, "setHomeLeagueItem() "
-				+ item.getLeagueId() + "-"
-				+ item.getOrgName() + " ("
-				+ item.getLeagueURL() + ")");
-		
-		mOldLeagueItem=getHomeLeagueItem(context);
-		if (mOldLeagueItem == null || mOldLeagueItem.getLeagueId() == null) {
-			// ADD, nothing currently
-			t.send(new HitBuilders.EventBuilder()
-			    .setCategory(TAG)
-			    .setAction("homeLeague")
-			    .setLabel(item.getOrgName())
-			    .setValue(1)
-			    .build());
-		}
-		else { // remove old homeleague, add a new one
-			t.send(new HitBuilders.EventBuilder()
-				.setCategory(TAG)
-				.setAction("homeLeague")
-				.setLabel(mOldLeagueItem.getOrgName())
-				.setValue(-1)
-				.build());
-			t.send(new HitBuilders.EventBuilder()
-				.setCategory(TAG)
-				.setAction("homeLeague")
-				.setLabel(item.getOrgName())
-				.setValue(1)
-				.build());
-		}
-		
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.remove(HOME_ID);
-		editor.remove(HOME_NAME);
-		editor.remove(HOME_URL);
-		editor.putString(HOME_ID,item.getLeagueId());
-		editor.putString(HOME_NAME,item.getOrgName());
-		editor.putString(HOME_URL,item.getLeagueURL());
-		editor.commit();
-		return;
-	}
-	public void removeFavoriteItem(Context context, String keyTeamURL) {
+	public void removeFavoriteTeamItem(Context context, TeamItem team, Tracker t) {
+		mLeagueItem=getHomeLeagueItem(context);
+		String keyTeamURL=team.getTeamURL();
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(keyTeamURL);
 		editor.commit();
 		Log.d(TAG, "removeFavoriteItem() Key="+keyTeamURL);
 		editor.commit();
+		String fullName;
+		if(team.getConferenceCount().equals("one")) {
+			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+					+team.getDivisionName()+"/"+"/"+team.getTeamName();
+		}
+		else {
+			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
+		}
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory(TAG)
+		.setAction("favoriteTeam")
+		.setLabel(fullName)
+		.setValue(-1) // Subtract 1
+		.build());
 		return;
-	}
-	public LeagueItem getHomeLeagueItem(Context context) {
-		Log.d(TAG, "getHomeLeageItem()");
-		LeagueItem item = new LeagueItem();
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		item.setLeagueId(prefs.getString(HOME_ID, null));
-		item.setOrgName(prefs.getString(HOME_NAME, null));
-		item.setLeagueURL(prefs.getString(HOME_URL, null));
-		Log.d(TAG, "getHomeLeageItem() "
-				+ item.getLeagueId() + "-"
-				+ item.getOrgName() + " ("
-				+ item.getLeagueURL() + ")");
-		return item;
 	}
 
 	public ArrayList<FavoriteItem> getFavoriteList(Context context) {

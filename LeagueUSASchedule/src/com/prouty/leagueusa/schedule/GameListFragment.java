@@ -18,6 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 public class GameListFragment extends Fragment{
 	private static final String TAG = "GameListFragment";
 	private static final int GET = 0;
@@ -131,15 +134,16 @@ public class GameListFragment extends Fragment{
 	    				" name="+mTeamItem.getTeamName() +
 	    				" url="+mTeamItem.getTeamURL());
     			FavoriteListUtil util = new FavoriteListUtil();
+				Tracker t = ((GameListActivity) getActivity()).getAppTracker();
 	    		if (mFavorite) {
 		    		Log.d(TAG, "onOptionsItemSelected() removing Team ID="+mTeamItem.getTeamId() +
 		    				" Name="+mTeamItem.getTeamName());
-	    			util.removeFavoriteItem(getActivity().getApplicationContext(), mTeamItem.getTeamURL());
+	    			util.removeFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t);
 	    		}
 	    		else {
 		    		Log.d(TAG, "onOptionsItemSelected() adding Team ID="+mTeamItem.getTeamId() +
 		    				" Name="+mTeamItem.getTeamName());
-		    		mFavoriteItem = util.addFavoriteItem(getActivity().getApplicationContext(), mTeamItem);
+		    		mFavoriteItem = util.addFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t);
 	    		}
     			getActivity().supportInvalidateOptionsMenu(); //triggers onPrepareOptions which resets menu
 	            return true;
@@ -154,6 +158,23 @@ public class GameListFragment extends Fragment{
 		    		if (mFavoriteTeam != null ) {
 			    		Log.d(TAG, "onOptionsItemSelected() this FavTeam: " + mFavoriteTeam.getTeamName());
 		    			util.launchGameListActivity(getActivity().getApplicationContext(), mFavoriteTeam);
+		    			String fullName = util.getHomeLeagueItem(getActivity().getApplicationContext()).getOrgName();
+		    					    			
+		    			if(mFavoriteTeam.getConferenceCount().equals("one")) {
+		    				fullName = fullName +"/"+mFavoriteTeam.getSeasonName()+"/"
+		    						+mFavoriteTeam.getDivisionName()+"/"+"/"+mFavoriteTeam.getTeamName();
+		    			}
+		    			else {
+		    				fullName = fullName +"/"+mFavoriteTeam.getSeasonName()+"/"
+		    						+mFavoriteTeam.getDivisionName()+"/"+mFavoriteTeam.getConferenceName()+"/"+mFavoriteTeam.getTeamName();
+		    			}
+						Tracker t2 = ((GameListActivity) getActivity()).getAppTracker();
+						t2.send(new HitBuilders.EventBuilder()
+						.setCategory("GameListing")
+						.setAction("favoriteListing")
+						.setLabel(fullName)
+						.setValue(1) // Add 1
+						.build());
 		    		}
 		    		else {
 						Toast.makeText(getActivity().getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();

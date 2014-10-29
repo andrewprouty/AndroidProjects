@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity {
 		Log.d(TAG, "onStart()");
 		// Set & send the screen view.
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		t.setScreenName(TAG);
+		//t.setScreenName(TAG);
         t.send(new HitBuilders.AppViewBuilder().build());
         
 		//Start the analytics tracking
