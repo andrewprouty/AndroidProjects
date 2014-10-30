@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.TeamCursor;
 
 public class TeamListActivity extends FragmentActivity {
@@ -52,6 +54,25 @@ public class TeamListActivity extends FragmentActivity {
 				+ " team ID="      + item.getTeamId()
 				+ ", name="        + item.getTeamName()
 				+ ", url="         + item.getTeamURL());
+		
+		FavoriteListUtil util = new FavoriteListUtil();
+		String fullName = util.queryOrgNameByTeamItem(getApplicationContext(),item);
+		if(item.getConferenceCount().equals("one")) {
+			fullName = fullName+"/"+item.getSeasonName()+"/"
+					+item.getDivisionName()+"/"+"/"+item.getTeamName();
+		}
+		else {
+			fullName = fullName+"/"+item.getSeasonName()+"/"
+					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
+		}
+		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory("GameListing")
+		.setAction("navigateListing")
+		.setLabel(fullName)
+		.setValue(1) // Add 1
+		.build());
+
 		startActivity(i);
 	}
 	
@@ -150,7 +171,8 @@ public class TeamListActivity extends FragmentActivity {
 			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
-				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {
 				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();

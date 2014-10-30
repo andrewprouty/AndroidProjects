@@ -155,12 +155,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null); //limit of rows
 		return new LeagueCursor(wrapped);
 	}
+	public LeagueCursor queryLeagueByTeamItem(TeamItem item) {
+		Log.d(TAG, "queryLeagueByTeamItem()");
+		// equivalent to "select * from league order by league_id asc"
+		// sorting by user_id as an alpha... just copying JSON ordering
+		Cursor wrapped = getReadableDatabase().query(TABLE_LEAGUE,
+				null, // all columns 
+				COLUMN_LEAGUE_LEAGUE_ID + " = ? AND "+
+				COLUMN_LEAGUE_LEAGUE_URL + " = ?",		// Where columns
+				new String[]{ String.valueOf(item.getLeagueId()),
+				String.valueOf(item.getLeagueURL())}, // values
+				null, // group by
+				null, // having
+				COLUMN_LEAGUE_ORG_NAME + " COLLATE NOCASE asc", // order by
+				null); // limit of rows
+		return new LeagueCursor(wrapped);
+	}
 
 	public long deleteSeasonBySeasonItem(SeasonItem item) {
 		Log.d(TAG, "deleteSeasonBySeasonItem()");
 		return getWritableDatabase().delete(TABLE_SEASON,
 				COLUMN_SEASON_LEAGUE_ID + " = ? AND " +
-						COLUMN_SEASON_LEAGUE_URL + " = ?",		// Where column
+						COLUMN_SEASON_LEAGUE_URL + " = ?",		// Where columns
 						new String[] {String.valueOf(item.getLeagueId()),
 				String.valueOf(item.getLeagueURL())}); // values
 	}

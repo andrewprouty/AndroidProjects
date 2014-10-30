@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
 import com.prouty.leagueusa.schedule.DatabaseHelper.ConferenceCursor;
 import com.prouty.leagueusa.schedule.DatabaseHelper.DivisionCursor;
 
@@ -148,7 +149,8 @@ public class DivisionListActivity extends FragmentActivity {
 			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
-				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {
 				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();

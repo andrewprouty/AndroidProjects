@@ -18,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 public class GameListFragment extends Fragment{
@@ -157,24 +156,8 @@ public class GameListFragment extends Fragment{
 		    		mFavoriteTeam=util.queryTeamByTeamURL(getActivity().getApplicationContext(),mFavoriteItem.getFavoriteURL());
 		    		if (mFavoriteTeam != null ) {
 			    		Log.d(TAG, "onOptionsItemSelected() this FavTeam: " + mFavoriteTeam.getTeamName());
-		    			util.launchGameListActivity(getActivity().getApplicationContext(), mFavoriteTeam);
-		    			String fullName = util.getHomeLeagueItem(getActivity().getApplicationContext()).getOrgName();
-		    					    			
-		    			if(mFavoriteTeam.getConferenceCount().equals("one")) {
-		    				fullName = fullName +"/"+mFavoriteTeam.getSeasonName()+"/"
-		    						+mFavoriteTeam.getDivisionName()+"/"+"/"+mFavoriteTeam.getTeamName();
-		    			}
-		    			else {
-		    				fullName = fullName +"/"+mFavoriteTeam.getSeasonName()+"/"
-		    						+mFavoriteTeam.getDivisionName()+"/"+mFavoriteTeam.getConferenceName()+"/"+mFavoriteTeam.getTeamName();
-		    			}
-						Tracker t2 = ((GameListActivity) getActivity()).getAppTracker();
-						t2.send(new HitBuilders.EventBuilder()
-						.setCategory("GameListing")
-						.setAction("favoriteListing")
-						.setLabel(fullName)
-						.setValue(1) // Add 1
-						.build());
+			    		Tracker t2 = ((GameListActivity) getActivity()).getAppTracker();
+		    			util.launchGameListActivity(getActivity().getApplicationContext(), mFavoriteTeam, t2);
 		    		}
 		    		else {
 						Toast.makeText(getActivity().getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();

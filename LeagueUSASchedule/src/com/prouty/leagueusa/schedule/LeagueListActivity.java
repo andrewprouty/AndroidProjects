@@ -120,7 +120,8 @@ public class LeagueListActivity extends FragmentActivity {
 			mFavoriteTeam=util.queryTeamByTeamURL(getApplicationContext(),mFavoriteItem.getFavoriteURL());
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
-				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam);
+				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {
 				Toast.makeText(getApplicationContext(), R.string.broken_must_navigate, Toast.LENGTH_SHORT).show();
@@ -160,5 +161,4 @@ public class LeagueListActivity extends FragmentActivity {
         mHelper.close();
     	return items;
     }
-
 }

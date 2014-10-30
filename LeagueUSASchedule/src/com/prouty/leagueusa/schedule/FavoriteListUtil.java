@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.prouty.leagueusa.schedule.DatabaseHelper.LeagueCursor;
 import com.prouty.leagueusa.schedule.DatabaseHelper.TeamCursor;
 
 public class FavoriteListUtil {
@@ -98,13 +99,14 @@ public class FavoriteListUtil {
 		//URL is absolute, the name could change (if team goes from single to multiple conferences division)
 		editor.putString(fav.getFavoriteURL(),fav.getFavoriteName());
 		editor.commit();
-		String fullName;
+
+		String fullName = queryOrgNameByTeamItem(context, team);
 		if(team.getConferenceCount().equals("one")) {
-			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+"/"+team.getTeamName();
 		}
 		else {
-			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
 		t.send(new HitBuilders.EventBuilder()
@@ -124,13 +126,13 @@ public class FavoriteListUtil {
 		editor.commit();
 		Log.d(TAG, "removeFavoriteItem() Key="+keyTeamURL);
 		editor.commit();
-		String fullName;
+		String fullName = queryOrgNameByTeamItem(context, team);
 		if(team.getConferenceCount().equals("one")) {
-			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+"/"+team.getTeamName();
 		}
 		else {
-			fullName = mLeagueItem.getOrgName()+"/"+team.getSeasonName()+"/"
+			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
 		t.send(new HitBuilders.EventBuilder()
@@ -209,6 +211,30 @@ public class FavoriteListUtil {
     	item.setLeagueURL(item.getTeamURL().substring(0,position));
 		return item; 
 	}
+    protected String queryOrgNameByTeamItem(Context context, TeamItem team) {
+		Log.d(TAG, "queryOrgNameByTeamItem() League PK (from team): "
+				+ " league ID="    + team.getLeagueId()
+				+ ", url="         + team.getLeagueURL());
+        mHelper = new DatabaseHelper(context);
+    	LeagueCursor cursor;
+    	cursor = mHelper.queryLeagueByTeamItem(team);
+    	cursor.moveToFirst();
+    	String orgName=null;
+    	ArrayList<LeagueItem> items = new ArrayList<LeagueItem>();
+		while(!cursor.isAfterLast()) {
+    		LeagueItem item = cursor.getLeagueItem();
+    		items.add(item);
+    		orgName=item.getOrgName();
+    		cursor.moveToNext();
+    		Log.v(TAG, "queryOrgNameByTeamItem() league: "
+    				+ item.getLeagueId() + "-"
+    				+ item.getOrgName() + "-"
+    				+ item.getLeagueURL());
+    	}
+    	cursor.close();
+        mHelper.close();
+    	return orgName;
+    }
     protected TeamItem queryTeamByTeamURL(Context context, String teamURL) {
 		// www...mobileschedule.php?league=1&season=8&division=123&conference=127&team=933
     	TeamItem item = new TeamItem();
@@ -261,7 +287,7 @@ public class FavoriteListUtil {
         }
     	return item;
     }
-	protected void launchGameListActivity(Context context, TeamItem item) {
+	protected void launchGameListActivity(Context context, TeamItem item, Tracker t) {
 		Log.d(TAG, "launchGameListActivity()");
 		Intent i = new Intent (context, GameListActivity.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -277,6 +303,22 @@ public class FavoriteListUtil {
 		i.putExtra("TeamId", item.getTeamId().toString());
 		i.putExtra("TeamName", item.getTeamName().toString());
 		i.putExtra("TeamURL", item.getTeamURL().toString());
+		
+		String fullName = queryOrgNameByTeamItem(context, item);
+		if(item.getConferenceCount().equals("one")) {
+			fullName = fullName+"/"+item.getSeasonName()+"/"
+					+item.getDivisionName()+"/"+"/"+item.getTeamName();
+		}
+		else {
+			fullName = fullName+"/"+item.getSeasonName()+"/"
+					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
+		}
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory("GameListing")
+		.setAction("favoriteListing")
+		.setLabel(fullName)
+		.setValue(1) // Add 1
+		.build());
 		Log.v(TAG, "launchGameListActivity(): "
 				+ " league ID="    + item.getLeagueId()
 				+ ", url="         + item.getLeagueURL()
@@ -290,6 +332,7 @@ public class FavoriteListUtil {
 				+ " team ID="      + item.getTeamId()
 				+ ", name="        + item.getTeamName()
 				+ ", url="         + item.getTeamURL());
+
 		context.startActivity(i);
 	}
 }
