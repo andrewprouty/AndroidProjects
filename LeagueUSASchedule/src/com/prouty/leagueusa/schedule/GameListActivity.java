@@ -46,7 +46,7 @@ public class GameListActivity extends FragmentActivity {
 		mTeamItem.setTeamId(teamId);
 		mTeamItem.setTeamName(teamName);
 		mTeamItem.setTeamURL(teamURL);
-		setActionBarLeagueName();
+		setActionBarLeagueName(mTeamItem);
 		Log.v(TAG, "onCreate() "
 				+ " league ID="    + mTeamItem.getLeagueId()
 				+ ", url="         + mTeamItem.getLeagueURL()
@@ -81,16 +81,15 @@ public class GameListActivity extends FragmentActivity {
 	}
 
 	@TargetApi(11)
-	private void setActionBarLeagueName() {
+	private void setActionBarLeagueName(TeamItem team) {
 		if (android.os.Build.VERSION.SDK_INT >= 11){
 			FavoriteListUtil util = new FavoriteListUtil();
-			LeagueItem item = new LeagueItem();
-			item=util.getHomeLeagueItem(getApplicationContext());
-			if (item == null || item.getLeagueId() == null) {
+			String fullName = util.queryOrgNameByTeamItem(getApplicationContext(),team);
+			if (fullName == null || team.getLeagueId() == null) {
 				return;
 			}
 			else {
-				getActionBar().setTitle(item.getOrgName());
+				getActionBar().setTitle(fullName);
 			}
 		}
 	}
