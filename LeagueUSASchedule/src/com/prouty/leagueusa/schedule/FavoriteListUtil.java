@@ -2,6 +2,7 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,10 +21,31 @@ public class FavoriteListUtil {
 	public static final String HOME_ID = "HOME_ID";
 	public static final String HOME_NAME = "HOME_NAME";
 	public static final String HOME_URL = "HOME_URL";
+	public static final String CLIENT_ID = "CLIENT_ID";
+	//WARNING- if adding a preference file, search for "Fragile" to add to exclusion list below... or will break favorites
 	private DatabaseHelper mHelper;
 	
 	private LeagueItem mLeagueItem = new LeagueItem();
 
+	public synchronized static String getClientID(Context context) {
+		Log.d(TAG, "getUUID()");
+		String clientID=null;
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		/**/
+		clientID=prefs.getString(CLIENT_ID, null);
+		if (clientID == null) {
+			clientID = UUID.randomUUID().toString();
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.remove(CLIENT_ID);
+			editor.putString(CLIENT_ID,clientID);
+			editor.commit();
+			Log.d(TAG, "getClientID() CREATED clientID=" + clientID);
+		}
+		else {
+			Log.d(TAG, "getClientID() existed clientID= " + clientID);
+		}
+		return clientID;
+	}
 	public LeagueItem getHomeLeagueItem(Context context) {
 		Log.d(TAG, "getHomeLeageItem()");
 		LeagueItem item = new LeagueItem();
@@ -44,6 +66,7 @@ public class FavoriteListUtil {
 				+ item.getLeagueURL() + ")");
 		
 		mLeagueItem=getHomeLeagueItem(context);
+		t.set("&uid", FavoriteListUtil.getClientID(context));
 		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
 			// ADD, nothing currently
 			t.send(new HitBuilders.EventBuilder()
@@ -109,6 +132,7 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
+		t.set("&uid", FavoriteListUtil.getClientID(context));
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory(TAG)
 		.setAction("favoriteTeam")
@@ -135,6 +159,7 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
+		t.set("&uid", FavoriteListUtil.getClientID(context));
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory(TAG)
 		.setAction("favoriteTeam")
@@ -151,7 +176,11 @@ public class FavoriteListUtil {
 		Boolean empty = false;
 		for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
             Object val = entry.getValue();
-            if (!entry.getKey().equals(HOME_ID) && !entry.getKey().equals(HOME_NAME) && !entry.getKey().equals(HOME_URL)) {
+            //Fragile
+            if (!entry.getKey().equals(HOME_ID)
+            		&& !entry.getKey().equals(HOME_NAME)
+            		&& !entry.getKey().equals(HOME_URL)
+            		&& !entry.getKey().equals(CLIENT_ID)) {
      			item = new FavoriteItem();
      			item.setFavoriteURL(entry.getKey());
                 item=getFieldsFromURL(item);
@@ -313,6 +342,7 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+item.getSeasonName()+"/"
 					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
 		}
+		t.set("&uid", FavoriteListUtil.getClientID(context));
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("GameListing")
 		.setAction("favoriteListing")

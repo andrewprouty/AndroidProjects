@@ -79,21 +79,9 @@ public class MainActivity extends FragmentActivity {
 		Log.d(TAG, "onStart()");
 		// Set & send the screen view.
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		//t.setScreenName(TAG);
+		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
         t.send(new HitBuilders.AppViewBuilder().build());
-        
-		//Start the analytics tracking
-		//For timing?  GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
-
-	/* TODO remove if going to use
-	@Override
-	protected void onStop() {
-		super.onStop();
-		Log.d(TAG, "onStop()");
-		//Stop the analytics tracking
-		//For timing?  GoogleAnalytics.getInstance(this).reportActivityStop(this);
-	}*/
 	
 	private boolean needLeague() {
 		FavoriteListUtil util = new FavoriteListUtil();

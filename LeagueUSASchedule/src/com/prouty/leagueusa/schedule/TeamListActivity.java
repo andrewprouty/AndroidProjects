@@ -66,6 +66,7 @@ public class TeamListActivity extends FragmentActivity {
 					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
 		}
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("GameListing")
 		.setAction("navigateListing")

@@ -20,7 +20,7 @@ public class MyApplication extends Application {
 	public static int GENERAL_TRACKER = 0;
 
 	public enum TrackerName {
-		APP_TRACKER, // Tracker used only in this apps.
+		APP_TRACKER, // Tracker used only in this app.
 		MONEY_TRACKER, // Tracker used for all money across applications
 		GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
 	}

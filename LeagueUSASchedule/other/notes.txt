@@ -51,69 +51,32 @@ UPDATING ON THE MARKET
 	
 FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
+	x fixed banner to show league name corresponding to favorite team "jump" navigation
+	>> add analytic (My Dashboard) https://www.google.com/analytics/web/
 	
-	>> add analytic
-	
-	1- finish with step #5 onStart() & onStop()
-	2- add Screens https://developers.google.com/analytics/devguides/collection/android/v4/screens
-	3- add Events  https://developers.google.com/analytics/devguides/collection/android/v4/events
-	4- Add a bogus global ID for myApplication
-	
-	http://www.javacodegeeks.com/2014/04/working-with-google-analytics-api-v4-for-android.html
-	
-		> Events
-		1- Set Home League Name (+1/-1)
-		2- Number of favorites per user
-		3- Game schedule view (if favorite or not)
-		My Dashboard:	https://www.google.com/analytics/web/
+	10-30 19:47:19.375: D/FavoriteListUtil(19105): getClientID() CREATED clientID=eb0df3cd-9862-46b1-85d6-2dc2d38ae2de
+	10-30 20:15:49.655: D/FavoriteListUtil(31299): getClientID() CREATED clientID=fe29fb2c-48f5-43fc-9d39-8ecec5f1682f
 
-			Account ID:		55871696
-			Account Name:	LeagueSchedule
-				Property Name:	SeasonList
-					Tracking ID:	UA-55871696-1
-					Detail Design:	SeasonList (actually called MainActivity)
-						WHERE TO CREATE, DESTROY and COUNT?
-						MainActivity.onCreate()
-							seasonListTracker = GoogleAnalyticsTracker.getInstance();
-							seasonListTracker.start("UA-55871696-1", 10, this);
-						MainActivity.onDestroy()	
-							@Override
-							public void onDestroy() {
-							  seasonListTracker.stop();
-							  super.onDestroy();
-							}
-						- seasonListTracker.trackPageView("/SeasonListActivity");
-						- "homeLeague", <orgName>, -1); // remove
-						- seasonListTracker.trackEvent("SeasonList", "homeLeague", <orgName>, +1); // add
-					Questions:
-						- How many page views to League Season Listings?
-						- Which Leagues?  AKA - Where do I market harder?
-						- (future) share usage with leagues?
-				Property Name:	GameList
-					Tracking ID:	UA-55871696-2
-					Detail Design:	Listing of games with "favorite" vs. "navigate" distinction
-						WHERE TO CREATE, DESTROY and COUNT?
-						- gameListTracker = GoogleAnalyticsTracker.getInstance();
-						- gameListTracker.trackPageView("/GameListActivity");
-						- gameListTracker.trackEvent("GameList", "favoriteList", "", -1);
-						- gameListTracker.trackEvent("GameList", "navigateList", "", -1);
-						- gameListTracker.trackEvent("GameList", "favoriteTeam",<teamName>, -1); // remove
-						- gameListTracker.trackEvent("GameList", "favoriteTeam",<teamName>, -1); // add
-					Questions:
-						- How many game list viewing are there really?
-						- # game listings per session
-						- % of views that are "favorites" (or not)
-						- # of favorites per person
-						- (future) How much load would a "team schedule change" notification service put on vicid?
-						- (future) share most popular teams?
-		end to end ex:	https://developers.google.com/mobile/articles/analytics_end_to_end
-		overview:		https://support.google.com/analytics/answer/2587086?hl=en
-		instructions:	https://developers.google.com/analytics/devguides/collection/android/v4/#tracking-methods
-		example:		https://developers.google.com/analytics/solutions/mobile-implementation-guide
-		ideas
-			count of favorites
-			home league
+t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
+t.set("&uid", FavoriteListUtil.getClientID(context));
+
+BEFORE t.send
+
+
+
+
+		x screens
+		x events
+			x- Set Home League Name (+1/-1)
+			o- Number of favorites per user
+			x- Game listing (category)
+				- favoriteListing with team path label
+				- navigateListing with team path label
+			x	FavoriteListUtil
+				- favoriteTeam with team path label
+				- homeLeague with league name in label
 	* notification of schedule changes to favourite teams
+	* notification reminder upcoming game for favorite teams
 	- Spanish translation
 	- switch logos for each league
 		http://developer.android.com/guide/topics/ui/menus.html
