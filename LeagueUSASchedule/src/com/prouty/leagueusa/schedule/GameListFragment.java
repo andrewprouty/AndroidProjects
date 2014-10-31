@@ -96,7 +96,7 @@ public class GameListFragment extends Fragment{
 		FavoriteItem favItem = new FavoriteItem();
 		mFavorite=false;
 		mFavoriteItems=util.getFavoriteList(getActivity().getApplicationContext());
-		Log.d(TAG, "onPrepareOptionsMenu() favorite count:"+mFavoriteItems.size());
+		Log.d(TAG, "onPrepareOptionsMenu() favorite count="+mFavoriteItems.size());
 		menu.removeGroup(1);
 		for (int i=0; i<mFavoriteItems.size(); i++) {
 			favItem=mFavoriteItems.get(i);

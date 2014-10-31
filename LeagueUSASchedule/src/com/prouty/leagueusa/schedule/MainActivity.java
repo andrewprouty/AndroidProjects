@@ -80,6 +80,7 @@ public class MainActivity extends FragmentActivity {
 		// Set & send the screen view.
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
 		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
+		t.enableAdvertisingIdCollection(true);
         t.send(new HitBuilders.AppViewBuilder().build());
 	}
 	
@@ -169,6 +170,7 @@ public class MainActivity extends FragmentActivity {
 				if (mFavoriteTeam != null ) {
 					Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 					Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+					//sets user_id in util class before logging event
 					util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 				}
 				else {

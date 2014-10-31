@@ -57,15 +57,7 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 	10-30 19:47:19.375: D/FavoriteListUtil(19105): getClientID() CREATED clientID=eb0df3cd-9862-46b1-85d6-2dc2d38ae2de
 	10-30 20:15:49.655: D/FavoriteListUtil(31299): getClientID() CREATED clientID=fe29fb2c-48f5-43fc-9d39-8ecec5f1682f
 
-t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
-t.set("&uid", FavoriteListUtil.getClientID(context));
-
-BEFORE t.send
-
-
-
-
-		x screens
+	x screens
 		x events
 			x- Set Home League Name (+1/-1)
 			o- Number of favorites per user
