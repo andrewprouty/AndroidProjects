@@ -53,20 +53,75 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
 	x fixed banner to show league name corresponding to favorite team "jump" navigation
 	>> add analytic (My Dashboard) https://www.google.com/analytics/web/
-	
-	10-30 19:47:19.375: D/FavoriteListUtil(19105): getClientID() CREATED clientID=eb0df3cd-9862-46b1-85d6-2dc2d38ae2de
-	10-30 20:15:49.655: D/FavoriteListUtil(31299): getClientID() CREATED clientID=fe29fb2c-48f5-43fc-9d39-8ecec5f1682f
-
 	x screens
-		x events
-			x- Set Home League Name (+1/-1)
-			o- Number of favorites per user
-			x- Game listing (category)
-				- favoriteListing with team path label
-				- navigateListing with team path label
-			x	FavoriteListUtil
+	x events category/action/label/value
+	====now
+		- FavoriteListUtil (category)
+			- favoriteCount (action) FavoriteListUtil.java, eventFavoriteCount()
+				- UUID
+					- <total>
+						Event Value- NOT useful, aggregate is just a big number
+						Avg Value- NOT useful, shows average over time not current
+			- favoriteTeam (action)
+				- <teamPath>
+					- +1/-1
+						Event Value- YES, aggregate shows # that have as a favorite
+						Avg Value- NOT useful = favorites count of a team / total # of favorite teams
+			- homeLeague (action) FavoriteListUtil.java, setHomeLeagueItem()
+				- <leagueName>
+					- +1/-1
+						Reporting useful except average
+		- GameListing
+			- navigateListing (action) TeamListActivity.java, launchGameListActivity()
+				- <teamPath>
+					- +1
+						All useful, rolls up to nav vs. favorite so cannot see team total
+			- favoriteListing (action) FavoriteListUtil.java, launchGameListActivity()
+				- teamPath
+					- +1
+						Reporting useful except average
+	====plan
+		x GameListing
+			- navigateListing (action) TeamListActivity.java, launchGameListActivity()
+				- <teamPath>
+					- +1
+			- favoriteListing (action) FavoriteListUtil.java, launchGameListActivity()
+				- <teamPath>
+					- +1
+		x FavoriteTeamTotal (action) FavoriteListUtil.java, eventFavoriteTeamTotal()
+			- LeagueUSA
+				- <UUID>
+					- <total>
+		x FavoriteTeamByTeam (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
+			- LeagueUSA
+				- <teamPath>
+					- +1/-1
+		x FavoriteTeamByUser (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
+			- LeagueUSA
+				- <UUID>
+					- +1/-1
+		x HomeLeague (action) FavoriteListUtil.java, setHomeLeagueItem()
+			- LeagueUSA
+				- <leagueName>
+					- +1/-1
+	====
+		x Set Home League Name (+1/-1)
+			o Number of favorites per user
+			x GameListing (category)
+				- favoriteGameListing (action)
+					- team path (label)
+				- navigateGameListing (action) team path (label)
+			> HomeLeague (category)
+			    - vicid
+					- 
+			- FavoriteCount
+			> FavoriteTeam (category
+				- addTeam
+				- removeTeam
+			x- FavoriteListUtil
 				- favoriteTeam with team path label
 				- homeLeague with league name in label
+				- favorite count by UUID
 	* notification of schedule changes to favourite teams
 	* notification reminder upcoming game for favorite teams
 	- Spanish translation

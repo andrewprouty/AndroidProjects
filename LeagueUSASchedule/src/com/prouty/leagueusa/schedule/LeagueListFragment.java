@@ -239,10 +239,10 @@ public class LeagueListFragment extends Fragment{
 					(size == 0)) { //API < 11, or no results from query so will have to wait anyway
 				Log.d(TAG, ".onPostExecute() execute FetchLeagueItemsTask()-serial");
 				if (size == 0) {
-					Toast.makeText(getActivity().getApplicationContext(), R.string.first_league_information, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity().getApplicationContext(), R.string.first_league_information, Toast.LENGTH_LONG).show();
 				}
 				else {
-					Toast.makeText(getActivity().getApplicationContext(), R.string.serial_league_information, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity().getApplicationContext(), R.string.serial_league_information, Toast.LENGTH_LONG).show();
 				}
 	            new FetchLeagueItemsTask().execute();
 	        } else {

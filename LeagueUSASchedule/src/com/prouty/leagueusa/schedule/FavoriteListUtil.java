@@ -70,22 +70,22 @@ public class FavoriteListUtil {
 		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
 			// ADD, nothing currently
 			t.send(new HitBuilders.EventBuilder()
-			    .setCategory(TAG)
-			    .setAction("homeLeague")
+			    .setCategory("HomeLeague")
+			    .setAction("LeagueUSA")
 			    .setLabel(item.getOrgName())
 			    .setValue(1)
 			    .build());
 		}
 		else { // REMOVE old homeleague, ADD the new one
 			t.send(new HitBuilders.EventBuilder()
-				.setCategory(TAG)
-				.setAction("homeLeague")
+				.setCategory("HomeLeague")
+				.setAction("LeagueUSA")
 				.setLabel(mLeagueItem.getOrgName())
 				.setValue(-1)
 				.build());
 			t.send(new HitBuilders.EventBuilder()
-				.setCategory(TAG)
-				.setAction("homeLeague")
+				.setCategory("HomeLeague")
+				.setAction("LeagueUSA")
 				.setLabel(item.getOrgName())
 				.setValue(1)
 				.build());
@@ -102,15 +102,15 @@ public class FavoriteListUtil {
 		return;
 	}
 
-	private void eventFavoriteCount(Context context, Tracker t) {
+	private void eventFavoriteTeamTotal(Context context, Tracker t) {
 		mFavoriteItems=getFavoriteList(context); // reusing to count
 		int count = mFavoriteItems.size();
 		Log.d(TAG, "eventFavoriteCount() favorite count="+count);
 		//uid is set for this tracker already
 		t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
-		.setCategory(TAG)
-		.setAction("favoriteCount")
+		.setCategory("FavoriteTeamTotal")
+		.setAction("LeagueUSA")
 		.setLabel(FavoriteListUtil.getClientID(context))
 		.setValue(count) //Total # of favorites
 		.build());
@@ -147,15 +147,22 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		t.set("&uid", FavoriteListUtil.getClientID(context));
+		String user = FavoriteListUtil.getClientID(context);
+		t.set("&uid", user);
 		t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
-		.setCategory(TAG)
-		.setAction("favoriteTeam")
+		.setCategory("FavoriteTeamByTeam")
+		.setAction("LeagueUSA")
 		.setLabel(fullName)
 		.setValue(1) // Add 1
 		.build());
-		eventFavoriteCount(context, t);
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory("FavoriteTeamByUser")
+		.setAction("LeagueUSA")
+		.setLabel(user)
+		.setValue(1) // Add 1
+		.build());
+		eventFavoriteTeamTotal(context, t);
 		return fav;
 	}
 	public void removeFavoriteTeamItem(Context context, TeamItem team, Tracker t) {
@@ -176,15 +183,22 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		t.set("&uid", FavoriteListUtil.getClientID(context));
+		String user = FavoriteListUtil.getClientID(context);
+		t.set("&uid", user);
 		t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
-		.setCategory(TAG)
-		.setAction("favoriteTeam")
+		.setCategory("FavoriteTeamByTeam")
+		.setAction("LeagueUSA")
 		.setLabel(fullName)
 		.setValue(-1) // Subtract 1
 		.build());
-		eventFavoriteCount(context, t);
+		t.send(new HitBuilders.EventBuilder()
+		.setCategory("FavoriteTeamByUser")
+		.setAction("LeagueUSA")
+		.setLabel(user)
+		.setValue(-1) // Subtract 1
+		.build());
+		eventFavoriteTeamTotal(context, t);
 		return;
 	}
 
