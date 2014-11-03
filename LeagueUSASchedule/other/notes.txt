@@ -55,6 +55,27 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 	>> add analytic (My Dashboard) https://www.google.com/analytics/web/
 	x screens
 	x events category/action/label/value
+	==== logic notes
+	MyApplication
+		global mUserID
+		global mUserIDType
+		enum   UserIDTypes
+		prepareTracker()
+			set properties
+			return mUserID
+			if NONE, retry with WIP
+		getUserID()
+		getAdvertisingIDThread()
+ 
+	FavoriteListUtil
+		CLIENT_ID 		######
+		CLIENT_ID_TYPE	ADID, UUID, NONE, WIP
+	ActivityFiles
+		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
+		t.enableAdvertisingIdCollection(true);	
+
+		
 	====now
 		- FavoriteListUtil (category)
 			- favoriteCount (action) FavoriteListUtil.java, eventFavoriteCount()
@@ -105,23 +126,6 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 				- <leagueName>
 					- +1/-1
 	====
-		x Set Home League Name (+1/-1)
-			o Number of favorites per user
-			x GameListing (category)
-				- favoriteGameListing (action)
-					- team path (label)
-				- navigateGameListing (action) team path (label)
-			> HomeLeague (category)
-			    - vicid
-					- 
-			- FavoriteCount
-			> FavoriteTeam (category
-				- addTeam
-				- removeTeam
-			x- FavoriteListUtil
-				- favoriteTeam with team path label
-				- homeLeague with league name in label
-				- favorite count by UUID
 	* notification of schedule changes to favourite teams
 	* notification reminder upcoming game for favorite teams
 	- Spanish translation

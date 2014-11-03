@@ -150,6 +150,7 @@ public class DivisionListActivity extends FragmentActivity {
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+				((MyApplication) getApplication()).prepareTracker(t);
 				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {

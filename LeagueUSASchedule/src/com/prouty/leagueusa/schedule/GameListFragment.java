@@ -134,15 +134,17 @@ public class GameListFragment extends Fragment{
 	    				" url="+mTeamItem.getTeamURL());
     			FavoriteListUtil util = new FavoriteListUtil();
 				Tracker t = ((GameListActivity) getActivity()).getAppTracker();
+				String user=((GameListActivity) getActivity()).prepareTracker(t);
+
 	    		if (mFavorite) {
 		    		Log.d(TAG, "onOptionsItemSelected() removing Team ID="+mTeamItem.getTeamId() +
 		    				" Name="+mTeamItem.getTeamName());
-	    			util.removeFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t);
+	    			util.removeFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t, user);
 	    		}
 	    		else {
 		    		Log.d(TAG, "onOptionsItemSelected() adding Team ID="+mTeamItem.getTeamId() +
 		    				" Name="+mTeamItem.getTeamName());
-		    		mFavoriteItem = util.addFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t);
+		    		mFavoriteItem = util.addFavoriteTeamItem(getActivity().getApplicationContext(), mTeamItem, t, user);
 	    		}
     			getActivity().supportInvalidateOptionsMenu(); //triggers onPrepareOptions which resets menu
 	            return true;

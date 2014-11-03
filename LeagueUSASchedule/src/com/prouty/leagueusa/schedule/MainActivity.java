@@ -52,6 +52,7 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
+		((MyApplication) getApplication()).getUserID();
 		if (needLeague()) {
 			launchLeagueListActivity();
 			finish();
@@ -72,18 +73,17 @@ public class MainActivity extends FragmentActivity {
 			mHelper = new DatabaseHelper(getApplicationContext());
 		}
 	}
-	
 	@Override
 	protected void onStart() {
 		super.onStart();
 		Log.d(TAG, "onStart()");
 		// Set & send the screen view.
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
-		t.enableAdvertisingIdCollection(true);
+		//TODO t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
+		//TODO t.enableAdvertisingIdCollection(true);
+		((MyApplication) getApplication()).prepareTracker(t);
         t.send(new HitBuilders.AppViewBuilder().build());
 	}
-	
 	private boolean needLeague() {
 		FavoriteListUtil util = new FavoriteListUtil();
 		mLeagueItem=util.getHomeLeagueItem(getApplicationContext());
@@ -170,7 +170,7 @@ public class MainActivity extends FragmentActivity {
 				if (mFavoriteTeam != null ) {
 					Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 					Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-					//sets user_id in util class before logging event
+					((MyApplication) getApplication()).prepareTracker(t);
 					util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 				}
 				else {

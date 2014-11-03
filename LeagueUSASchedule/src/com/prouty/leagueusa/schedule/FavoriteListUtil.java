@@ -2,7 +2,6 @@ package com.prouty.leagueusa.schedule;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,30 +20,15 @@ public class FavoriteListUtil {
 	public static final String HOME_ID = "HOME_ID";
 	public static final String HOME_NAME = "HOME_NAME";
 	public static final String HOME_URL = "HOME_URL";
-	public static final String CLIENT_ID = "CLIENT_ID";
+	public static final String USER_TYPE = "USER_TYPE";
+	public static final String USER_UUID = "USER_UUID";
+	public static final String USER_ADID = "USER_ADID";
 	//WARNING- if adding a preference file, search for "Fragile" to add to exclusion list below... or will break favorites
 	private DatabaseHelper mHelper;
 	private ArrayList<FavoriteItem> mFavoriteItems;
 	
 	private LeagueItem mLeagueItem = new LeagueItem();
 
-	public synchronized static String getClientID(Context context) {
-		String clientID=null;
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		clientID=prefs.getString(CLIENT_ID, null);
-		if (clientID == null) {
-			clientID = UUID.randomUUID().toString();
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.remove(CLIENT_ID);
-			editor.putString(CLIENT_ID,clientID);
-			editor.commit();
-			Log.d(TAG, "getClientID() CREATED clientID=" + clientID);
-		}
-		else {
-			Log.d(TAG, "getClientID() existed clientID= " + clientID);
-		}
-		return clientID;
-	}
 	public LeagueItem getHomeLeagueItem(Context context) {
 		Log.d(TAG, "getHomeLeageItem()");
 		LeagueItem item = new LeagueItem();
@@ -65,8 +49,8 @@ public class FavoriteListUtil {
 				+ item.getLeagueURL() + ")");
 		
 		mLeagueItem=getHomeLeagueItem(context);
-		t.set("&uid", FavoriteListUtil.getClientID(context));
-		t.enableAdvertisingIdCollection(true);
+		//TODO remove t.set("&uid", FavoriteListUtil.getClientID(context));
+		//TODO remove t.enableAdvertisingIdCollection(true);
 		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
 			// ADD, nothing currently
 			t.send(new HitBuilders.EventBuilder()
@@ -102,7 +86,7 @@ public class FavoriteListUtil {
 		return;
 	}
 
-	private void eventFavoriteTeamTotal(Context context, Tracker t) {
+	private void eventFavoriteTeamTotal(Context context, Tracker t, String userID) {
 		mFavoriteItems=getFavoriteList(context); // reusing to count
 		int count = mFavoriteItems.size();
 		Log.d(TAG, "eventFavoriteCount() favorite count="+count);
@@ -111,12 +95,12 @@ public class FavoriteListUtil {
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("FavoriteTeamTotal")
 		.setAction("LeagueUSA")
-		.setLabel(FavoriteListUtil.getClientID(context))
+		.setLabel(userID)
 		.setValue(count) //Total # of favorites
 		.build());
 		return;
 	}
-	public FavoriteItem addFavoriteTeamItem(Context context, TeamItem team, Tracker t) {
+	public FavoriteItem addFavoriteTeamItem(Context context, TeamItem team, Tracker t, String user) {
 		FavoriteItem fav = new FavoriteItem();
 		if(team.getConferenceCount().equals("one")) {
 			fav.setFavoriteName(team.getTeamName()+"/"
@@ -147,9 +131,9 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		String user = FavoriteListUtil.getClientID(context);
-		t.set("&uid", user);
-		t.enableAdvertisingIdCollection(true);
+		//TODO remove String user = FavoriteListUtil.getClientID(context);
+		//TODO remove t.set("&uid", user);
+		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("FavoriteTeamByTeam")
 		.setAction("LeagueUSA")
@@ -162,10 +146,10 @@ public class FavoriteListUtil {
 		.setLabel(user)
 		.setValue(1) // Add 1
 		.build());
-		eventFavoriteTeamTotal(context, t);
+		eventFavoriteTeamTotal(context, t, user);
 		return fav;
 	}
-	public void removeFavoriteTeamItem(Context context, TeamItem team, Tracker t) {
+	public void removeFavoriteTeamItem(Context context, TeamItem team, Tracker t, String user) {
 		mLeagueItem=getHomeLeagueItem(context);
 		String keyTeamURL=team.getTeamURL();
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -183,9 +167,9 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		String user = FavoriteListUtil.getClientID(context);
-		t.set("&uid", user);
-		t.enableAdvertisingIdCollection(true);
+		//TODO remove String user = FavoriteListUtil.getClientID(context);
+		//TODO remove t.set("&uid", user);
+		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("FavoriteTeamByTeam")
 		.setAction("LeagueUSA")
@@ -198,7 +182,7 @@ public class FavoriteListUtil {
 		.setLabel(user)
 		.setValue(-1) // Subtract 1
 		.build());
-		eventFavoriteTeamTotal(context, t);
+		eventFavoriteTeamTotal(context, t, user);
 		return;
 	}
 
@@ -213,7 +197,9 @@ public class FavoriteListUtil {
             if (!entry.getKey().equals(HOME_ID)
             		&& !entry.getKey().equals(HOME_NAME)
             		&& !entry.getKey().equals(HOME_URL)
-            		&& !entry.getKey().equals(CLIENT_ID)) {
+            		&& !entry.getKey().equals(USER_TYPE)
+            		&& !entry.getKey().equals(USER_UUID)
+            		&& !entry.getKey().equals(USER_ADID)) {
      			item = new FavoriteItem();
      			item.setFavoriteURL(entry.getKey());
                 item=getFieldsFromURL(item);
@@ -375,8 +361,8 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+item.getSeasonName()+"/"
 					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
 		}
-		t.set("&uid", FavoriteListUtil.getClientID(context));
-		t.enableAdvertisingIdCollection(true);
+		//TODO remove t.set("&uid", FavoriteListUtil.getClientID(context));
+		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("GameListing")
 		.setAction("favoriteListing")

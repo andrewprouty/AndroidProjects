@@ -66,8 +66,9 @@ public class TeamListActivity extends FragmentActivity {
 					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
 		}
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
-		t.enableAdvertisingIdCollection(true);
+		((MyApplication) getApplication()).prepareTracker(t);
+		//TODO remove t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
+		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("GameListing")
 		.setAction("navigateListing")
@@ -174,6 +175,7 @@ public class TeamListActivity extends FragmentActivity {
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+				((MyApplication) getApplication()).prepareTracker(t);
 				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {

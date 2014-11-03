@@ -79,6 +79,11 @@ public class GameListActivity extends FragmentActivity {
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
 		return t;
 	}
+	public String prepareTracker (Tracker t) {
+		String user;
+		user=((MyApplication) getApplication()).prepareTracker(t);
+		return user;
+	}
 
 	@TargetApi(11)
 	private void setActionBarLeagueName(TeamItem team) {
