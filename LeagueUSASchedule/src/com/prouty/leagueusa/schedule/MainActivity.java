@@ -52,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
-		((MyApplication) getApplication()).getUserID();
+		((MyApplication) getApplication()).getUserID(); // prepare for event Trackers
 		if (needLeague()) {
 			launchLeagueListActivity();
 			finish();

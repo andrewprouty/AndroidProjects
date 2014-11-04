@@ -179,7 +179,7 @@ public class ConferenceListActivity extends FragmentActivity {
     		ConferenceItem item = cursor.getConferenceItem();
     		items.add(item);
     		cursor.moveToNext();
-    		Log.v(TAG, "queryDivisionItem() Division: "
+    		Log.v(TAG, "queryConferencesByDivisionItem() Conference: "
     				+ " league ID="    + item.getLeagueId()
     				+ ", url="         + item.getLeagueURL()
     				+ " season ID="    + item.getSeasonId()

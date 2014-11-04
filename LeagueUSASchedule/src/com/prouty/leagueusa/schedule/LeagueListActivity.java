@@ -51,6 +51,7 @@ public class LeagueListActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate()");
+		((MyApplication) getApplication()).getUserID(); // prepare for event Trackers
 		setContentView(R.layout.activity_fragment);
 		setActionBarVicid();
 		FragmentManager fm = getSupportFragmentManager();

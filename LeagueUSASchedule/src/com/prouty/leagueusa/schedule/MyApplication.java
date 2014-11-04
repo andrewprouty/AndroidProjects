@@ -35,10 +35,6 @@ public class MyApplication extends Application {
 	private static boolean mADThread_Waiting=false;
 	private static UserIDTypes mUserIDType=UserIDTypes.UNKNOWN;
 
-	//private static String mAdvertisingID=null;
-	//private static String mApplicationUserID=null;
-	//private static boolean mAdvertisingOptOut=true;
-
 	public enum TrackerName {
 		APP_TRACKER, // Tracker used only in this app.
 		MONEY_TRACKER, // Tracker used for all money across applications
@@ -87,7 +83,7 @@ public class MyApplication extends Application {
 			debug="UUID";
 		}
 		debug=debug+" user="+user;
-		Toast.makeText(getApplicationContext(),debug,Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(),debug,Toast.LENGTH_LONG).show();
 
 		return user;
 	}
@@ -95,19 +91,19 @@ public class MyApplication extends Application {
 		if (mADThread_Waiting == true) {
 			Log.w(TAG, "getUserID() ID Waiting. Parallel? Exiting");
 		}
-		else if (mUserIDType == UserIDTypes.ADID) {
-			Log.w(TAG, "getUserID() ID was ADID. OK if from MainActivity.onCreate()... Exiting");
-		}
-		else if (mUserIDType == UserIDTypes.UUID) {
-			Log.w(TAG, "getUserID() ID was UUID. OK if from MainActivity.onCreate()... Exiting");
-		}
 		else {
 			mADThread_Waiting=true;
 			if (mUserIDType == UserIDTypes.UNKNOWN) {
-				Log.d(TAG, "getUserID() ID was UNKNOWN, OK, should be starting up. Set to Waiting & getThread()");
+				Log.d(TAG, "getUserID() ID was UNKNOWN, OK, should be starting up. Set to Waiting & getThread()"); //TODO RESET to debug logging?
 			}
 			else if (mUserIDType == UserIDTypes.EMPTY) {
 				Log.w(TAG, "getUserID() ID was EMPTY. If first usage then OK. Set to Waiting & getThread()");
+			}
+			else if (mUserIDType == UserIDTypes.ADID) {
+				Log.w(TAG, "getUserID() ID was ADID. Wasteful to deep check again?");
+			}
+			else if (mUserIDType == UserIDTypes.UUID) {
+				Log.w(TAG, "getUserID() ID was UUID. Wasteful to deep check again?");
 			}
 			retrieveUserInfoPrefs();  // use something for now
 			getAdvertisingIDThread(); // will retrieve/reset & set for next usage
@@ -116,13 +112,14 @@ public class MyApplication extends Application {
 		return;
 	}
 	private void getAdvertisingIDThread(){
-		Log.d(TAG, "getAdvertisingIDThread()");
+		Log.e(TAG, "getAdvertisingIDThread()");	//TODO reset to Log.debug
 		new Thread(new Runnable() {
 			@Override public void run() {
 				// See sample code at http://developer.android.com/google/play-services/id.html
 				UserIDTypes setType=UserIDTypes.UUID; // initialize rather than set for each error condition
 				String adID;
 				boolean adOptOut;
+				boolean otherChange=false;
 				try {
 					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
 					adID = adInfo.getId();
@@ -135,6 +132,11 @@ public class MyApplication extends Application {
 					} else {
 						setType=UserIDTypes.ADID;
 						Log.e(TAG, "getAdvertisingIDThread() YES ADID="+adID);	//TODO change back to Log.debug
+						if (mUserADID != null && !mUserADID.equals(adID)) { // a Different adID
+							Log.d(TAG, "getAdvertisingIDThread() ADID old="+mUserADID+".");
+							Log.d(TAG, "getAdvertisingIDThread() ADID new="+adID+".");
+							otherChange = true;
+						}
 						mUserADID = adID;
 					}
 				} catch (IOException e) {
@@ -152,12 +154,12 @@ public class MyApplication extends Application {
 					// getId() is sometimes null
 				}
 
-				if(setType == mUserIDType) {
-					Log.d(TAG, "getAdvertisingIDThread() done. No changes");
+				if(setType == mUserIDType && !otherChange) {
+					Log.e(TAG, "getAdvertisingIDThread() done. No changes");	//TODO change back to Log.debug
 				} else {
+					Log.e(TAG, "getAdvertisingIDThread() calling save, otherChange="+otherChange);	//TODO change back to Log.debug
 					saveUserInfo(setType);
 				}
-			
 				mADThread_Waiting=false;
 			}
 		}).start();
@@ -200,13 +202,15 @@ public class MyApplication extends Application {
 				userType=UserIDTypes.UUID;
 			}
 			else {
+				mUserIDType = UserIDTypes.ADID;
 				editor.putString(FavoriteListUtil.USER_ADID,mUserADID);
 				editor.putString(FavoriteListUtil.USER_TYPE,"ADID");
 				editor.commit();
-				Log.d(TAG, "saveUserInfo() UUID existing mUserUUID=" + mUserUUID);
+				Log.d(TAG, "saveUserInfo() ADID saved mUserADID=" + mUserADID);
 			}
 		}
 		if (userType == UserIDTypes.UUID) {
+			mUserIDType = UserIDTypes.UUID;
 			if (mUserUUID == null) { // if exists, re-use
 				editor.remove(FavoriteListUtil.USER_UUID);
 				mUserUUID = UUID.randomUUID().toString();
@@ -232,7 +236,7 @@ public class MyApplication extends Application {
 	public synchronized Tracker getTracker(TrackerName trackerId) {
 		Log.d(TAG, "getTracker()");
 		if (!mTrackers.containsKey(trackerId)) {
-			Log.e(TAG, "getTracker() CREATED TRACKER");
+			Log.e(TAG, "getTracker() CREATED TRACKER");	//TODO reset to Log.debug
 			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
 			Tracker t = (trackerId == TrackerName.APP_TRACKER)  ? analytics.newTracker(R.xml.app_tracker)
 					: (trackerId == TrackerName.MONEY_TRACKER)? analytics.newTracker(R.xml.money_tracker)

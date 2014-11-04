@@ -151,12 +151,12 @@ public class DivisionListFragment extends Fragment{
 		Log.d(TAG, "returnConference("+choice+") choiceSize="+choiceSize+" division="+mDivisionItem.getDivisionId()+"-"+mDivisionItem.getDivisionName());
 		if (mConferenceDisplay == null || mConferenceDisplay.size() == 0) {
 			if (choiceSize > 0) {
-				if (choice == GET) {
+				if (choice == GET) { //GET=0
 					Log.d(TAG, "returnConference("+choice+") (2nd/GET) has the only results so insert them");
 					mConferenceDisplay = mConferenceFetch;
 					new InsertConferenceItemsTask().execute(); 
 				}
-				else {
+				else { // QUERY=1
 					mConferenceDisplay = mConferenceQuery;
 				}
 				mConferenceItem = mConferenceDisplay.get(0);
@@ -195,8 +195,22 @@ public class DivisionListFragment extends Fragment{
 			}
 			else {
 				if (!mConferenceFetch.equals(mConferenceQuery)) {
+					int queryCount=0;
+					if(mConferenceQuery == null || mConferenceQuery.size() == 0) {
+						Log.e(TAG, "returnConference("+choice+") mConferenceQuery is null");
+					}
+					else {
+						queryCount=mConferenceQuery.size();
+					}
+					int fetchCount=0;
+					if(mConferenceFetch == null || mConferenceFetch.size() == 0) {
+						Log.e(TAG, "returnConference("+choice+") mConferenceFetch is null");
+					}
+					else {
+						fetchCount=mConferenceFetch.size();
+					}
 					Log.w(TAG, "returnConference("+choice+") Fetched != Queried. Sizes info only: "
-							+ mConferenceFetch.size() + " " + mConferenceQuery.size());
+							+ fetchCount + " " + queryCount);
 					if (choice == GET) {
 						Log.d(TAG, "returnConference("+choice+") (2nd/GET) difference so inserting");
 						mConferenceDisplay.clear();
