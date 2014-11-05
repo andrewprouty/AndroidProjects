@@ -8,7 +8,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
@@ -46,73 +45,95 @@ public class MyApplication extends Application {
 		super();
 	}
 
-	public String prepareTracker(Tracker t) {
+	public synchronized Tracker getTracker(TrackerName trackerId) {
+		Log.d(TAG, "getTracker()");
+		if (!mTrackers.containsKey(trackerId)) {
+			Log.d(TAG, "getTracker() CREATED TRACKER");
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			Tracker t = (trackerId == TrackerName.APP_TRACKER)  ? analytics.newTracker(R.xml.app_tracker)
+					: (trackerId == TrackerName.MONEY_TRACKER)? analytics.newTracker(R.xml.money_tracker)
+					: analytics.newTracker(PROPERTY_ID);	//else GLOBAL_TRACKER
+			mTrackers.put(trackerId, t);
+		}
+		prepareTracker(mTrackers.get(trackerId));
+		return mTrackers.get(trackerId);
+	}
+	
+	private String prepareTracker(Tracker t) {
 		if (mUserIDType == UserIDTypes.UNKNOWN) {
 			Log.w(TAG, "prepareTracker() UNKNOWN. retrieveUserInfoPrefs() and continue");
 			retrieveUserInfoPrefs();
 		}
 		String user=null;
-		String debug= null; //TODO remove
 		if (mUserIDType == UserIDTypes.UNKNOWN) {
 			Log.e(TAG, "prepareTracker() UNKNOWN again! Set to WIP & get(). Event no user, no Add Collection");
-			getUserID();
+			setUserID();
 			t.set("&uid", "");
 			t.enableAdvertisingIdCollection(false);
-			debug="UNKNOWN";
 		}
 		else if (mUserIDType == UserIDTypes.EMPTY) {
 			Log.w(TAG, "prepareTracker() EMPTY. If first usage then OK. Set to WIP & get(). Event no user, no Add Collection");
-			getUserID();
+			setUserID();
 			t.set("&uid", "");
 			t.enableAdvertisingIdCollection(false);
-			debug="EMPTY";
 		}
 		else if (mUserIDType == UserIDTypes.ADID) {
 			Log.d(TAG, "prepareTracker() User=ADID="+mUserADID);
 			user=mUserADID;
 			t.set("&uid", user);
 			t.enableAdvertisingIdCollection(true);
-			debug="ADID";
 		}
 		else if (mUserIDType == UserIDTypes.UUID) {
 			Log.d(TAG, "prepareTracker() User=UUID="+mUserUUID);
 			user=mUserUUID;
 			t.set("&uid", user);
-			//"Not to use Advertising ID..." Either they don't want to use it or missing anyway, so set to false.
-			t.enableAdvertisingIdCollection(false);
-			debug="UUID";
+			//"Not to use Advertising ID..." instead using a local UUID, not the Advertising ID
+			t.enableAdvertisingIdCollection(true);
 		}
-		debug=debug+" user="+user;
-		Toast.makeText(getApplicationContext(),debug,Toast.LENGTH_LONG).show();
 
 		return user;
 	}
-	public synchronized void getUserID() {
+	public String getUserID() {
+		String user=null;
+		if (mUserIDType == UserIDTypes.ADID) {
+			user=mUserADID;
+			Log.d(TAG, "getUserID() ID ADID="+user);
+		}
+		else if (mUserIDType == UserIDTypes.UUID) {
+			user=mUserUUID;
+			Log.d(TAG, "getUserID() ID UUID="+user);
+		}
+		else {
+			Log.w(TAG, "getUserID() not set, returning user="+user);
+		}
+		return user;
+	}
+	public synchronized void setUserID() {
 		if (mADThread_Waiting == true) {
-			Log.w(TAG, "getUserID() ID Waiting. Parallel? Exiting");
+			Log.w(TAG, "setUserID() ID Waiting, parallel? Exiting.");
 		}
 		else {
 			mADThread_Waiting=true;
 			if (mUserIDType == UserIDTypes.UNKNOWN) {
-				Log.d(TAG, "getUserID() ID was UNKNOWN, OK, should be starting up. Set to Waiting & getThread()"); //TODO RESET to debug logging?
+				Log.d(TAG, "setUserID() ID was UNKNOWN, OK, should be starting up. Set to Waiting & getThread()");
 			}
 			else if (mUserIDType == UserIDTypes.EMPTY) {
-				Log.w(TAG, "getUserID() ID was EMPTY. If first usage then OK. Set to Waiting & getThread()");
+				Log.w(TAG, "setUserID() ID was EMPTY. If first usage then OK. Set to Waiting & getThread()");
 			}
 			else if (mUserIDType == UserIDTypes.ADID) {
-				Log.w(TAG, "getUserID() ID was ADID. Wasteful to deep check again?");
+				Log.d(TAG, "setUserID() ID was ADID. Very thorough but set to Waiting & getThread()");
 			}
 			else if (mUserIDType == UserIDTypes.UUID) {
-				Log.w(TAG, "getUserID() ID was UUID. Wasteful to deep check again?");
+				Log.d(TAG, "setUserID() ID was UUID. Very thorough but set to Waiting & getThread()");
 			}
-			retrieveUserInfoPrefs();  // use something for now
+			retrieveUserInfoPrefs();  // use something while waiting
 			getAdvertisingIDThread(); // will retrieve/reset & set for next usage
 		}
 
 		return;
 	}
 	private void getAdvertisingIDThread(){
-		Log.e(TAG, "getAdvertisingIDThread()");	//TODO reset to Log.debug
+		Log.d(TAG, "getAdvertisingIDThread()");
 		new Thread(new Runnable() {
 			@Override public void run() {
 				// See sample code at http://developer.android.com/google/play-services/id.html
@@ -126,15 +147,15 @@ public class MyApplication extends Application {
 					adOptOut = adInfo.isLimitAdTrackingEnabled();
 
 					if (adID == null) {
-						Log.w(TAG, "getAdvertisingIDThread() adID is null => UUID");
+						Log.d(TAG, "getAdvertisingIDThread() adID is null => UUID");
 					} else if (adOptOut != false) {
-						Log.w(TAG, "getAdvertisingIDThread() OptOut is true (or null) => UUID");
+						Log.d(TAG, "getAdvertisingIDThread() OptOut is true (or null) => UUID");
 					} else {
 						setType=UserIDTypes.ADID;
-						Log.e(TAG, "getAdvertisingIDThread() YES ADID="+adID);	//TODO change back to Log.debug
+						Log.d(TAG, "getAdvertisingIDThread() YES ADID="+adID);
 						if (mUserADID != null && !mUserADID.equals(adID)) { // a Different adID
-							Log.d(TAG, "getAdvertisingIDThread() ADID old="+mUserADID+".");
-							Log.d(TAG, "getAdvertisingIDThread() ADID new="+adID+".");
+							Log.d(TAG, "getAdvertisingIDThread() ADID changed old="+mUserADID+".");
+							Log.d(TAG, "getAdvertisingIDThread() ADID changed new="+adID+".");
 							otherChange = true;
 						}
 						mUserADID = adID;
@@ -154,11 +175,15 @@ public class MyApplication extends Application {
 					// getId() is sometimes null
 				}
 
-				if(setType == mUserIDType && !otherChange) {
-					Log.e(TAG, "getAdvertisingIDThread() done. No changes");	//TODO change back to Log.debug
-				} else {
-					Log.e(TAG, "getAdvertisingIDThread() calling save, otherChange="+otherChange);	//TODO change back to Log.debug
+				if(setType != mUserIDType) {
+					Log.d(TAG, "getAdvertisingIDThread() save user ID type");
 					saveUserInfo(setType);
+				}
+				else if (otherChange) {
+					Log.d(TAG, "getAdvertisingIDThread() save new Advertising ID");
+					saveUserInfo(setType);
+				} else {
+					Log.d(TAG, "getAdvertisingIDThread() done. No changes");
 				}
 				mADThread_Waiting=false;
 			}
@@ -214,7 +239,7 @@ public class MyApplication extends Application {
 			if (mUserUUID == null) { // if exists, re-use
 				editor.remove(FavoriteListUtil.USER_UUID);
 				mUserUUID = UUID.randomUUID().toString();
-				Log.w(TAG, "saveUserInfo() UUID GENERATED mUserUUID=" + mUserUUID);		//TODO normal so return to Log.debug
+				Log.d(TAG, "saveUserInfo() UUID GENERATED mUserUUID=" + mUserUUID);
 				editor.putString(FavoriteListUtil.USER_UUID,mUserUUID);
 			}
 			else {	//USER_UUID is already set
@@ -230,19 +255,5 @@ public class MyApplication extends Application {
 			Log.e(TAG, "saveUserInfo() UNKNOWN requested... should set to UUID or ADID");
 		}
 		return;
-	}
-
-
-	public synchronized Tracker getTracker(TrackerName trackerId) {
-		Log.d(TAG, "getTracker()");
-		if (!mTrackers.containsKey(trackerId)) {
-			Log.e(TAG, "getTracker() CREATED TRACKER");	//TODO reset to Log.debug
-			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-			Tracker t = (trackerId == TrackerName.APP_TRACKER)  ? analytics.newTracker(R.xml.app_tracker)
-					: (trackerId == TrackerName.MONEY_TRACKER)? analytics.newTracker(R.xml.money_tracker)
-					: analytics.newTracker(PROPERTY_ID);	//else GLOBAL_TRACKER
-			mTrackers.put(trackerId, t);
-		}
-		return mTrackers.get(trackerId);
 	}
 }

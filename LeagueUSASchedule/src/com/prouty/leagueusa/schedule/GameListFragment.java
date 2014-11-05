@@ -134,7 +134,7 @@ public class GameListFragment extends Fragment{
 	    				" url="+mTeamItem.getTeamURL());
     			FavoriteListUtil util = new FavoriteListUtil();
 				Tracker t = ((GameListActivity) getActivity()).getAppTracker();
-				String user=((GameListActivity) getActivity()).prepareTracker(t);
+				String user=((GameListActivity) getActivity()).getUserID();
 
 	    		if (mFavorite) {
 		    		Log.d(TAG, "onOptionsItemSelected() removing Team ID="+mTeamItem.getTeamId() +

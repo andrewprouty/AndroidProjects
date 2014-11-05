@@ -53,78 +53,32 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
 	x fixed banner to show league name corresponding to favorite team "jump" navigation
 	>> add analytic (My Dashboard) https://www.google.com/analytics/web/
-	x screens
-	x events category/action/label/value
-	==== logic notes
-	MyApplication
-		global mUserID
-		global mUserIDType
-		enum   UserIDTypes
-		prepareTracker()
-			set properties
-			return mUserID
-			if NONE, retry with WIP
-		getUserID()
-		getAdvertisingIDThread()
- 
-	FavoriteListUtil
-		CLIENT_ID 		######
-		CLIENT_ID_TYPE	ADID, UUID, NONE, WIP
-	ActivityFiles
-		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
-		t.enableAdvertisingIdCollection(true);	
-
-		
-	====now
-		- FavoriteListUtil (category)
-			- favoriteCount (action) FavoriteListUtil.java, eventFavoriteCount()
-				- UUID
-					- <total>
-						Event Value- NOT useful, aggregate is just a big number
-						Avg Value- NOT useful, shows average over time not current
-			- favoriteTeam (action)
-				- <teamPath>
-					- +1/-1
-						Event Value- YES, aggregate shows # that have as a favorite
-						Avg Value- NOT useful = favorites count of a team / total # of favorite teams
-			- homeLeague (action) FavoriteListUtil.java, setHomeLeagueItem()
-				- <leagueName>
-					- +1/-1
-						Reporting useful except average
-		- GameListing
-			- navigateListing (action) TeamListActivity.java, launchGameListActivity()
-				- <teamPath>
-					- +1
-						All useful, rolls up to nav vs. favorite so cannot see team total
-			- favoriteListing (action) FavoriteListUtil.java, launchGameListActivity()
-				- teamPath
-					- +1
-						Reporting useful except average
-	====plan
-		x GameListing
-			- navigateListing (action) TeamListActivity.java, launchGameListActivity()
-				- <teamPath>
-					- +1
-			- favoriteListing (action) FavoriteListUtil.java, launchGameListActivity()
-				- <teamPath>
-					- +1
-		x FavoriteTeamTotal (action) FavoriteListUtil.java, eventFavoriteTeamTotal()
-			- LeagueUSA
-				- <UUID>
-					- <total>
-		x FavoriteTeamByTeam (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
-			- LeagueUSA
-				- <teamPath>
-					- +1/-1
-		x FavoriteTeamByUser (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
-			- LeagueUSA
-				- <UUID>
-					- +1/-1
-		x HomeLeague (action) FavoriteListUtil.java, setHomeLeagueItem()
-			- LeagueUSA
-				- <leagueName>
-					- +1/-1
+		x screens
+		x events category/action/label/value
+			x GameListing
+				- navigateListing (action) TeamListActivity.java, launchGameListActivity()
+					- <teamPath>
+						- +1
+				- favoriteListing (action) FavoriteListUtil.java, launchGameListActivity()
+					- <teamPath>
+						- +1
+			x FavoriteTeamTotal (action) FavoriteListUtil.java, eventFavoriteTeamTotal()
+				- LeagueUSA
+					- <UUID>
+						- <total>
+			x FavoriteTeamByTeam (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
+				- LeagueUSA
+					- <teamPath>
+						- +1/-1
+			x FavoriteTeamByUser (action) FavoriteListUtil.java, add/removeFavoriteTeamItem()
+				- LeagueUSA
+					- <UUID>
+						- +1/-1
+			x HomeLeague (action) FavoriteListUtil.java, setHomeLeagueItem()
+				- LeagueUSA
+					- <leagueName>
+						- +1/-1
+	x	Left in log.e to prevent NullPointerException in Division around 199 (DEBUG)
 	====
 	* notification of schedule changes to favourite teams
 	* notification reminder upcoming game for favorite teams

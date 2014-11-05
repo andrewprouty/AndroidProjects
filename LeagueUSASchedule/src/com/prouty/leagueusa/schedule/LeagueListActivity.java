@@ -30,7 +30,6 @@ public class LeagueListActivity extends FragmentActivity {
 		if (item.getLeagueId() != null) {
 
 			Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-			((MyApplication) getApplication()).prepareTracker(t);
 
 			FavoriteListUtil util = new FavoriteListUtil();
 			util.setHomeLeagueItem(getApplicationContext(),item, t);
@@ -51,7 +50,7 @@ public class LeagueListActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate()");
-		((MyApplication) getApplication()).getUserID(); // prepare for event Trackers
+		((MyApplication) getApplication()).setUserID(); // prepare for event Trackers
 		setContentView(R.layout.activity_fragment);
 		setActionBarVicid();
 		FragmentManager fm = getSupportFragmentManager();
@@ -115,7 +114,6 @@ public class LeagueListActivity extends FragmentActivity {
 			if (mFavoriteTeam != null ) {
 				Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 				Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-				((MyApplication) getApplication()).prepareTracker(t);
 				util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 			}
 			else {

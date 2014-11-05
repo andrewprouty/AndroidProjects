@@ -76,13 +76,10 @@ public class GameListActivity extends FragmentActivity {
 	}
 
 	public Tracker getAppTracker () {
-		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		return t;
+		return ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
 	}
-	public String prepareTracker (Tracker t) {
-		String user;
-		user=((MyApplication) getApplication()).prepareTracker(t);
-		return user;
+	public String getUserID () {
+		return ((MyApplication) getApplication()).getUserID();
 	}
 
 	@TargetApi(11)

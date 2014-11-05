@@ -49,8 +49,6 @@ public class FavoriteListUtil {
 				+ item.getLeagueURL() + ")");
 		
 		mLeagueItem=getHomeLeagueItem(context);
-		//TODO remove t.set("&uid", FavoriteListUtil.getClientID(context));
-		//TODO remove t.enableAdvertisingIdCollection(true);
 		if (mLeagueItem == null || mLeagueItem.getLeagueId() == null) {
 			// ADD, nothing currently
 			t.send(new HitBuilders.EventBuilder()
@@ -131,9 +129,6 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		//TODO remove String user = FavoriteListUtil.getClientID(context);
-		//TODO remove t.set("&uid", user);
-		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("FavoriteTeamByTeam")
 		.setAction("LeagueUSA")
@@ -167,9 +162,6 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+team.getSeasonName()+"/"
 					+team.getDivisionName()+"/"+team.getConferenceName()+"/"+team.getTeamName();
 		}
-		//TODO remove String user = FavoriteListUtil.getClientID(context);
-		//TODO remove t.set("&uid", user);
-		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("FavoriteTeamByTeam")
 		.setAction("LeagueUSA")
@@ -361,8 +353,6 @@ public class FavoriteListUtil {
 			fullName = fullName+"/"+item.getSeasonName()+"/"
 					+item.getDivisionName()+"/"+item.getConferenceName()+"/"+item.getTeamName();
 		}
-		//TODO remove t.set("&uid", FavoriteListUtil.getClientID(context));
-		//TODO remove t.enableAdvertisingIdCollection(true);
 		t.send(new HitBuilders.EventBuilder()
 		.setCategory("GameListing")
 		.setAction("favoriteListing")

@@ -52,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
-		((MyApplication) getApplication()).getUserID(); // prepare for event Trackers
+		((MyApplication) getApplication()).setUserID(); // prepare for event Trackers
 		if (needLeague()) {
 			launchLeagueListActivity();
 			finish();
@@ -79,9 +79,6 @@ public class MainActivity extends FragmentActivity {
 		Log.d(TAG, "onStart()");
 		// Set & send the screen view.
 		Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-		//TODO t.set("&uid", FavoriteListUtil.getClientID(getApplicationContext()));
-		//TODO t.enableAdvertisingIdCollection(true);
-		((MyApplication) getApplication()).prepareTracker(t);
         t.send(new HitBuilders.AppViewBuilder().build());
 	}
 	private boolean needLeague() {
@@ -170,7 +167,6 @@ public class MainActivity extends FragmentActivity {
 				if (mFavoriteTeam != null ) {
 					Log.d(TAG, "onOptionsItemSelected() FavTeam: " + mFavoriteTeam.getTeamName());
 					Tracker t = ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
-					((MyApplication) getApplication()).prepareTracker(t);
 					util.launchGameListActivity(getApplicationContext(), mFavoriteTeam, t);
 				}
 				else {
