@@ -34,14 +34,28 @@ BEFORE MARKET
 
 UPDATING ON THE MARKET
 	https://support.google.com/googleplay/android-developer/answer/113476?hl=en
-	0- Rename to get the old one out of the way C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
-	1- Update version Code & Name in Manifest file
-		http://developer.android.com/tools/publishing/versioning.html
-	2- SAVE FILE.  Otherwise new version won't get into the apk, which the store will detect and give you an error for.
-	3- Follow export & sign wizard in Eclipse
-	4- U:\andy docs\Other\keystore\keystr password is in Lastpass (League Schedule Application)
-		Use existing key, repeat password again
-	5- Copy as _vx to C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin
+	1- Ensure an archive copy of the "current" LeagueUSASchedule.apk is in the archive subfolder C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
+	2- Delete the current copy C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed\LeagueUSASchedule.apk
+	3- Update version Code & Name in Manifest file.  Version code must be an integer, so +1.
+		http://developer.android.com/tools/publishing/versioning.html.
+	4- SAVE FILE.  Otherwise new version won't get into the apk, which the store will detect and give you an error for.
+	5- Follow export & sign wizard in Eclipse (link at the bottom of Manifest file view)
+		a- Use existing keystore, repeat password again
+			U:\andy docs\Other\keystore\keystr
+			Password is in Lastpass (League Schedule Application)
+		b- Use existing key
+			Alias: andy key
+			<same password again>
+		c- Destination and key/certificate checks
+			Destination APK file: C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed\LeagueUSASchedule.apk
+				(expires in 30 years)
+				Certificate fingerprints:
+				MD5 : 8A:84:98:50:9F:97:58:C5:23:1D:C2:2C:80:9D:B3:B0
+				SHA1: B2:7E:5A:FD:DF:E8:E3:EF:4A:9C:40:B9:AA:D2:82:EE:F2:48:2E:9F
+	6- Create a backup copy/renaming to archive/*_v<version>.apk from C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed\LeagueUSASchedule.apk
+	7- Sync/commit to GitHub
+
+	HUH- Copy as _vx to C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin
 	
 	Update on market store 
 	1- Goto my app https://play.google.com/apps/publish/?dev_acc=01382750548498594644#MarketListingPlace:p=com.prouty.leagueusa.schedule
@@ -80,7 +94,7 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 						- +1/-1
 	x	Left in log.e to prevent NullPointerException in Division around 199 (DEBUG)
 	====
-	* notification of schedule changes to favourite teams
+	* notification of schedule changes to favorite teams
 	* notification reminder upcoming game for favorite teams
 	- Spanish translation
 	- switch logos for each league
@@ -88,6 +102,7 @@ FUTURE ENHANCEMENTS (d=depend on Vicid)
 		http://stackoverflow.com/questions/14606294/remove-icon-logo-from-action-bar-on-android
 		http://developer.android.com/reference/android/app/ActionBar.html#setLogo(int)
 	- make use of ACCESS_NETWORK_STATE for more sophisticated way to determine whether offline?
+	- do not show an item if there are no children (i.e. division without a conference, or conference without a team, etc...)
 	d Google calendar integration (would require a feed from leagueUSA)
 	d game's address: get & utilize (use intent to launch map/navigation)
 	d team contact: get & utilize (i.e. call/text/email coach when cannot make practice)
