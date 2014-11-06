@@ -60,6 +60,7 @@ UPDATING ON THE MARKET
 	2- Click on "APK"
 	3- Upload new APK to Production
 	4- Copy new file from C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed
+	5- Enter a description of the changes.
 	
 FUTURE ENHANCEMENTS (d=depend on Vicid)
 	x Switch AsyncTasks to parallel
