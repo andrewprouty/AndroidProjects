@@ -53,10 +53,8 @@ UPDATING ON THE MARKET
 				MD5 : 8A:84:98:50:9F:97:58:C5:23:1D:C2:2C:80:9D:B3:B0
 				SHA1: B2:7E:5A:FD:DF:E8:E3:EF:4A:9C:40:B9:AA:D2:82:EE:F2:48:2E:9F
 	6- Create a backup copy/renaming to archive/*_v<version>.apk from C:\Dev\Git\AndroidProjects\LeagueUSASchedule\other\signed\LeagueUSASchedule.apk
-	7- Sync/commit to GitHub
+	7- Commit/push changes to GitHub
 
-	HUH- Copy as _vx to C:\Dev\Git\AndroidProjects\LeagueUSASchedule\bin
-	
 	Update on market store 
 	1- Goto my app https://play.google.com/apps/publish/?dev_acc=01382750548498594644#MarketListingPlace:p=com.prouty.leagueusa.schedule
 	2- Click on "APK"
